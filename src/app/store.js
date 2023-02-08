@@ -1,8 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import rootReducer from 'rootReducer';
+import loggerMiddleware from 'app/middleware/logger';
 
-export const store = configureStore({
-  reducer: {
-    counter: counterReducer,
-  },
+const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these field paths in all actions
+        ignoredActionPaths: ['payload.config', 'payload.request', 'error', 'meta.arg'],
+      },
+    }).concat(loggerMiddleware),
 });
+
+// getStore provides a way to access the Redux store
+const getStore = () => store;
+
+export default getStore;

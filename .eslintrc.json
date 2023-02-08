@@ -1,0 +1,88 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "plugins": ["react", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "airbnb",
+    "prettier",
+    "eslint-config-prettier",
+    "plugin:import/recommended"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "**/*.spec.js",
+        "**/*.spec.jsx",
+        "**/*.test.js",
+        "**/*.test.jsx"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "node": {
+        "paths": ["src"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "project": "./jsconfig.json"
+  },
+
+  "rules": {
+    "arrow-parens": ["error"],
+    "spaced-comment": ["warn", "always"],
+    "guard-for-in": "error",
+    "no-labels": "error",
+    "no-caller": "error",
+    "no-bitwise": "error",
+    "no-console": ["error", { "allow": ["warn", "error"] }],
+    "no-new-wrappers": "error",
+    "no-eval": "error",
+    "no-new": "error",
+    "no-var": "error",
+    "radix": "error",
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "prefer-const": "error",
+    "object-shorthand": [
+      "error",
+      "always",
+      { "avoidExplicitReturnArrows": true }
+    ],
+    "default-case": "error",
+    "complexity": ["error", 40],
+    "no-invalid-this": "off",
+    "react/prop-types": "off",
+    "react/display-name": "off",
+    "comma-dangle": [
+      "warn",
+      {
+        "arrays": "only-multiline",
+        "objects": "only-multiline",
+        "imports": "only-multiline",
+        "exports": "only-multiline",
+        "functions": "only-multiline"
+      }
+    ],
+    "no-param-reassign": [
+      "error",
+      { "props": true, "ignorePropertyModificationsForRegex": ["^state"] }
+    ]
+  }
+}
