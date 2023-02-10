@@ -1,9 +1,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import { ChakraProvider, extendTheme, theme as defaultTheme } from '@chakra-ui/react';
 import getStore from 'app/store';
-import { extendTheme, ChakraProvider, theme as defaultTheme } from '@chakra-ui/react';
-import loadIcon from 'app/icon-loader';
+
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
@@ -18,9 +19,6 @@ const theme = extendTheme(defaultTheme, {
   },
 });
 
-// Load icons
-loadIcon();
-
 // Initialize mount point
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -29,7 +27,9 @@ root.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <Provider store={store}>
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </Provider>
     </ChakraProvider>
   </React.StrictMode>

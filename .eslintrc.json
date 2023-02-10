@@ -3,7 +3,7 @@
     "browser": true,
     "es2021": true
   },
-  "plugins": ["react", "prettier"],
+  "plugins": ["react", "prettier", "simple-import-sort"],
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
@@ -14,14 +14,35 @@
   ],
   "overrides": [
     {
-      "files": [
-        "**/*.spec.js",
-        "**/*.spec.jsx",
-        "**/*.test.js",
-        "**/*.test.jsx"
-      ],
+      "files": ["**/*.spec.js", "**/*.spec.jsx", "**/*.test.js", "**/*.test.jsx"],
       "env": {
-        "jest": true
+        "jest": true,
+        "amd": false // Disable require() and define() as global variables as per the amd spec.
+      }
+    },
+    // override "simple-import-sort" config
+    {
+      "files": ["*.js", "*.jsx", "*.ts", "*.tsx"],
+      "rules": {
+        "simple-import-sort/imports": [
+          "warn",
+          {
+            "groups": [
+              // Packages `react` related packages come first.
+              ["^react", "^@?\\w"],
+              // Internal packages.
+              ["^(@|components)(/.*|$)"],
+              // Side effect imports.
+              ["^\\u0000"],
+              // Parent imports. Put `..` last.
+              ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+              // Other relative imports. Put same-folder imports and `.` last.
+              ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+              // Style imports.
+              ["^.+\\.?(css)$"]
+            ]
+          }
+        ]
       }
     }
   ],
@@ -37,16 +58,16 @@
     }
   },
   "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module",
+    "ecmaVersion": "latest", // Use the latest ecmascript standard
+    "sourceType": "module", // Allows using import/export statements
     "ecmaFeatures": {
-      "jsx": true
+      "jsx": true // Enable JSX since we're using React
     },
     "project": "./jsconfig.json"
   },
 
   "rules": {
-    "arrow-parens": ["error"],
+    "arrow-parens": ["warn"],
     "spaced-comment": ["warn", "always"],
     "guard-for-in": "error",
     "no-labels": "error",
@@ -54,17 +75,14 @@
     "no-bitwise": "error",
     "no-console": ["error", { "allow": ["warn", "error"] }],
     "no-new-wrappers": "error",
+    "no-unused-vars": ["warn", { "args": "all" }],
     "no-eval": "error",
     "no-new": "error",
     "no-var": "error",
     "radix": "error",
     "eqeqeq": ["error", "always", { "null": "ignore" }],
     "prefer-const": "error",
-    "object-shorthand": [
-      "error",
-      "always",
-      { "avoidExplicitReturnArrows": true }
-    ],
+    "object-shorthand": ["error", "always", { "avoidExplicitReturnArrows": true }],
     "default-case": "error",
     "complexity": ["error", 40],
     "no-invalid-this": "off",
@@ -83,6 +101,7 @@
     "no-param-reassign": [
       "error",
       { "props": true, "ignorePropertyModificationsForRegex": ["^state"] }
-    ]
+    ],
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
   }
 }
