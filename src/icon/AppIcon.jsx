@@ -7,6 +7,7 @@ import {
   House,
   Moon,
   Pill,
+  Question,
   SignOut,
   SmileyNervous,
   Sun,
@@ -28,6 +29,7 @@ const libIcons = {
   moon: Moon,
   'user-list': UserList,
   'sign-out': SignOut,
+  question: Question,
   // add more icons here
 };
 

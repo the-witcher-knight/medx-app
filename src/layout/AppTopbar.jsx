@@ -13,6 +13,7 @@ import {
   MenuItem,
   MenuList,
   Text,
+  Tooltip,
   useColorMode,
   useColorModeValue,
 } from '@chakra-ui/react';
@@ -46,9 +47,16 @@ function AppTopbar({ ...rest }) {
       </Flex>
 
       <HStack py={2} spacing={2}>
-        <Button type="button" variant="ghost" size="sm" onClick={toggleColorMode}>
-          <AppIcon weight="bold" icon={colorModeIcon} />
-        </Button>
+        <Tooltip label="Chuyển đổi chế độ sáng/tối" fontSize="md" placement="bottom">
+          <Button type="button" variant="ghost" size="sm" onClick={toggleColorMode}>
+            <AppIcon weight="bold" icon={colorModeIcon} />
+          </Button>
+        </Tooltip>
+        <Tooltip label="Trợ giúp" fontSize="md" placement="bottom">
+          <Button type="button" variant="ghost" size="sm">
+            <AppIcon weight="bold" icon="question" />
+          </Button>
+        </Tooltip>
         <Menu>
           <MenuButton
             as={Avatar}
