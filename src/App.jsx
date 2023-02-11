@@ -1,4 +1,8 @@
 import React from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
+import { Box, Container } from '@chakra-ui/react';
+import Home from 'features/home';
+import PatientMgmt from 'features/patient-mgmt';
 import AppContent from 'layout/AppContainer';
 import AppFooter from 'layout/AppFooter';
 import AppSidebar from 'layout/AppSidebar';
@@ -34,7 +38,7 @@ const routes = [
   },
   {
     name: 'Bác sĩ',
-    icon: 'pill',
+    icon: 'first-aid-kit',
     path: '/doctor',
   },
   {
@@ -45,8 +49,10 @@ const routes = [
 ];
 
 function App() {
+  const location = useLocation();
+
   return (
-    <div className="App">
+    <Box>
       <AppTopbar />
       <AppSidebar
         display={{ base: 'none', md: 'flex' }}
@@ -55,12 +61,16 @@ function App() {
         pos="fixed"
       />
       <AppContent ml={{ base: 0, md: sideWidth }}>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid libero voluptas corporis
-        amet quae magni illum! Perferendis fugiat recusandae similique magnam, in odit ea,
-        perspiciatis, dolores explicabo eligendi ratione animi.
+        <Routes location={location.state?.backgroundLocation || location}>
+          <Route index element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/patient/*" element={<PatientMgmt />} />
+          {/* Add more routes here */}
+        </Routes>
+
         <AppFooter />
       </AppContent>
-    </div>
+    </Box>
   );
 }
 

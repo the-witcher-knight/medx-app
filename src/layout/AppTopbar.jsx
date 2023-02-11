@@ -58,12 +58,7 @@ function AppTopbar({ ...rest }) {
           </Button>
         </Tooltip>
         <Menu>
-          <MenuButton
-            as={Avatar}
-            variant="outline"
-            size="sm"
-            rightIcon={<AppIcon icon="caret-down" />}
-          />
+          <MenuButton as={Avatar} variant="outline" size="sm" />
           <MenuList>
             <MenuItem icon={<AppIcon icon="user-list" size={24} />}>Thông tin cá nhân</MenuItem>
             <MenuItem icon={<AppIcon icon="sign-out" size={24} />}>Đăng xuất</MenuItem>

@@ -4,6 +4,7 @@ import {
   CaretDown,
   ChartLine,
   FileText,
+  FirstAidKit,
   House,
   Moon,
   Pill,
@@ -30,6 +31,7 @@ const libIcons = {
   'user-list': UserList,
   'sign-out': SignOut,
   question: Question,
+  'first-aid-kit': FirstAidKit,
   // add more icons here
 };
 
