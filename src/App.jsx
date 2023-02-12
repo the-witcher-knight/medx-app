@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { Box, Container } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import Home from 'features/home';
 import PatientMgmt from 'features/patient-mgmt';
 import AppContent from 'layout/AppContainer';
@@ -61,7 +61,7 @@ function App() {
         pos="fixed"
       />
       <AppContent ml={{ base: 0, md: sideWidth }}>
-        <Routes location={location.state?.backgroundLocation || location}>
+        <Routes location={location}>
           <Route index element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/patient/*" element={<PatientMgmt />} />

@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { ChakraProvider, extendTheme, theme as defaultTheme } from '@chakra-ui/react';
 import getStore from 'app/store';
+import ToastContainer from 'common/toastify';
 
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -29,6 +30,7 @@ root.render(
       <Provider store={store}>
         <BrowserRouter>
           <App />
+          <ToastContainer />
         </BrowserRouter>
       </Provider>
     </ChakraProvider>

@@ -2,17 +2,23 @@
 import React from 'react';
 import {
   CaretDown,
+  CaretUp,
   ChartLine,
   FileText,
   FirstAidKit,
+  Funnel,
   House,
+  MagnifyingGlass,
   Moon,
+  Pen,
   Pill,
+  Plus,
   Question,
   SignOut,
   SmileyNervous,
   Sun,
   TestTube,
+  Trash,
   User,
   UserList,
 } from 'phosphor-react';
@@ -26,12 +32,18 @@ const libIcons = {
   pill: Pill,
   user: User,
   'caret-down': CaretDown,
+  'caret-up': CaretUp,
   sun: Sun,
   moon: Moon,
   'user-list': UserList,
   'sign-out': SignOut,
   question: Question,
   'first-aid-kit': FirstAidKit,
+  'manifying-glass': MagnifyingGlass,
+  funnel: Funnel,
+  plus: Plus,
+  pen: Pen,
+  trash: Trash,
   // add more icons here
 };
 
