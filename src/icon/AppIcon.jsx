@@ -6,6 +6,7 @@ import {
   ChartLine,
   FileText,
   FirstAidKit,
+  FloppyDisk,
   Funnel,
   House,
   MagnifyingGlass,
@@ -21,6 +22,7 @@ import {
   Trash,
   User,
   UserList,
+  X,
 } from 'phosphor-react';
 
 const libIcons = {
@@ -44,6 +46,8 @@ const libIcons = {
   plus: Plus,
   pen: Pen,
   trash: Trash,
+  'floppy-disk': FloppyDisk,
+  x: X,
   // add more icons here
 };
 
