@@ -19,7 +19,6 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Portal,
-  TableContainer,
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
@@ -78,9 +77,11 @@ function PatientManagement() {
     }),
     columnHelper.accessor('phone', {
       cell: (info) => info.getValue(),
+      header: 'Số điện thoại',
     }),
     columnHelper.accessor('personalID', {
       cell: (info) => info.getValue(),
+      header: 'Số CCCD',
     }),
     columnHelper.accessor('birthday', {
       cell: (info) => dayjs(info.getValue()).format('DD/MM/YYYY'),
@@ -150,19 +151,20 @@ function PatientManagement() {
         </HStack>
       </Flex>
 
-      <TableContainer
+      <AppTable
+        variant="striped"
+        data={patients}
+        columns={columns}
         sx={{
           h: '27rem',
-          minH: 'full',
-          minW: 'full',
+          minH: { base: '10rem', md: '27rem' },
+          minW: '100%',
           m: 2,
           shadow: 'md',
           overflow: 'auto',
           resize: 'both',
         }}
-      >
-        <AppTable variant="striped" data={patients} columns={columns} />
-      </TableContainer>
+      />
     </Box>
   );
 }

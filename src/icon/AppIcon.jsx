@@ -1,7 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import {
+  CaretDoubleLeft,
+  CaretDoubleRight,
   CaretDown,
+  CaretLeft,
+  CaretRight,
   CaretUp,
   ChartLine,
   FileText,
@@ -48,6 +52,10 @@ const libIcons = {
   trash: Trash,
   'floppy-disk': FloppyDisk,
   x: X,
+  'caret-double-left': CaretDoubleLeft,
+  'caret-left': CaretLeft,
+  'caret-right': CaretRight,
+  'caret-double-right': CaretDoubleRight,
   // add more icons here
 };
 
