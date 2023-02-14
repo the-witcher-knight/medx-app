@@ -1,9 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  Box,
   Button,
   Drawer,
   DrawerBody,
@@ -19,8 +18,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import AppIcon from 'icon/AppIcon';
 import * as yup from 'yup';
 
-import ValidatedCheck from 'components/ValidatedCheck';
 import ValidatedInput from 'components/ValidatedInput';
+import ValidatedSelect from 'components/ValidatedSelect';
 import withSuspense from 'components/withSuspense';
 
 function PatientEdit() {
@@ -30,16 +29,24 @@ function PatientEdit() {
 
   const schema = yup.object().shape({
     fullname: yup.string().required('Vui lòng nhập họ tên'),
+    code: yup.string().required('Vui lòng nhập mã bệnh nhân'),
+    personalID: yup.string().required('Vui lòng nhập CCCD').length(12, 'CCCD phải có 12 ký tự'),
+    phone: yup
+      .string()
+      .required('Vui lòng nhập số điện thoại')
+      .length(10, 'Số điện thoại không hợp lệ'),
     birthday: yup.string().required('Vui lòng nhập ngày sinh'),
-    gender: yup.boolean().required('Vui lòng chọn giới tính'),
+    sex: yup.number().required('Vui lòng chọn giới tính'),
     address: yup.string().required('Vui lòng nhập địa chỉ'),
   });
 
   const { handleSubmit, control } = useForm({
     defaultValues: {
       fullname: '',
+      code: '',
+      personalID: '',
       birthday: '',
-      gender: false,
+      sex: 0,
       address: '',
     },
     resolver: yupResolver(schema),
@@ -62,7 +69,7 @@ function PatientEdit() {
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader>Create patient</DrawerHeader>
+        <DrawerHeader>Tạo bệnh nhân mới</DrawerHeader>
 
         <DrawerBody>
           <Flex
@@ -73,8 +80,15 @@ function PatientEdit() {
             gap={2}
           >
             <ValidatedInput control={control} name="fullname" type="text" label="Họ & tên" />
+            <ValidatedInput control={control} name="personalID" type="text" label="CCCD" />
+            <ValidatedInput control={control} name="code" type="text" label="Mã bệnh nhân" />
+            <ValidatedInput control={control} name="phone" type="text" label="Số điện thoại" />
+            <ValidatedSelect control={control} name="sex" label="Giới tính">
+              <option value="0">Nam</option>
+              <option value="1">Nữ</option>
+              <option value="2">Khác</option>
+            </ValidatedSelect>
             <ValidatedInput control={control} name="birthday" type="date" label="Ngày sinh" />
-            <ValidatedCheck control={control} name="gender" label="Nam" />
             <ValidatedInput control={control} name="address" type="text" label="Địa chỉ" />
           </Flex>
         </DrawerBody>

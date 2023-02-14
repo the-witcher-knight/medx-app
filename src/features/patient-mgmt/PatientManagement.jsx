@@ -68,7 +68,7 @@ function PatientManagement() {
   const columnHelper = createColumnHelper();
 
   const columns = [
-    columnHelper.accessor('id', {
+    columnHelper.accessor('code', {
       cell: (info) => info.getValue(),
       header: 'Mã bệnh nhân',
     }),
@@ -76,12 +76,21 @@ function PatientManagement() {
       cell: (info) => info.getValue(),
       header: 'Họ và tên',
     }),
+    columnHelper.accessor('phone', {
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('personalID', {
+      cell: (info) => info.getValue(),
+    }),
     columnHelper.accessor('birthday', {
       cell: (info) => dayjs(info.getValue()).format('DD/MM/YYYY'),
       header: 'Ngày sinh',
     }),
-    columnHelper.accessor('gender', {
-      cell: (info) => (info.getValue() ? 'Nam' : 'Nữ'),
+    columnHelper.accessor('sex', {
+      cell(info) {
+        const gender = ['Nam', 'Nữ', 'Khác'];
+        return gender[info.getValue()];
+      },
       header: 'Giới tính',
     }),
     columnHelper.accessor('address', {
