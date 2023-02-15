@@ -5,6 +5,7 @@ import {
   Button,
   Flex,
   Input,
+  Progress,
   Select,
   Table,
   TableContainer,
@@ -23,7 +24,7 @@ import {
 } from '@tanstack/react-table';
 import AppIcon from 'icon/AppIcon';
 
-function AppTable({ data, columns, ...rest }) {
+function AppTable({ data, columns, loading, ...rest }) {
   const [sorting, setSorting] = useState([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -77,21 +78,30 @@ function AppTable({ data, columns, ...rest }) {
                 })}
               </Tr>
             ))}
+
+            {loading && (
+              <Tr>
+                <Td colSpan={10}>
+                  <Progress size="xs" isIndeterminate />
+                </Td>
+              </Tr>
+            )}
           </Thead>
           <Tbody>
-            {table.getRowModel().rows.map((row) => (
-              <Tr key={row.id}>
-                {row.getVisibleCells().map((cell) => {
-                  // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
-                  const { meta } = cell.column.columnDef;
-                  return (
-                    <Td key={cell.id} isNumeric={meta?.isNumeric}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </Td>
-                  );
-                })}
-              </Tr>
-            ))}
+            {table.getRowModel().rows?.length > 0 &&
+              table.getRowModel().rows.map((row) => (
+                <Tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => {
+                    // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
+                    const { meta } = cell.column.columnDef;
+                    return (
+                      <Td key={cell.id} isNumeric={meta?.isNumeric}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </Td>
+                    );
+                  })}
+                </Tr>
+              ))}
           </Tbody>
         </Table>
       </TableContainer>
