@@ -32,6 +32,16 @@ export const getPatient = createAsyncThunk('patient/getPatient', async (id) => {
   return resp.data;
 });
 
+export const deletePatient = createAsyncThunk('patient/deletePatient', async (id) => {
+  const resp = await axios.delete(`${apiURL}/patients/${id}`, {
+    headers: {
+      // Authorization: `Bearer ${localStorage.getItem("token")}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  return resp.data;
+});
+
 const patientSlice = createSlice({
   name: 'patient',
   initialState,
@@ -58,6 +68,17 @@ const patientSlice = createSlice({
         state.selectedPatient = action.payload;
       })
       .addCase(getPatient.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
+      })
+      .addCase(deletePatient.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deletePatient.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(deletePatient.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
       });

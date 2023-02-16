@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -73,7 +73,7 @@ function SearchBox({ onSearch, sx }) {
       label: 'Số CCCD',
     },
   ];
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit, control, register } = useForm({
     defaultValues: {
       searchKey: '',
       searchType: 'code',
@@ -86,13 +86,8 @@ function SearchBox({ onSearch, sx }) {
         <AppIcon icon="manifying-glass" weight="bold" />
       </InputLeftElement>
 
-      <Controller
-        name="searchKey"
-        control={control}
-        render={({ field: { onChange, onBlur, value, ref } }) => (
-          <Input type="text" onChange={onChange} onBlur={onBlur} value={value} ref={ref} />
-        )}
-      />
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+      <Input type="text" {...register('searchKey')} />
 
       <InputRightAddon>
         <Controller
