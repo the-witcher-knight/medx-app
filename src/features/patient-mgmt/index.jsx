@@ -5,6 +5,7 @@ import withSuspense from 'components/withSuspense';
 
 import PatientEdit from './PatientEdit';
 import PatientManagement from './PatientManagement';
+import PatientUpdate from './PatientUpdate';
 
 function PatientMgmt() {
   const location = useLocation();
@@ -18,6 +19,7 @@ function PatientMgmt() {
       {location.state?.background && (
         <Routes>
           <Route path="/new" element={<PatientEdit />} />
+          <Route path="/edit/:id" element={<PatientUpdate />} />
         </Routes>
       )}
     </>

@@ -12,8 +12,18 @@ const initialState = {
 
 // Actions
 
-export const getPatients = createAsyncThunk('patient/getPatients', async () => {
+export const fetchPatients = createAsyncThunk('patient/fetchPatients', async () => {
   const resp = await axios.get(`${apiURL}/patients`, {
+    headers: {
+      // Authorization: `Bearer ${localStorage.getItem("token")}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  return resp.data;
+});
+
+export const getPatient = createAsyncThunk('patient/getPatient', async (id) => {
+  const resp = await axios.get(`${apiURL}/patients/${id}`, {
     headers: {
       // Authorization: `Bearer ${localStorage.getItem("token")}`,
       'Content-Type': 'application/json',
@@ -27,17 +37,29 @@ const patientSlice = createSlice({
   initialState,
   extraReducers(builder) {
     builder
-      .addCase(getPatients.pending, (state) => {
+      .addCase(fetchPatients.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getPatients.fulfilled, (state, action) => {
+      .addCase(fetchPatients.fulfilled, (state, action) => {
         state.loading = false;
         state.patients = action.payload;
       })
-      .addCase(getPatients.rejected, (state, action) => {
+      .addCase(fetchPatients.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.error;
+      })
+      .addCase(getPatient.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getPatient.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedPatient = action.payload;
+      })
+      .addCase(getPatient.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
       });
   },
 });

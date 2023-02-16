@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -11,15 +12,8 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverFooter,
-  PopoverHeader,
-  PopoverTrigger,
-  Portal,
+  InputRightAddon,
+  Select,
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
@@ -30,20 +24,20 @@ import AppIcon from 'icon/AppIcon';
 import AppTable from 'components/AppTable';
 import withSuspense from 'components/withSuspense';
 
-import { getPatients } from './patientSlice';
+import { fetchPatients } from './patientSlice';
 
 function ActionGroup({ patientID }) {
   const location = useLocation();
   const navigate = useNavigate();
 
   const handleEdit = () => {
-    navigate(`edit/${patientID}}`, {
+    navigate(`edit/${patientID}`, {
       state: { background: location },
     });
   };
 
   const handleDelete = () => {
-    navigate(`delete/${patientID}}`, {
+    navigate(`delete/${patientID}`, {
       state: { background: location },
     });
   };
@@ -60,6 +54,65 @@ function ActionGroup({ patientID }) {
   );
 }
 
+function SearchBox({ onSearch, sx }) {
+  const searchType = [
+    {
+      key: 'code',
+      label: 'Mã bệnh nhân',
+    },
+    {
+      key: 'fullname',
+      label: 'Họ và tên',
+    },
+    {
+      key: 'phone',
+      label: 'Số điện thoại',
+    },
+    {
+      key: 'personalID',
+      label: 'Số CCCD',
+    },
+  ];
+  const { handleSubmit, control } = useForm({
+    defaultValues: {
+      searchKey: '',
+      searchType: 'code',
+    },
+  });
+
+  return (
+    <InputGroup as="form" onSubmit={handleSubmit(onSearch)} sx={sx}>
+      <InputLeftElement>
+        <AppIcon icon="manifying-glass" weight="bold" />
+      </InputLeftElement>
+
+      <Controller
+        name="searchKey"
+        control={control}
+        render={({ field: { onChange, onBlur, value, ref } }) => (
+          <Input type="text" onChange={onChange} onBlur={onBlur} value={value} ref={ref} />
+        )}
+      />
+
+      <InputRightAddon>
+        <Controller
+          name="searchType"
+          control={control}
+          render={({ field: { onChange, onBlur, value, ref } }) => (
+            <Select border={0} onChange={onChange} onBlur={onBlur} value={value} ref={ref}>
+              {searchType.map((item) => (
+                <option key={item.key} value={item.key}>
+                  {item.label}
+                </option>
+              ))}
+            </Select>
+          )}
+        />
+      </InputRightAddon>
+    </InputGroup>
+  );
+}
+
 function PatientManagement() {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -67,7 +120,7 @@ function PatientManagement() {
   const { patients, loading } = useSelector((state) => state.patient);
 
   useEffect(() => {
-    dispatch(getPatients());
+    dispatch(fetchPatients());
   }, []);
 
   const columnHelper = createColumnHelper();
@@ -104,9 +157,9 @@ function PatientManagement() {
       cell: (info) => info.getValue(),
       header: 'Địa chỉ',
     }),
-    columnHelper.accessor('action', {
+    columnHelper.accessor('id', {
       // eslint-disable-next-line react/no-unstable-nested-components
-      cell: (info) => <ActionGroup patientID={info.row.getAllCells().at(0).getValue()} />,
+      cell: (info) => <ActionGroup patientID={info.getValue()} />,
       header: '',
     }),
   ];
@@ -115,42 +168,23 @@ function PatientManagement() {
     navigate('new', { state: { background: location } });
   };
 
+  const handleSearch = (values) => {
+    // eslint-disable-next-line no-console
+    console.log(values);
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDir: 'column', gap: 3 }}>
       <Heading as="h2" size="md" color={useColorModeValue('teal.500', 'teal.300')}>
         Quản lý bệnh nhân
       </Heading>
 
-      <InputGroup as="form" maxW="24rem">
-        <InputLeftElement>
-          <AppIcon icon="manifying-glass" weight="bold" />
-        </InputLeftElement>
-        <Input type="text" placeholder="Tìm kiếm bệnh nhân" />
-      </InputGroup>
+      <SearchBox onSearch={handleSearch} sx={{ maxW: '30rem' }} />
 
       <Flex alignItems="center">
         <Text flex={2}>Bệnh nhân</Text>
 
-        <HStack spacing={2}>
-          <Popover>
-            <PopoverTrigger>
-              <Button>
-                <AppIcon icon="funnel" size={16} weight="bold" />
-              </Button>
-            </PopoverTrigger>
-            <Portal>
-              <PopoverContent>
-                <PopoverArrow />
-                <PopoverHeader>Header</PopoverHeader>
-                <PopoverCloseButton />
-                <PopoverBody>
-                  <Button colorScheme="blue">Button</Button>
-                </PopoverBody>
-                <PopoverFooter>This is the footer</PopoverFooter>
-              </PopoverContent>
-            </Portal>
-          </Popover>
-
+        <HStack>
           <Button variant="solid" colorScheme="teal" onClick={handleCreatePatient}>
             <AppIcon icon="plus" size={16} weight="bold" />
           </Button>

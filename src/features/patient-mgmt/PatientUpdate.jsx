@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   Button,
   Drawer,
@@ -11,9 +12,11 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
+  Text,
   useDisclosure,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import dayjs from 'dayjs';
 import AppIcon from 'icon/AppIcon';
 import * as yup from 'yup';
 
@@ -21,10 +24,15 @@ import ValidatedInput from 'components/ValidatedInput';
 import ValidatedSelect from 'components/ValidatedSelect';
 import withSuspense from 'components/withSuspense';
 
+import { getPatient } from './patientSlice';
+
 function PatientEdit() {
+  const { id } = useParams();
+  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
+  const { selectedPatient } = useSelector((state) => state.patient);
 
   const schema = useMemo(
     () =>
@@ -43,17 +51,35 @@ function PatientEdit() {
     []
   );
 
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     defaultValues: {
       fullname: '',
       code: '',
       personalID: '',
-      birthday: '',
+      phone: '',
+      birthday: '2000-12-31',
       sex: 0,
       address: '',
     },
     resolver: yupResolver(schema),
   });
+
+  useEffect(() => {
+    dispatch(getPatient(id));
+  }, []);
+
+  useEffect(() => {
+    if (selectedPatient) {
+      setValue('id', selectedPatient.id);
+      setValue('fullname', selectedPatient.fullname);
+      setValue('code', selectedPatient.code);
+      setValue('personalID', selectedPatient.personalID);
+      setValue('phone', selectedPatient.phone);
+      setValue('birthday', dayjs(selectedPatient.birthday).format('YYYY-MM-DD'));
+      setValue('sex', selectedPatient.sex);
+      setValue('address', selectedPatient.address);
+    }
+  }, [selectedPatient]);
 
   const onSubmit = (values) => {
     // eslint-disable-next-line no-console
@@ -72,7 +98,12 @@ function PatientEdit() {
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader>Tạo bệnh nhân mới</DrawerHeader>
+        <DrawerHeader>
+          Cập nhật thông tin bệnh nhân
+          <Text fontSize="md" fontStyle="italic" fontWeight="medium">
+            Mã bệnh nhân: {id}
+          </Text>
+        </DrawerHeader>
 
         <DrawerBody>
           <Flex
