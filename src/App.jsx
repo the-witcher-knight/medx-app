@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
+import DoctorMgmt from 'features/doctor-mgmt';
 import Home from 'features/home';
 import PatientMgmt from 'features/patient-mgmt';
 import AppContent from 'layout/AppContainer';
@@ -65,6 +66,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/patient/*" element={<PatientMgmt />} />
+          <Route path="/doctor/*" element={<DoctorMgmt />} />
           {/* Add more routes here */}
         </Routes>
 

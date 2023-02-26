@@ -26,14 +26,14 @@ function InputComponent(props) {
  * @see https://react-hook-form.com/api/useform/register
  * @returns the Input with validation
  */
-export default function ValidatedInput({ control, name, type, label, rules, sx }) {
+export default function ValidatedInput({ control, name, type, label, size = 'md', rules, sx }) {
   return (
     <Controller
       name={name}
       rules={rules}
       control={control}
       render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
-        <FormControl sx={sx} isInvalid={!!error}>
+        <FormControl sx={sx} isInvalid={!!error} size={size}>
           <FormLabel>{label}</FormLabel>
           <InputComponent
             type={type}
@@ -41,6 +41,7 @@ export default function ValidatedInput({ control, name, type, label, rules, sx }
             onBlur={onBlur}
             value={value}
             innerRef={ref}
+            size={size}
           />
           {error && <FormErrorMessage>{error?.message}</FormErrorMessage>}
         </FormControl>

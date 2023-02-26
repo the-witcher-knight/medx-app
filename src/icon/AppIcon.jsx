@@ -8,6 +8,8 @@ import {
   CaretRight,
   CaretUp,
   ChartLine,
+  Check,
+  DotsThreeOutlineVertical,
   FileText,
   FirstAidKit,
   FloppyDisk,
@@ -56,6 +58,8 @@ const libIcons = {
   'caret-left': CaretLeft,
   'caret-right': CaretRight,
   'caret-double-right': CaretDoubleRight,
+  check: Check,
+  'dots-three-outline-vertical': DotsThreeOutlineVertical,
   // add more icons here
 };
 
