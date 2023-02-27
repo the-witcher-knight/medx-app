@@ -29,6 +29,20 @@ export const fetchDoctors = createAsyncThunk('doctor/fetchDoctors', async (crite
   return resp.data;
 });
 
+/**
+ * Create a doctor
+ */
+export const createDoctor = createAsyncThunk('doctor/createDoctor', async (values) => {
+  const resp = await axios.post(`${apiURL}/Doctor`, values, {
+    headers: {
+      // Authorization: `Bearer ${localStorage.getItem("token")}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return resp.data;
+});
+
 const doctorSlice = createSlice({
   name: 'doctor',
   initialState,
@@ -49,6 +63,24 @@ const doctorSlice = createSlice({
         }
       })
       .addCase(fetchDoctors.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
+      })
+      .addCase(createDoctor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createDoctor.fulfilled, (state, action) => {
+        const { data, isSuccess, message } = action.payload;
+
+        state.loading = false;
+        if (!isSuccess) {
+          state.error = { message };
+        } else {
+          state.entity = data;
+        }
+      })
+      .addCase(createDoctor.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
       });

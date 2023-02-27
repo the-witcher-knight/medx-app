@@ -1,8 +1,8 @@
 import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
+import DoctorEdit from './DoctorEdit';
 import DoctorManagement from './DoctorManagement';
-import DoctorUpdate from './DoctorUpdate';
 
 function DoctorMgmt() {
   const location = useLocation();
@@ -15,7 +15,7 @@ function DoctorMgmt() {
 
       {location.state?.background && (
         <Routes>
-          <Route path="/new" element={<DoctorUpdate />} />
+          <Route path="/new" element={<DoctorEdit />} />
         </Routes>
       )}
     </>

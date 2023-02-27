@@ -109,7 +109,7 @@ function DoctorManagement() {
   }, [error]);
 
   const handleCreate = () => {
-    navigate('/new', { state: { background: location } });
+    navigate('new', { state: { background: location } });
   };
 
   const handleFilter = (values) => {
