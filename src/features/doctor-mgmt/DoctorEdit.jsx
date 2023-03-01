@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   Button,
   Drawer,
@@ -12,6 +12,7 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
+  Text,
   useDisclosure,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -22,9 +23,10 @@ import ValidatedInput from 'components/ValidatedInput';
 import ValidatedSelect from 'components/ValidatedSelect';
 import withSuspense from 'components/withSuspense';
 
-import { createDoctor } from './doctorSlice';
+import { createDoctor, fetchDoctor, updateDoctor } from './doctorSlice';
 
 function DoctorEdit() {
+  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -40,7 +42,7 @@ function DoctorEdit() {
     title: yup.string().required('Vui lòng nhập tiêu đề'),
     sex: yup.number().required('Vui lòng chọn giới tính'),
   });
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit, setValue, reset, control } = useForm({
     defaultValues: {
       fullName: '',
       phoneNo: '',
@@ -53,10 +55,34 @@ function DoctorEdit() {
   });
 
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
-  const { loading, error } = useSelector((state) => state.doctor);
+  const { entity, loading, error } = useSelector((state) => state.doctor);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchDoctor(id));
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (entity) {
+      Object.keys(entity).forEach((key) => {
+        if (key === 'id') {
+          return;
+        }
+        setValue(key, entity[key]);
+      });
+    }
+  }, [entity]);
 
   const onSubmit = (values) => {
-    dispatch(createDoctor(values));
+    // eslint-disable-next-line no-console
+    console.log(values);
+    if (!id) {
+      dispatch(createDoctor(values));
+    } else {
+      dispatch(updateDoctor({ id, ...values }));
+    }
+    reset();
   };
 
   const handleClose = () => {
@@ -71,7 +97,16 @@ function DoctorEdit() {
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader>Tạo bác sĩ mới</DrawerHeader>
+        <DrawerHeader>
+          {id ? (
+            <>
+              Cập nhật bác sĩ&nbsp;
+              <Text as="sub">{id}</Text>
+            </>
+          ) : (
+            'Tạo bác sĩ mới'
+          )}
+        </DrawerHeader>
 
         <DrawerBody>
           <Flex
@@ -85,7 +120,7 @@ function DoctorEdit() {
             <ValidatedInput control={control} name="phoneNo" type="text" label="Số điện thoại" />
             <ValidatedInput control={control} name="address" type="text" label="Địa chỉ" />
             <ValidatedInput control={control} name="email" type="text" label="Email" />
-            <ValidatedInput control={control} name="title" type="text" label="Tiêu đề" />
+            <ValidatedInput control={control} name="title" type="text" label="Chức danh" />
             <ValidatedSelect control={control} name="sex" label="Giới tính">
               <option value="0">Nữ</option>
               <option value="1">Nam</option>

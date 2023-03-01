@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import {
+  ArrowCounterClockwise,
   CaretDoubleLeft,
   CaretDoubleRight,
   CaretDown,
@@ -60,6 +61,7 @@ const libIcons = {
   'caret-double-right': CaretDoubleRight,
   check: Check,
   'dots-three-outline-vertical': DotsThreeOutlineVertical,
+  'arrow-counter-clockwise': ArrowCounterClockwise,
   // add more icons here
 };
 

@@ -10,6 +10,12 @@ const initialState = {
   error: null,
 };
 
+export const test = createAsyncThunk('doctor/test', async (criteria) => {
+  // eslint-disable-next-line no-console
+  console.log(criteria);
+  return [];
+});
+
 /**
  * Fetch all doctors
  * @param {object} criteria - search criteria
@@ -43,6 +49,48 @@ export const createDoctor = createAsyncThunk('doctor/createDoctor', async (value
   return resp.data;
 });
 
+/**
+ * Fetch a doctor
+ */
+export const fetchDoctor = createAsyncThunk('doctor/fetchDoctor', async (id) => {
+  const resp = await axios.get(`${apiURL}/Doctor/${id}`, {
+    headers: {
+      // Authorization: `Bearer ${localStorage.getItem("token")}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return resp.data;
+});
+
+/**
+ * Update a doctor
+ */
+export const updateDoctor = createAsyncThunk('doctor/updateDoctor', async (values) => {
+  const resp = await axios.put(`${apiURL}/Doctor/${values.id}`, values, {
+    headers: {
+      // Authorization: `Bearer ${localStorage.getItem("token")}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return resp.data;
+});
+
+/**
+ * Delete a doctor
+ */
+export const deleteDoctor = createAsyncThunk('doctor/deleteDoctor', async (id) => {
+  const resp = await axios.delete(`${apiURL}/Doctor/${id}`, {
+    headers: {
+      // Authorization: `Bearer ${localStorage.getItem("token")}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return resp.data;
+});
+
 const doctorSlice = createSlice({
   name: 'doctor',
   initialState,
@@ -59,7 +107,7 @@ const doctorSlice = createSlice({
         if (!isSuccess) {
           state.error = { message };
         } else {
-          state.entities = data;
+          state.entities = data.data;
         }
       })
       .addCase(fetchDoctors.rejected, (state, action) => {
@@ -77,10 +125,66 @@ const doctorSlice = createSlice({
         if (!isSuccess) {
           state.error = { message };
         } else {
-          state.entity = data;
+          state.entities.push(data);
         }
       })
       .addCase(createDoctor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
+      })
+      .addCase(fetchDoctor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchDoctor.fulfilled, (state, action) => {
+        const { data, isSuccess, message } = action.payload;
+
+        state.loading = false;
+        if (!isSuccess) {
+          state.error = { message };
+        } else {
+          state.entity = data;
+        }
+      })
+      .addCase(fetchDoctor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
+      })
+      .addCase(updateDoctor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateDoctor.fulfilled, (state, action) => {
+        const { data, isSuccess, message } = action.payload;
+
+        state.loading = false;
+        if (!isSuccess) {
+          state.error = { message };
+        } else {
+          const idx = state.entities.findIndex((entity) => entity.id === data.id);
+          state.entities[idx] = data;
+        }
+      })
+      .addCase(updateDoctor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
+      })
+      .addCase(deleteDoctor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteDoctor.fulfilled, (state, action) => {
+        const { data, isSuccess, message } = action.payload;
+        const { arg } = action.meta;
+
+        state.loading = false;
+        if (!isSuccess) {
+          state.error = { message };
+        } else {
+          state.entities.filter((entity) => entity.id !== arg);
+        }
+      })
+      .addCase(deleteDoctor.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
       });

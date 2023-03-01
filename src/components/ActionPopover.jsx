@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -18,10 +18,12 @@ import {
 import AppIcon from 'icon/AppIcon';
 
 function ActionPopover({ path, id }) {
+  const location = useLocation();
+
   return (
     <Popover>
       <PopoverTrigger>
-        <Button size="sm">
+        <Button variant="ghost" type="button" size="sm">
           <AppIcon icon="dots-three-outline-vertical" />
         </Button>
       </PopoverTrigger>
@@ -31,7 +33,12 @@ function ActionPopover({ path, id }) {
         <PopoverHeader>Hành động</PopoverHeader>
         <PopoverBody>
           <VStack spacing={2} m={2} align="stretch">
-            <Link as={NavLink} to={`${path}/${id}`} sx={{ _hover: {} }}>
+            <Link
+              as={NavLink}
+              to={`${path}/${id}/edit`}
+              state={{ background: location }}
+              sx={{ _hover: {} }}
+            >
               <Flex gap={3} alignItems="center">
                 <Box
                   sx={{ w: 6, h: 'auto', p: 1, borderRadius: 'md', shadow: 'sm' }}
@@ -42,7 +49,12 @@ function ActionPopover({ path, id }) {
               </Flex>
             </Link>
 
-            <Link as={NavLink} to="/**" sx={{ _hover: {} }}>
+            <Link
+              as={NavLink}
+              to={`${path}/${id}/delete`}
+              state={{ background: location }}
+              sx={{ _hover: {} }}
+            >
               <Flex gap={3} alignItems="center">
                 <Box
                   sx={{ w: 6, h: 'auto', p: 1, borderRadius: 'md', shadow: 'sm' }}

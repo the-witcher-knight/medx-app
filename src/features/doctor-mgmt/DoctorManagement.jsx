@@ -27,7 +27,7 @@ import DataGrid from 'components/DataGrid';
 import FilterPopover from 'components/FilterPopover';
 import withSuspense from 'components/withSuspense';
 
-import { fetchDoctors } from './doctorSlice';
+import { fetchDoctors, test } from './doctorSlice';
 
 const initDoctorColumns = () => {
   const columnHelper = createColumnHelper();
@@ -46,7 +46,7 @@ const initDoctorColumns = () => {
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor('title', {
-      header: 'Tiêu đề',
+      header: 'Chức danh',
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor('sex', {
@@ -58,7 +58,7 @@ const initDoctorColumns = () => {
     }),
     columnHelper.accessor('id', {
       header: '',
-      cell: (info) => <ActionPopover path="/doctor" id={info.getValue} />,
+      cell: (info) => <ActionPopover path="/doctor" id={info.getValue()} />,
     }),
   ];
 };
@@ -71,11 +71,11 @@ function DoctorManagement() {
   const columns = useMemo(() => initDoctorColumns(), []);
   const { entities, loading, error } = useSelector((state) => state.doctor);
   const [sorting, setSorting] = useState([{ id: 'fullName', desc: false }]);
+  const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
-    pageIndex: 0,
+    pageIndex: 1,
     pageSize: 30,
   });
-  const [filters, setFilters] = useState([]);
 
   const tableDef = useReactTable({
     columns,
@@ -83,10 +83,8 @@ function DoctorManagement() {
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onPaginationChange: setPagination,
     state: {
       sorting,
-      pagination,
       loading,
     },
   });
@@ -100,13 +98,24 @@ function DoctorManagement() {
         pageSize: pagination.pageSize,
       })
     );
-  }, [filters, sorting, pagination]);
+  }, [filters, sorting, pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
     if (error) {
       toastify({ title: 'Lỗi', description: error.message, status: 'error' });
     }
   }, [error]);
+
+  const handleRefresh = () => {
+    dispatch(
+      fetchDoctors({
+        filters,
+        sortBy: { fieldName: 'fullName', accending: true },
+        pageIndex: 1,
+        pageSize: 30,
+      })
+    );
+  };
 
   const handleCreate = () => {
     navigate('new', { state: { background: location } });
@@ -124,25 +133,36 @@ function DoctorManagement() {
         </Heading>
 
         <Flex flex={1} gap={2}>
-          <Button size="sm" flex={1}>
+          <Button
+            size="sm"
+            flex={1}
+            disabled={loading}
+            onClick={() => setPagination({ ...pagination, pageIndex: pagination.pageIndex - 1 })}
+          >
             <AppIcon icon="caret-left" weight="bold" />
           </Button>
 
           <Input
             size="sm"
             flex={1}
-            min={0}
+            min={1}
             type="number"
             variant="ghost"
-            defaultValue={pagination.pageIndex + 1}
             w="max-content"
+            disabled={loading}
+            value={pagination.pageIndex}
             onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              tableDef.setPageIndex(page);
+              const page = e.target.value ? Number(e.target.value) : 1;
+              setPagination({ ...pagination, pageIndex: Math.max(page, 1) });
             }}
           />
 
-          <Button size="sm" flex={1}>
+          <Button
+            size="sm"
+            flex={1}
+            disabled={loading}
+            onClick={() => setPagination({ ...pagination, pageIndex: pagination.pageIndex + 1 })}
+          >
             <AppIcon icon="caret-right" weight="bold" />
           </Button>
 
@@ -152,7 +172,8 @@ function DoctorManagement() {
             flex={8}
             defaultValue={pagination.pageSize}
             onChange={(e) => {
-              tableDef.setPageSize(e.target.value);
+              const pageSize = e.target.value ? Number(e.target.value) : 30;
+              setPagination({ ...pagination, pageSize });
             }}
           >
             {[30, 50, 100].map((size) => (
@@ -172,19 +193,20 @@ function DoctorManagement() {
             </InputLeftElement>
 
             <Input
-              min={0}
+              min={1}
               type="number"
               variant="filled"
-              defaultValue={pagination.pageIndex + 1}
               w="max-content"
-              onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                tableDef.setPageIndex(page);
-              }}
+              placeholder='Tìm kiếm theo "ID"'
+              disabled
             />
           </InputGroup>
 
           <FilterPopover fieldNames={tableDef.getAllColumns()} onFilter={handleFilter} />
+
+          <Button size="sm" variant="solid" colorScheme="blue" onClick={() => handleRefresh()}>
+            <AppIcon icon="arrow-counter-clockwise" weight="bold" />
+          </Button>
         </Flex>
 
         <HStack>
