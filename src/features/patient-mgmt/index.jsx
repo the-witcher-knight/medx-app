@@ -1,12 +1,9 @@
 import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
-import withSuspense from 'components/withSuspense';
-
-import DeletePatient from './DeletePatient';
+import PatientDeleteDialog from './PatientDeleteDialog';
 import PatientEdit from './PatientEdit';
 import PatientManagement from './PatientManagement';
-import PatientUpdate from './PatientUpdate';
 
 function PatientMgmt() {
   const location = useLocation();
@@ -20,12 +17,12 @@ function PatientMgmt() {
       {location.state?.background && (
         <Routes>
           <Route path="/new" element={<PatientEdit />} />
-          <Route path="/edit/:id" element={<PatientUpdate />} />
-          <Route path="/delete/:id" element={<DeletePatient />} />
+          <Route path="/:id/edit" element={<PatientEdit />} />
+          <Route path="/:id/delete" element={<PatientDeleteDialog />} />
         </Routes>
       )}
     </>
   );
 }
 
-export default withSuspense(PatientMgmt, 'Quản lý bệnh nhân');
+export default PatientMgmt;

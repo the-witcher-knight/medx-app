@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   Button,
   Drawer,
@@ -11,6 +12,7 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
+  Text,
   useDisclosure,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -21,43 +23,70 @@ import ValidatedInput from 'components/ValidatedInput';
 import ValidatedSelect from 'components/ValidatedSelect';
 import withSuspense from 'components/withSuspense';
 
+import { createOne, fetchOne, updateOne } from './patientSlice';
+
 function PatientEdit() {
+  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
+  const dispatch = useDispatch();
 
-  const schema = useMemo(
-    () =>
-      yup.object().shape({
-        fullname: yup.string().required('Vui lòng nhập họ tên'),
-        code: yup.string().required('Vui lòng nhập mã bệnh nhân'),
-        personalID: yup.string().required('Vui lòng nhập CCCD').length(12, 'CCCD phải có 12 ký tự'),
-        phone: yup
-          .string()
-          .required('Vui lòng nhập số điện thoại')
-          .length(10, 'Số điện thoại không hợp lệ'),
-        birthday: yup.string().required('Vui lòng nhập ngày sinh'),
-        sex: yup.number().required('Vui lòng chọn giới tính'),
-        address: yup.string().required('Vui lòng nhập địa chỉ'),
-      }),
-    []
-  );
-
-  const { handleSubmit, control } = useForm({
+  const schema = yup.object().shape({
+    fullName: yup.string().required('Vui lòng nhập họ tên'),
+    personalId: yup
+      .string()
+      .required('Vui lòng nhập căn cước công dân')
+      .length(12, 'Vui lòng nhập căn cước công dân 12 số'),
+    code: yup.string().required('Vui lòng nhập mã bệnh nhân'),
+    phoneNo: yup
+      .string()
+      .required('Vui lòng nhập số điện thoại')
+      .length(10, 'Số điện thoại không hợp lệ'),
+    address: yup.string().required('Vui lòng nhập địa chỉ'),
+    email: yup.string().email().notRequired(),
+    sex: yup.number().required('Vui lòng chọn giới tính'),
+  });
+  const { handleSubmit, setValue, reset, control } = useForm({
     defaultValues: {
-      fullname: '',
+      fullName: '',
+      personalId: '',
       code: '',
-      personalID: '',
+      phoneNo: '',
       birthday: '',
-      sex: 0,
       address: '',
+      email: '',
+      sex: 0,
     },
     resolver: yupResolver(schema),
   });
 
+  const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
+  const { entity, loading, error } = useSelector((state) => state.patient);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchOne(id));
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (entity) {
+      Object.keys(entity).forEach((key) => {
+        if (key === 'id') {
+          return;
+        }
+        setValue(key, entity[key]);
+      });
+    }
+  }, [entity]);
+
   const onSubmit = (values) => {
-    // eslint-disable-next-line no-console
-    console.log(values);
+    if (id) {
+      dispatch(updateOne({ id, ...values }));
+    } else {
+      dispatch(createOne(values));
+    }
+    reset();
   };
 
   const handleClose = () => {
@@ -72,7 +101,16 @@ function PatientEdit() {
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader>Tạo bệnh nhân mới</DrawerHeader>
+        <DrawerHeader>
+          {id ? (
+            <>
+              Cập nhật bệnh nhân&nbsp;
+              <Text as="sub">{id}</Text>
+            </>
+          ) : (
+            'Tạo bệnh nhân mới'
+          )}
+        </DrawerHeader>
 
         <DrawerBody>
           <Flex
@@ -82,28 +120,29 @@ function PatientEdit() {
             flexDir="column"
             gap={2}
           >
-            <ValidatedInput control={control} name="fullname" type="text" label="Họ & tên" />
-            <ValidatedInput control={control} name="personalID" type="text" label="CCCD" />
+            <ValidatedInput control={control} name="fullName" type="text" label="Họ & tên" />
+            <ValidatedInput control={control} name="personalId" type="text" label="CCCD" />
             <ValidatedInput control={control} name="code" type="text" label="Mã bệnh nhân" />
-            <ValidatedInput control={control} name="phone" type="text" label="Số điện thoại" />
-            <ValidatedSelect control={control} name="sex" label="Giới tính">
-              <option value="0">Nam</option>
-              <option value="1">Nữ</option>
-              <option value="2">Khác</option>
-            </ValidatedSelect>
+            <ValidatedInput control={control} name="phoneNo" type="text" label="Số điện thoại" />
             <ValidatedInput control={control} name="birthday" type="date" label="Ngày sinh" />
             <ValidatedInput control={control} name="address" type="text" label="Địa chỉ" />
+            <ValidatedInput control={control} name="email" type="text" label="Email" />
+            <ValidatedSelect control={control} name="sex" label="Giới tính">
+              <option value="0">Nữ</option>
+              <option value="1">Nam</option>
+              <option value="2">Khác</option>
+            </ValidatedSelect>
           </Flex>
         </DrawerBody>
 
         <DrawerFooter justifyContent="left">
-          <Button variant="outline" mr={3} onClick={handleClose}>
-            <AppIcon icon="x" weight="fill" size={24} />
-            &nbsp; Hủy
-          </Button>
-          <Button type="submit" form="update-form" colorScheme="teal">
+          <Button type="submit" form="update-form" isLoading={loading} colorScheme="teal">
             <AppIcon icon="floppy-disk" weight="fill" size={24} />
-            &nbsp; Lưu
+            &nbsp;Lưu
+          </Button>
+          <Button variant="ghost" mr={3} onClick={handleClose}>
+            <AppIcon icon="x" weight="fill" size={24} />
+            &nbsp;Hủy
           </Button>
         </DrawerFooter>
       </DrawerContent>
@@ -111,4 +150,4 @@ function PatientEdit() {
   );
 }
 
-export default withSuspense(PatientEdit, 'Cập nhật thông tin bệnh nhân');
+export default withSuspense(PatientEdit, 'Chỉnh sửa thông tin bệnh nhân');
