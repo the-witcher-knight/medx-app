@@ -9,7 +9,7 @@ import AppFooter from 'layout/AppFooter';
 import AppSidebar from 'layout/AppSidebar';
 import AppTopbar from 'layout/AppTopbar';
 
-const sideWidth = 200;
+const sideWidth = '3.3rem';
 
 const routes = [
   {
@@ -54,13 +54,15 @@ function App() {
 
   return (
     <Box>
-      <AppTopbar />
       <AppSidebar
         display={{ base: 'none', md: 'flex' }}
         w={sideWidth}
         routes={routes}
         pos="fixed"
+        mt={-5}
+        mb={5}
       />
+      <AppTopbar ml={sideWidth} my={5} />
       <AppContent ml={{ base: 0, md: sideWidth }}>
         <Routes location={location}>
           <Route index element={<Home />} />

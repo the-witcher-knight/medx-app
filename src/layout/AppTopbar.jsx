@@ -34,7 +34,7 @@ function AppTopbar({ ...rest }) {
     <Box
       sx={{
         display: 'flex',
-        px: 8,
+        px: 4,
         justifyContent: 'space-between',
       }}
       {...rest}

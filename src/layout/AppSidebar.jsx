@@ -1,16 +1,15 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { NavLink, useMatch, useResolvedPath } from 'react-router-dom';
-import { Box, chakra, Flex, Link, Text, VStack } from '@chakra-ui/react';
+import { Box, chakra, Flex, Link, Text, Tooltip, VStack } from '@chakra-ui/react';
 import AppIcon from 'icon/AppIcon';
 
 const SideIcon = chakra(AppIcon, {
   baseStyle: {
-    w: 6,
+    w: '2.3rem',
     h: 'auto',
     p: 1,
     borderRadius: 'md',
-    shadow: 'sm',
   },
 });
 
@@ -28,12 +27,11 @@ function SidebarItem({ name, icon, path }) {
   };
 
   return (
-    <Link as={NavLink} to={path} sx={{ _hover: {} }}>
-      <Flex gap={3} alignItems="center">
+    <Tooltip label={name}>
+      <Link as={NavLink} to={path} sx={{ _hover: {} }}>
         <SideIcon icon={icon} sx={match && activeIconStyle} weight="bold" />
-        <Text sx={match && activeStyle}>{name}</Text>
-      </Flex>
-    </Link>
+      </Link>
+    </Tooltip>
   );
 }
 
@@ -44,6 +42,9 @@ function AppSidebar({ routes, ...rest }) {
       sx={{
         h: 'full',
         shadow: 'md',
+        display: 'flex',
+        flexDir: 'column',
+        justifyContent: 'center',
       }}
       {...rest}
     >
