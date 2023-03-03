@@ -10,12 +10,6 @@ const initialState = {
   error: null,
 };
 
-export const test = createAsyncThunk('doctor/test', async (criteria) => {
-  // eslint-disable-next-line no-console
-  console.log(criteria);
-  return [];
-});
-
 /**
  * Fetch all doctors
  * @param {object} criteria - search criteria

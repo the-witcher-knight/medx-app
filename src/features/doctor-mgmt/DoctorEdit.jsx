@@ -38,7 +38,7 @@ function DoctorEdit() {
       .required('Vui lòng nhập số điện thoại')
       .length(10, 'Số điện thoại không hợp lệ'),
     address: yup.string().required('Vui lòng nhập địa chỉ'),
-    email: yup.string().required('Vui lòng nhập email'),
+    email: yup.string().email().required('Vui lòng nhập email'),
     title: yup.string().required('Vui lòng nhập tiêu đề'),
     sex: yup.number().required('Vui lòng chọn giới tính'),
   });
@@ -58,6 +58,8 @@ function DoctorEdit() {
   const { entity, loading, error } = useSelector((state) => state.doctor);
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log(id);
     if (id) {
       dispatch(fetchDoctor(id));
     }
@@ -75,12 +77,10 @@ function DoctorEdit() {
   }, [entity]);
 
   const onSubmit = (values) => {
-    // eslint-disable-next-line no-console
-    console.log(values);
-    if (!id) {
-      dispatch(createDoctor(values));
-    } else {
+    if (id) {
       dispatch(updateDoctor({ id, ...values }));
+    } else {
+      dispatch(createDoctor(values));
     }
     reset();
   };

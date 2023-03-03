@@ -58,13 +58,13 @@ function DoctorDeleteDialog() {
         </ModalBody>
 
         <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={handleClose}>
-            <AppIcon icon="x" />
-            &nbsp;Hủy
-          </Button>
           <Button isLoading={loading} colorScheme="red" onClick={handleDelete}>
             <AppIcon icon="trash" />
             &nbsp;Xóa
+          </Button>
+          <Button variant="ghost" mr={3} onClick={handleClose}>
+            <AppIcon icon="x" />
+            &nbsp;Hủy
           </Button>
         </ModalFooter>
       </ModalContent>

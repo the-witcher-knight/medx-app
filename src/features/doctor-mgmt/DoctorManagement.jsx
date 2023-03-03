@@ -27,7 +27,7 @@ import DataGrid from 'components/DataGrid';
 import FilterPopover from 'components/FilterPopover';
 import withSuspense from 'components/withSuspense';
 
-import { fetchDoctors, test } from './doctorSlice';
+import { fetchDoctors } from './doctorSlice';
 
 const initDoctorColumns = () => {
   const columnHelper = createColumnHelper();
