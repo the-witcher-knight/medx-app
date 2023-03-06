@@ -55,14 +55,26 @@ function App() {
   return (
     <Box>
       <AppSidebar
-        display={{ base: 'none', md: 'flex' }}
-        w={sideWidth}
+        sx={{
+          display: 'flex',
+          pos: 'fixed',
+          w: sideWidth,
+          mt: -2,
+          mb: 2,
+        }}
         routes={routes}
-        pos="fixed"
-        mt={-5}
-        mb={5}
       />
-      <AppTopbar ml={sideWidth} my={5} />
+      <AppTopbar
+        sx={{
+          display: 'flex',
+          flexDir: 'row',
+          ml: sideWidth,
+          my: 2,
+          px: 4,
+          justifyContent: 'space-between',
+        }}
+        routes={routes}
+      />
       <AppContent ml={{ base: 0, md: sideWidth }}>
         <Routes location={location}>
           <Route index element={<Home />} />
