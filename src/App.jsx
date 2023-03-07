@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import DoctorMgmt from 'features/doctor-mgmt';
 import Home from 'features/home';
 import PatientMgmt from 'features/patient-mgmt';
@@ -53,39 +53,52 @@ function App() {
   const location = useLocation();
 
   return (
-    <Box>
+    <Box
+      sx={{
+        display: 'flex',
+      }}
+    >
       <AppSidebar
         sx={{
           display: 'flex',
           pos: 'fixed',
           w: sideWidth,
-          mt: -2,
-          mb: 2,
+          h: 'full',
+          shadow: 'md',
         }}
         routes={routes}
       />
-      <AppTopbar
+
+      <Box
         sx={{
           display: 'flex',
-          flexDir: 'row',
-          ml: sideWidth,
-          my: 2,
-          px: 4,
-          justifyContent: 'space-between',
+          flexDir: 'column',
+          w: 'full',
         }}
-        routes={routes}
-      />
-      <AppContent ml={{ base: 0, md: sideWidth }}>
-        <Routes location={location}>
-          <Route index element={<Home />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/patient/*" element={<PatientMgmt />} />
-          <Route path="/doctor/*" element={<DoctorMgmt />} />
-          {/* Add more routes here */}
-        </Routes>
+      >
+        <AppTopbar
+          sx={{
+            display: 'flex',
+            flexDir: 'row',
+            ml: sideWidth,
+            my: 2,
+            px: 4,
+            justifyContent: 'space-between',
+          }}
+          routes={routes}
+        />
+        <AppContent ml={{ base: 0, md: sideWidth }}>
+          <Routes location={location}>
+            <Route index element={<Home />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/patient/*" element={<PatientMgmt />} />
+            <Route path="/doctor/*" element={<DoctorMgmt />} />
+            {/* Add more routes here */}
+          </Routes>
 
-        <AppFooter />
-      </AppContent>
+          <AppFooter />
+        </AppContent>
+      </Box>
     </Box>
   );
 }
