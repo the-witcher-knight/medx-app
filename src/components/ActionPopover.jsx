@@ -17,7 +17,18 @@ import {
 } from '@chakra-ui/react';
 import AppIcon from 'icon/AppIcon';
 
-function ActionPopover({ path, id }) {
+export function ActionItem({ location, path, label, icon }) {
+  return (
+    <Link as={NavLink} to={path} state={{ background: location }} sx={{ _hover: {} }}>
+      <Flex gap={3} alignItems="center">
+        <Box sx={{ w: 6, h: 'auto', p: 1 }} as={AppIcon} icon={icon} />
+        <Text>{label}</Text>
+      </Flex>
+    </Link>
+  );
+}
+
+function ActionPopover({ path, id, render }) {
   const location = useLocation();
 
   return (
@@ -33,37 +44,21 @@ function ActionPopover({ path, id }) {
         <PopoverHeader>Hành động</PopoverHeader>
         <PopoverBody>
           <VStack spacing={2} m={2} align="stretch">
-            <Link
-              as={NavLink}
-              to={`${path}/${id}/edit`}
-              state={{ background: location }}
-              sx={{ _hover: {} }}
-            >
-              <Flex gap={3} alignItems="center">
-                <Box
-                  sx={{ w: 6, h: 'auto', p: 1, borderRadius: 'md', shadow: 'sm' }}
-                  as={AppIcon}
-                  icon="pen"
-                />
-                <Text>Chỉnh sửa</Text>
-              </Flex>
-            </Link>
+            <ActionItem
+              location={location}
+              path={`${path}/${id}/edit`}
+              label="Chỉnh sửa"
+              icon="pen"
+            />
 
-            <Link
-              as={NavLink}
-              to={`${path}/${id}/delete`}
-              state={{ background: location }}
-              sx={{ _hover: {} }}
-            >
-              <Flex gap={3} alignItems="center">
-                <Box
-                  sx={{ w: 6, h: 'auto', p: 1, borderRadius: 'md', shadow: 'sm' }}
-                  as={AppIcon}
-                  icon="trash"
-                />
-                <Text>Xóa</Text>
-              </Flex>
-            </Link>
+            <ActionItem
+              location={location}
+              path={`${path}/${id}/delete`}
+              label="Xóa"
+              icon="trash"
+            />
+
+            {render && render(location)}
           </VStack>
         </PopoverBody>
       </PopoverContent>

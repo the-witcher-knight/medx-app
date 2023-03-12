@@ -23,7 +23,7 @@ import { toastify } from 'common/toastify';
 import dayjs from 'dayjs';
 import AppIcon from 'icon/AppIcon';
 
-import ActionPopover from 'components/ActionPopover';
+import ActionPopover, { ActionItem } from 'components/ActionPopover';
 import DataGrid from 'components/DataGrid';
 import FilterPopover from 'components/FilterPopover';
 import withSuspense from 'components/withSuspense';
@@ -71,7 +71,18 @@ const initPatientColumns = () => {
     }),
     columnHelper.accessor('id', {
       header: '',
-      cell: (info) => <ActionPopover path="/patient" id={info.getValue()} />,
+      cell: (info) => (
+        <ActionPopover path="/patient" id={info.getValue()}>
+          {(location) => {
+            <ActionItem
+              location={location}
+              path="/test-manage/new"
+              icon="note-pencil"
+              label="Làm xét nghiệm"
+            />;
+          }}
+        </ActionPopover>
+      ),
     }),
   ];
 };

@@ -18,6 +18,7 @@ import {
   House,
   MagnifyingGlass,
   Moon,
+  NotePencil,
   Pen,
   Pill,
   Plus,
@@ -62,6 +63,7 @@ const libIcons = {
   check: Check,
   'dots-three-outline-vertical': DotsThreeOutlineVertical,
   'arrow-counter-clockwise': ArrowCounterClockwise,
+  'note-pencil': NotePencil,
   // add more icons here
 };
 
