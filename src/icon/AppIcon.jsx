@@ -2,6 +2,7 @@
 import React from 'react';
 import {
   ArrowCounterClockwise,
+  BoundingBox,
   CaretDoubleLeft,
   CaretDoubleRight,
   CaretDown,
@@ -66,6 +67,7 @@ const libIcons = {
   'arrow-counter-clockwise': ArrowCounterClockwise,
   'note-pencil': NotePencil,
   percent: Percent,
+  'bounding-box': BoundingBox,
   // add more icons here
 };
 
