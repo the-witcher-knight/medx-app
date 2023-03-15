@@ -20,6 +20,7 @@ import {
   Moon,
   NotePencil,
   Pen,
+  Percent,
   Pill,
   Plus,
   Question,
@@ -64,6 +65,7 @@ const libIcons = {
   'dots-three-outline-vertical': DotsThreeOutlineVertical,
   'arrow-counter-clockwise': ArrowCounterClockwise,
   'note-pencil': NotePencil,
+  percent: Percent,
   // add more icons here
 };
 

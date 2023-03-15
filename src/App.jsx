@@ -5,6 +5,7 @@ import DoctorMgmt from 'features/doctor-mgmt';
 import Home from 'features/home';
 import PatientMgmt from 'features/patient-mgmt';
 import TestMgmt from 'features/test-mgmt';
+import UnitMgmt from 'features/unit-mgmt';
 import AppContent from 'layout/AppContainer';
 import AppFooter from 'layout/AppFooter';
 import AppSidebar from 'layout/AppSidebar';
@@ -27,6 +28,11 @@ const routes = [
     name: 'Xét nghiệm',
     icon: 'test-tube',
     path: '/test-manage',
+  },
+  {
+    name: 'Đơn vị',
+    icon: 'percent',
+    path: '/unit',
   },
   {
     name: 'Báo cáo',
@@ -95,6 +101,7 @@ function App() {
             <Route path="/patient/*" element={<PatientMgmt />} />
             <Route path="/doctor/*" element={<DoctorMgmt />} />
             <Route path="/test-manage/*" element={<TestMgmt />} />
+            <Route path="/unit/*" element={<UnitMgmt />} />
             {/* Add more routes here */}
           </Routes>
 
