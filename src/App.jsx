@@ -4,6 +4,7 @@ import { Box } from '@chakra-ui/react';
 import DoctorMgmt from 'features/doctor-mgmt';
 import Home from 'features/home';
 import PatientMgmt from 'features/patient-mgmt';
+import TestCategoryMgmt from 'features/test-category-mgmt';
 import TestGroupMgmt from 'features/test-group-mgmt';
 import TestMgmt from 'features/test-mgmt';
 import UnitMgmt from 'features/unit-mgmt';
@@ -34,6 +35,11 @@ const routes = [
     name: 'Nhóm xét nghiệm',
     icon: 'bounding-box',
     path: '/test-group-mgmt',
+  },
+  {
+    name: 'Loại xét nghiệm',
+    icon: 'eyedropper-sample',
+    path: '/test-category',
   },
   {
     name: 'Đơn vị',
@@ -109,6 +115,7 @@ function App() {
             <Route path="/test-manage/*" element={<TestMgmt />} />
             <Route path="/unit/*" element={<UnitMgmt />} />
             <Route path="/test-group-mgmt/*" element={<TestGroupMgmt />} />
+            <Route path="/test-category/*" element={<TestCategoryMgmt />} />
             {/* Add more routes here */}
           </Routes>
 

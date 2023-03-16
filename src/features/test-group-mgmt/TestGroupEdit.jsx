@@ -65,8 +65,6 @@ function TestGroupEdit() {
   }, [entity]);
 
   const onSubmit = (values) => {
-    // eslint-disable-next-line no-console
-    console.log(values);
     const parentGroup = entities.find((ent) => ent.id === values.parentGroupId);
     const saveData = { ...values, parentGroupName: parentGroup?.name };
 

@@ -12,6 +12,7 @@ import {
   ChartLine,
   Check,
   DotsThreeOutlineVertical,
+  EyedropperSample,
   FileText,
   FirstAidKit,
   FloppyDisk,
@@ -68,6 +69,7 @@ const libIcons = {
   'note-pencil': NotePencil,
   percent: Percent,
   'bounding-box': BoundingBox,
+  'eyedropper-sample': EyedropperSample,
   // add more icons here
 };
 
