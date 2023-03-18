@@ -35,14 +35,7 @@ export default function ValidatedInput({ control, name, type, label, size = 'md'
       render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
         <FormControl sx={sx} isInvalid={!!error} size={size}>
           <FormLabel>{label}</FormLabel>
-          <InputComponent
-            type={type}
-            onChange={onChange}
-            onBlur={onBlur}
-            value={value}
-            innerRef={ref}
-            size={size}
-          />
+          <InputComponent type={type} onChange={onChange} onBlur={onBlur} value={value} innerRef={ref} size={size} />
           {error && <FormErrorMessage>{error?.message}</FormErrorMessage>}
         </FormControl>
       )}

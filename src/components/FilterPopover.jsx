@@ -14,9 +14,9 @@ import {
   PopoverTrigger,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import AppIcon from 'icon/AppIcon';
 import * as yup from 'yup';
 
+import AppIcon from './AppIcon';
 import ValidatedInput from './ValidatedInput';
 import ValidatedSelect from './ValidatedSelect';
 
@@ -52,13 +52,7 @@ function FilterPopover({ fieldNames, onFilter }) {
         <PopoverCloseButton />
         <PopoverHeader>Lọc danh sách</PopoverHeader>
         <PopoverBody>
-          <Box
-            as="form"
-            id="filter-form"
-            overflow="auto"
-            maxHeight="24rem"
-            onSubmit={handleSubmit(onSubmit)}
-          >
+          <Box as="form" id="filter-form" overflow="auto" maxHeight="24rem" onSubmit={handleSubmit(onSubmit)}>
             {fields.map((item, index) => (
               <Box key={item.id} gap={2}>
                 <Flex alignItems="end" gap={2}>
@@ -76,28 +70,14 @@ function FilterPopover({ fieldNames, onFilter }) {
                 </Flex>
 
                 <Flex gap={2}>
-                  <ValidatedInput
-                    sx={{ flex: 2 }}
-                    name={`filters[${index}].operation`}
-                    size="sm"
-                    control={control}
-                  />
-                  <ValidatedInput
-                    sx={{ flex: 9 }}
-                    name={`filters[${index}].value`}
-                    size="sm"
-                    control={control}
-                  />
+                  <ValidatedInput sx={{ flex: 2 }} name={`filters[${index}].operation`} size="sm" control={control} />
+                  <ValidatedInput sx={{ flex: 9 }} name={`filters[${index}].value`} size="sm" control={control} />
                 </Flex>
               </Box>
             ))}
 
             <Flex mt={2} justifyContent="center">
-              <Button
-                type="button"
-                size="sm"
-                onClick={() => append({ fieldName: '', operation: '', value: '' })}
-              >
+              <Button type="button" size="sm" onClick={() => append({ fieldName: '', operation: '', value: '' })}>
                 <AppIcon icon="plus" />
               </Button>
             </Flex>

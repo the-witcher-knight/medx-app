@@ -1,7 +1,8 @@
 import React from 'react';
 import { Flex, Progress, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import { flexRender } from '@tanstack/react-table';
-import AppIcon from 'icon/AppIcon';
+
+import AppIcon from './AppIcon';
 
 /**
  * DataGrid component
@@ -20,11 +21,7 @@ function DataGrid({ tableDef, variant = 'striped', sx }) {
                 const { meta } = header.column.columnDef;
 
                 return (
-                  <Th
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    isNumeric={meta?.isNumeric}
-                  >
+                  <Th key={header.id} onClick={header.column.getToggleSortingHandler()} isNumeric={meta?.isNumeric}>
                     <Flex justifyContent="space-between">
                       {flexRender(header.column.columnDef.header, header.getContext())}
 

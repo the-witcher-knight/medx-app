@@ -1,19 +1,14 @@
 import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
-import DoctorMgmt from 'features/doctor-mgmt';
-import Home from 'features/home';
-import PatientMgmt from 'features/patient-mgmt';
-import TestCategoryMgmt from 'features/test-category-mgmt';
-import TestGroupMgmt from 'features/test-group-mgmt';
-import TestMgmt from 'features/test-mgmt';
-import UnitMgmt from 'features/unit-mgmt';
-import AppContent from 'layout/AppContainer';
-import AppFooter from 'layout/AppFooter';
-import AppSidebar from 'layout/AppSidebar';
-import AppTopbar from 'layout/AppTopbar';
+import DoctorMgmt from 'pages/doctor-mgmt';
+import Home from 'pages/home';
+import PatientMgmt from 'pages/patient-mgmt';
+import TestCategoryMgmt from 'pages/test-category-mgmt';
+import TestGroupMgmt from 'pages/test-group-mgmt';
+import UnitMgmt from 'pages/unit-mgmt';
 
-const sideWidth = '3.3rem';
+import { AppContainer, AppFooter, AppSidebar, AppTopbar } from 'components';
 
 const routes = [
   {
@@ -69,6 +64,7 @@ const routes = [
 ];
 
 function App() {
+  const sideWidth = '3.3rem';
   const location = useLocation();
 
   return (
@@ -106,13 +102,13 @@ function App() {
           }}
           routes={routes}
         />
-        <AppContent ml={{ base: 0, md: sideWidth }}>
+        <AppContainer ml={{ base: 0, md: sideWidth }}>
           <Routes location={location}>
             <Route index element={<Home />} />
             <Route path="/home" element={<Home />} />
             <Route path="/patient/*" element={<PatientMgmt />} />
             <Route path="/doctor/*" element={<DoctorMgmt />} />
-            <Route path="/test-manage/*" element={<TestMgmt />} />
+            {/* <Route path="/test-manage/*" element={<TestMgmt />} /> */}
             <Route path="/unit/*" element={<UnitMgmt />} />
             <Route path="/test-group-mgmt/*" element={<TestGroupMgmt />} />
             <Route path="/test-category/*" element={<TestCategoryMgmt />} />
@@ -120,7 +116,7 @@ function App() {
           </Routes>
 
           <AppFooter />
-        </AppContent>
+        </AppContainer>
       </Box>
     </Box>
   );

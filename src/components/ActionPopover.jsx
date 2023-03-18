@@ -15,7 +15,8 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import AppIcon from 'icon/AppIcon';
+
+import AppIcon from './AppIcon';
 
 export function ActionItem({ location, path, label, icon }) {
   return (
@@ -44,19 +45,9 @@ function ActionPopover({ path, id, render }) {
         <PopoverHeader>Hành động</PopoverHeader>
         <PopoverBody>
           <VStack spacing={2} m={2} align="stretch">
-            <ActionItem
-              location={location}
-              path={`${path}/${id}/edit`}
-              label="Chỉnh sửa"
-              icon="pen"
-            />
+            <ActionItem location={location} path={`${path}/${id}/edit`} label="Chỉnh sửa" icon="pen" />
 
-            <ActionItem
-              location={location}
-              path={`${path}/${id}/delete`}
-              label="Xóa"
-              icon="trash"
-            />
+            <ActionItem location={location} path={`${path}/${id}/delete`} label="Xóa" icon="trash" />
 
             {render && render(location)}
           </VStack>
