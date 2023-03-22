@@ -8,16 +8,20 @@ import {
   Heading,
   HStack,
   Input,
-  InputGroup,
-  InputLeftElement,
   Select,
+  Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { toastify } from 'common/toastify';
 import { fetchDoctors } from 'store/doctorSlice';
 
-import { ActionPopover, AppIcon, DataGrid, FilterPopover, withSuspense } from 'components';
+import { ActionButtonGroup, AppIcon, DataGrid, FilterGroup, withSuspense } from 'components';
 
 const initDoctorColumns = () => {
   const columnHelper = createColumnHelper();
@@ -48,10 +52,23 @@ const initDoctorColumns = () => {
     }),
     columnHelper.accessor('id', {
       header: '',
-      cell: (info) => <ActionPopover path="/doctor" id={info.getValue()} />,
+      cell: (info) => <ActionButtonGroup path="/doctor" id={info.getValue()} />,
     }),
   ];
 };
+
+const filterFields = [
+  {
+    id: 'fullName',
+    icon: 'address-book',
+    label: 'Tên bác sĩ',
+  },
+  {
+    id: 'phoneNo',
+    icon: 'phone',
+    label: 'Số điện thoại',
+  },
+];
 
 function DoctorManagement() {
   const dispatch = useDispatch();
@@ -177,19 +194,29 @@ function DoctorManagement() {
 
       <Flex alignItems="center" justifyContent="space-between" p={2}>
         <Flex gap={2}>
-          <InputGroup size="sm" borderRadius="md">
-            <InputLeftElement pointerEvents="none">
-              <AppIcon icon="manifying-glass" />
-            </InputLeftElement>
-
-            <Input min={1} type="number" variant="filled" w="max-content" placeholder='Tìm kiếm theo "ID"' disabled />
-          </InputGroup>
-
-          <FilterPopover fieldNames={tableDef.getAllColumns()} onFilter={handleFilter} />
-
-          <Button size="sm" variant="solid" colorScheme="blue" onClick={() => handleRefresh()}>
-            <AppIcon icon="arrow-counter-clockwise" weight="bold" />
-          </Button>
+          <FilterGroup
+            fields={filterFields}
+            onFilter={handleFilter}
+            sx={{
+              p: 2,
+            }}
+          >
+            {(reset) => (
+              <Tooltip label="Tải lại">
+                <Button
+                  size="sm"
+                  variant="solid"
+                  colorScheme="blue"
+                  onClick={() => {
+                    handleRefresh();
+                    reset();
+                  }}
+                >
+                  <AppIcon icon="arrow-counter-clockwise" weight="bold" />
+                </Button>
+              </Tooltip>
+            )}
+          </FilterGroup>
         </Flex>
 
         <HStack>
