@@ -1,4 +1,5 @@
 import doctorSlice from './doctorSlice';
+import indicationSlice from './indicationSlice';
 import patientSlice from './patientSlice';
 import testCategorySlice from './testCategorySlice';
 import testGroupSlice from './testGroupSlice';
@@ -10,6 +11,7 @@ const rootReducer = {
   unit: unitSlice,
   testCategory: testCategorySlice,
   testGroup: testGroupSlice,
+  indication: indicationSlice,
 };
 
 export default rootReducer;

@@ -12,6 +12,7 @@ import {
   CaretUp,
   ChartLine,
   Check,
+  CurrencyDollar,
   DotsThreeOutlineVertical,
   Envelope,
   EyedropperSample,
@@ -33,6 +34,7 @@ import {
   Question,
   SignOut,
   SmileyNervous,
+  Sticker,
   Sun,
   TestTube,
   Trash,
@@ -80,6 +82,8 @@ const libIcons = {
   envelope: Envelope,
   'identification-card': IdentificationCard,
   'gender-intersex': GenderIntersex,
+  sticker: Sticker,
+  'currency-dollar': CurrencyDollar,
   // add more icons here
 };
 

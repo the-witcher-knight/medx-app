@@ -61,7 +61,7 @@ export const deleteCategory = createAsyncThunk('testCategory/deleteOne', async (
 });
 
 const testCategorySlice = createSlice({
-  name: 'unitSlice',
+  name: 'testCategory',
   initialState,
   extraReducers(builder) {
     builder

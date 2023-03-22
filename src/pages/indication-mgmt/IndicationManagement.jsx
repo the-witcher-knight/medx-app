@@ -19,21 +19,21 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { toastify } from 'common/toastify';
-import { fetchUnits } from 'store/unitSlice';
+import { fetchIndications } from 'store/indicationSlice';
 
 import { ActionButtonGroup, AppIcon, DataGrid, FilterGroup, withSuspense } from 'components';
 
-const initUnitColumns = () => {
+const initIndicationColumns = () => {
   const columnHelper = createColumnHelper();
 
   return [
     columnHelper.accessor('name', {
-      header: 'Đơn vị',
+      header: 'Tên chỉ mục',
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor('id', {
       header: '',
-      cell: (info) => <ActionButtonGroup path="/unit" id={info.getValue()} />,
+      cell: (info) => <ActionButtonGroup path="/indication" id={info.getValue()} />,
     }),
   ];
 };
@@ -41,18 +41,18 @@ const initUnitColumns = () => {
 const filterFields = [
   {
     id: 'name',
-    icon: 'address-book',
-    label: 'Tên đơn vị',
+    icon: 'sticker',
+    label: 'Tên chỉ định',
   },
 ];
 
-function UnitManagement() {
+function IndicationManagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const columns = useMemo(() => initUnitColumns(), []);
-  const { entities, loading, error } = useSelector((state) => state.unit);
+  const columns = useMemo(() => initIndicationColumns(), []);
+  const { entities, loading, error } = useSelector((state) => state.indication);
   const [sorting, setSorting] = useState([{ id: 'id', desc: false }]);
   const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
@@ -74,7 +74,7 @@ function UnitManagement() {
 
   useEffect(() => {
     dispatch(
-      fetchUnits({
+      fetchIndications({
         filters,
         sortBy: { fieldName: sorting[0]?.id, accending: !sorting[0]?.desc },
         pageIndex: pagination.pageIndex,
@@ -91,7 +91,7 @@ function UnitManagement() {
 
   const handleRefresh = () => {
     dispatch(
-      fetchUnits({
+      fetchIndications({
         filters,
         sortBy: { fieldName: 'id', accending: true },
         pageIndex: 1,
@@ -112,7 +112,7 @@ function UnitManagement() {
     <Box sx={{ display: 'flex', flexDir: 'column', gap: 3 }}>
       <Flex alignItems="center" p={2}>
         <Heading flex={3} as="h2" size="md" color={useColorModeValue('teal.500', 'teal.300')}>
-          Quản lý đơn vị
+          Quản lý chỉ mục xét nghiệm
         </Heading>
 
         <Flex flex={1} gap={2}>
@@ -198,7 +198,7 @@ function UnitManagement() {
         <HStack>
           <Button size="sm" variant="solid" colorScheme="teal" onClick={handleCreate}>
             <AppIcon icon="plus" size={16} weight="bold" />
-            &nbsp;Thêm đơn vị
+            &nbsp;Thêm chỉ mục
           </Button>
         </HStack>
       </Flex>
@@ -219,4 +219,4 @@ function UnitManagement() {
   );
 }
 
-export default withSuspense(UnitManagement, 'Quản lý đơn vị xét nghiệm');
+export default withSuspense(IndicationManagement, 'Quản lý đơn vị xét nghiệm');

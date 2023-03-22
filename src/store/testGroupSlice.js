@@ -59,7 +59,7 @@ export const deleteTestGroup = createAsyncThunk('testGroup/deleteOne', async (id
 });
 
 const testGroupSlice = createSlice({
-  name: 'testGroupSlice',
+  name: 'testGroup',
   initialState,
   extraReducers(builder) {
     builder

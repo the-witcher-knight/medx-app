@@ -8,16 +8,20 @@ import {
   Heading,
   HStack,
   Input,
-  InputGroup,
-  InputLeftElement,
   Select,
+  Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { toastify } from 'common/toastify';
 import { fetchTestCategories } from 'store/testCategorySlice';
 
-import { ActionPopover, AppIcon, DataGrid, FilterPopover, withSuspense } from 'components';
+import { ActionButtonGroup, AppIcon, DataGrid, FilterGroup, withSuspense } from 'components';
 
 const initTestCategoryColumns = () => {
   const columnHelper = createColumnHelper();
@@ -49,10 +53,48 @@ const initTestCategoryColumns = () => {
     }),
     columnHelper.accessor('id', {
       header: '',
-      cell: (info) => <ActionPopover path="/test-category" id={info.getValue()} />,
+      cell: (info) => <ActionButtonGroup path="/test-category" id={info.getValue()} />,
     }),
   ];
 };
+
+const filterFields = [
+  {
+    id: 'name',
+    icon: 'address-book',
+    label: 'Tên loại',
+  },
+  {
+    id: 'code',
+    icon: 'eyedropper-sample',
+    label: 'Mã xét nghiệm',
+  },
+  {
+    id: 'lowerBound',
+    icon: 'caret-down',
+    label: 'Ngưỡng thấp',
+  },
+  {
+    id: 'upperBound',
+    icon: 'caret-up',
+    label: 'Ngưỡng cao',
+  },
+  {
+    id: 'unitId',
+    icon: 'percent',
+    label: 'Mã đơn vị',
+  },
+  {
+    id: 'groupId',
+    icon: 'bounding-box',
+    label: 'Mã nhóm xét nghiệm',
+  },
+  {
+    id: 'price',
+    icon: 'currency-dollar',
+    label: 'Giá tiền',
+  },
+];
 
 function TestCategoryManagement() {
   const dispatch = useDispatch();
@@ -178,19 +220,29 @@ function TestCategoryManagement() {
 
       <Flex alignItems="center" justifyContent="space-between" p={2}>
         <Flex gap={2}>
-          <InputGroup size="sm" borderRadius="md">
-            <InputLeftElement pointerEvents="none">
-              <AppIcon icon="manifying-glass" />
-            </InputLeftElement>
-
-            <Input min={1} type="number" variant="filled" w="max-content" placeholder='Tìm kiếm theo "ID"' disabled />
-          </InputGroup>
-
-          <FilterPopover fieldNames={tableDef.getAllColumns()} onFilter={handleFilter} />
-
-          <Button size="sm" variant="solid" colorScheme="blue" onClick={() => handleRefresh()}>
-            <AppIcon icon="arrow-counter-clockwise" weight="bold" />
-          </Button>
+          <FilterGroup
+            fields={filterFields}
+            onFilter={handleFilter}
+            sx={{
+              p: 2,
+            }}
+          >
+            {(reset) => (
+              <Tooltip label="Tải lại">
+                <Button
+                  size="sm"
+                  variant="solid"
+                  colorScheme="blue"
+                  onClick={() => {
+                    handleRefresh();
+                    reset();
+                  }}
+                >
+                  <AppIcon icon="arrow-counter-clockwise" weight="bold" />
+                </Button>
+              </Tooltip>
+            )}
+          </FilterGroup>
         </Flex>
 
         <HStack>

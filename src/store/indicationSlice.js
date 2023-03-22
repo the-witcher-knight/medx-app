@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { unitAPI } from 'apis';
+import { indicationAPI } from 'apis';
 
 const initialState = {
   entity: null,
@@ -9,65 +9,65 @@ const initialState = {
 };
 
 /**
- * Fetch all units
+ * Fetch all indications
  * @param {object} criteria - search criteria
  * @param {Array} criteria.filters - array of filters ```{fieldName: "name", operation: "like", value: "John"}```
  * @param {object} criteria.sortBy - sort criteria ```{fieldName: "name", accending: true}```
  * @param {number} criteria.pageIndex - page index number
  * @param {number} criteria.pageSize - page size number
  */
-export const fetchUnits = createAsyncThunk('unit/fetchAll', async (criteria) => {
-  const resp = await unitAPI.getAll(criteria);
+export const fetchIndications = createAsyncThunk('indication/fetchAll', async (criteria) => {
+  const resp = await indicationAPI.getAll(criteria);
 
   return resp.data;
 });
 
 /**
- * Create a unit
+ * Create a indication
  */
-export const createUnit = createAsyncThunk('unit/createOne', async (values) => {
-  const resp = await unitAPI.create(values);
+export const createIndication = createAsyncThunk('indication/createOne', async (values) => {
+  const resp = await indicationAPI.create(values);
 
   return resp.data;
 });
 
 /**
- * Fetch a unit
+ * Fetch a indication
  */
-export const fetchUnit = createAsyncThunk('unit/fetchOne', async (id) => {
-  const resp = await unitAPI.getByID(id);
+export const fetchIndication = createAsyncThunk('indication/fetchOne', async (id) => {
+  const resp = await indicationAPI.getByID(id);
 
   return resp.data;
 });
 
 /**
- * Update a unit
+ * Update a indication
  */
-export const updateUnit = createAsyncThunk('unit/updateOne', async (values) => {
-  const resp = await unitAPI.update(values);
+export const updateIndication = createAsyncThunk('indication/updateOne', async (values) => {
+  const resp = await fetchIndication.update(values);
 
   return resp.data;
 });
 
 /**
- * Delete a unit
+ * Delete a indication
  */
-export const deleteUnit = createAsyncThunk('unit/deleteOne', async (id) => {
-  const resp = await unitAPI.delete(id);
+export const deleteIndication = createAsyncThunk('indication/deleteOne', async (id) => {
+  const resp = await indicationAPI.delete(id);
 
   return resp.data;
 });
 
-const unitSlice = createSlice({
-  name: 'unit',
+const indicationSlice = createSlice({
+  name: 'indication',
   initialState,
   extraReducers(builder) {
     builder
-      .addCase(fetchUnits.pending, (state) => {
+      .addCase(fetchIndications.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUnits.fulfilled, (state, action) => {
+      .addCase(fetchIndications.fulfilled, (state, action) => {
         const { data, isSuccess, message } = action.payload;
 
         state.loading = false;
@@ -77,15 +77,15 @@ const unitSlice = createSlice({
           state.entities = data.data;
         }
       })
-      .addCase(fetchUnits.rejected, (state, action) => {
+      .addCase(fetchIndications.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
       })
-      .addCase(createUnit.pending, (state) => {
+      .addCase(createIndication.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(createUnit.fulfilled, (state, action) => {
+      .addCase(createIndication.fulfilled, (state, action) => {
         const { data, isSuccess, message } = action.payload;
 
         state.loading = false;
@@ -95,15 +95,15 @@ const unitSlice = createSlice({
           state.entities.push(data);
         }
       })
-      .addCase(createUnit.rejected, (state, action) => {
+      .addCase(createIndication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
       })
-      .addCase(fetchUnit.pending, (state) => {
+      .addCase(fetchIndication.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUnit.fulfilled, (state, action) => {
+      .addCase(fetchIndication.fulfilled, (state, action) => {
         const { data, isSuccess, message } = action.payload;
 
         state.loading = false;
@@ -113,15 +113,15 @@ const unitSlice = createSlice({
           state.entity = data;
         }
       })
-      .addCase(fetchUnit.rejected, (state, action) => {
+      .addCase(fetchIndication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
       })
-      .addCase(updateUnit.pending, (state) => {
+      .addCase(updateIndication.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateUnit.fulfilled, (state, action) => {
+      .addCase(updateIndication.fulfilled, (state, action) => {
         const { data, isSuccess, message } = action.payload;
 
         state.loading = false;
@@ -132,15 +132,15 @@ const unitSlice = createSlice({
           state.entities[idx] = data;
         }
       })
-      .addCase(updateUnit.rejected, (state, action) => {
+      .addCase(updateIndication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
       })
-      .addCase(deleteUnit.pending, (state) => {
+      .addCase(deleteIndication.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(deleteUnit.fulfilled, (state, action) => {
+      .addCase(deleteIndication.fulfilled, (state, action) => {
         const { data, isSuccess, message } = action.payload;
         const { arg } = action.meta;
 
@@ -151,11 +151,11 @@ const unitSlice = createSlice({
           state.entities.filter((entity) => entity.id !== arg);
         }
       })
-      .addCase(deleteUnit.rejected, (state, action) => {
+      .addCase(deleteIndication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
       });
   },
 });
 
-export default unitSlice.reducer;
+export default indicationSlice.reducer;

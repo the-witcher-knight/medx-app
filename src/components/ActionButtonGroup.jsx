@@ -7,7 +7,13 @@ import AppIcon from './AppIcon';
 export function ActionButton({ location, colorScheme, path, label, icon }) {
   return (
     <Tooltip label={label}>
-      <Button as={NavLink} to={path} colorScheme={colorScheme} state={{ background: location }}>
+      <Button
+        as={NavLink}
+        to={path}
+        colorScheme={colorScheme}
+        size="sm"
+        state={{ background: location }}
+      >
         <AppIcon icon={icon} />
       </Button>
     </Tooltip>
