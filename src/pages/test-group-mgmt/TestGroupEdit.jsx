@@ -63,8 +63,12 @@ function TestGroupEdit() {
   }, [entity]);
 
   const onSubmit = (values) => {
-    const parentGroup = entities.find((ent) => ent.id === values.parentGroupId);
-    const saveData = { ...values, parentGroupName: parentGroup?.name };
+    const saveData = { ...values };
+    Object.keys(saveData).forEach((key) => {
+      if (saveData[key] == null || saveData[key] === undefined || saveData[key] === '') {
+        delete saveData[key];
+      }
+    });
 
     if (id) {
       dispatch(updateTestGroup({ id, ...saveData }));
@@ -98,7 +102,13 @@ function TestGroupEdit() {
         </DrawerHeader>
 
         <DrawerBody>
-          <Flex as="form" id="update-form" onSubmit={handleSubmit(onSubmit)} flexDir="column" gap={2}>
+          <Flex
+            as="form"
+            id="update-form"
+            onSubmit={handleSubmit(onSubmit)}
+            flexDir="column"
+            gap={2}
+          >
             <ValidatedInput control={control} name="name" type="text" label="Tên nhóm xét nghiệm" />
             <ValidatedInput control={control} name="level" type="number" label="Mức độ" />
             <ValidatedSelect control={control} name="parentGroupId" label="Thuộc nhóm xét nghiệm">

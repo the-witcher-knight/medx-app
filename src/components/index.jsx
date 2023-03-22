@@ -11,3 +11,5 @@ export { default as ActionItem } from './ActionPopover';
 export { default as DataGrid } from './DataGrid';
 export { default as FilterPopover } from './FilterPopover';
 export { default as withSuspense } from './withSuspense';
+export { default as ActionButtonGroup } from './ActionButtonGroup';
+export { default as FilterGroup } from './FilterGroup';

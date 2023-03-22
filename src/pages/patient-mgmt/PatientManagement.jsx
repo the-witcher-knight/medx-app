@@ -8,17 +8,22 @@ import {
   Heading,
   HStack,
   Input,
-  InputGroup,
-  InputLeftElement,
   Select,
+  Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { createColumnHelper, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { toastify } from 'common/toastify';
 import dayjs from 'dayjs';
 import { fetchPatients } from 'store/patientSlice';
 
-import { ActionItem, ActionPopover, AppIcon, DataGrid, FilterPopover, withSuspense } from 'components';
+import { ActionButtonGroup, AppIcon, DataGrid, FilterGroup, withSuspense } from 'components';
+import { ActionButton } from 'components/ActionButtonGroup';
 
 const initPatientColumns = () => {
   const columnHelper = createColumnHelper();
@@ -62,15 +67,54 @@ const initPatientColumns = () => {
     columnHelper.accessor('id', {
       header: '',
       cell: (info) => (
-        <ActionPopover path="/patient" id={info.getValue()}>
-          {(location) => {
-            <ActionItem location={location} path="/test-manage/new" icon="note-pencil" label="Làm xét nghiệm" />;
-          }}
-        </ActionPopover>
+        <ActionButtonGroup path="/patient" id={info.getValue()}>
+          {(location) => (
+            <ActionButton
+              location={location}
+              path="/test-manage/new"
+              colorScheme="orange"
+              icon="note-pencil"
+              label="Làm xét nghiệm"
+            />
+          )}
+        </ActionButtonGroup>
       ),
     }),
   ];
 };
+
+const filterFields = [
+  {
+    id: 'fullName',
+    icon: 'address-book',
+    label: 'Tên bệnh nhân',
+  },
+  {
+    id: 'phoneNo',
+    icon: 'phone',
+    label: 'Số điện thoại',
+  },
+  {
+    id: 'code',
+    icon: 'smiley-nervous',
+    label: 'Mã bệnh nhân',
+  },
+  {
+    id: 'personalId',
+    icon: 'identification-card',
+    label: 'CCCD',
+  },
+  {
+    id: 'email',
+    icon: 'envelope',
+    label: 'Email',
+  },
+  {
+    id: 'sex',
+    icon: 'gender-intersex',
+    label: 'Giới tính',
+  },
+];
 
 function PatientManagement() {
   const dispatch = useDispatch();
@@ -194,24 +238,34 @@ function PatientManagement() {
         </Flex>
       </Flex>
 
-      <Flex alignItems="center" justifyContent="space-between" p={2}>
+      <Flex alignItems="start" justifyContent="space-between" p={2}>
         <Flex gap={2}>
-          <InputGroup size="sm" borderRadius="md">
-            <InputLeftElement pointerEvents="none">
-              <AppIcon icon="manifying-glass" />
-            </InputLeftElement>
-
-            <Input min={1} type="number" variant="filled" w="max-content" placeholder='Tìm kiếm theo "ID"' disabled />
-          </InputGroup>
-
-          <FilterPopover fieldNames={tableDef.getAllColumns()} onFilter={handleFilter} />
-
-          <Button size="sm" variant="solid" colorScheme="blue" onClick={() => handleRefresh()}>
-            <AppIcon icon="arrow-counter-clockwise" weight="bold" />
-          </Button>
+          <FilterGroup
+            fields={filterFields}
+            onFilter={handleFilter}
+            sx={{
+              p: 2,
+            }}
+          >
+            {(reset) => (
+              <Tooltip label="Tải lại">
+                <Button
+                  size="sm"
+                  variant="solid"
+                  colorScheme="blue"
+                  onClick={() => {
+                    handleRefresh();
+                    reset();
+                  }}
+                >
+                  <AppIcon icon="arrow-counter-clockwise" weight="bold" />
+                </Button>
+              </Tooltip>
+            )}
+          </FilterGroup>
         </Flex>
 
-        <HStack>
+        <HStack p={2}>
           <Button size="sm" variant="solid" colorScheme="teal" onClick={handleCreate}>
             <AppIcon icon="plus" size={16} weight="bold" />
             &nbsp;Thêm bệnh nhân

@@ -89,14 +89,10 @@ function TestCategoryEdit() {
   }, [entity]);
 
   const onSubmit = (values) => {
-    const unit = testGroupSelector.entites.find((u) => u.id === values.unitId);
-    const group = unitSelector.entites.find((gr) => gr.id === values.groupId);
-    const saveData = { ...values, unitName: unit.name, groupName: group.name };
-
     if (id) {
-      dispatch(updateCategory({ id, ...saveData }));
+      dispatch(updateCategory({ id, ...values }));
     } else {
-      dispatch(createCategory(saveData));
+      dispatch(createCategory(values));
     }
     reset();
   };
@@ -125,9 +121,15 @@ function TestCategoryEdit() {
         </DrawerHeader>
 
         <DrawerBody>
-          <Flex as="form" id="update-form" onSubmit={handleSubmit(onSubmit)} flexDir="column" gap={2}>
-            <ValidatedInput control={control} name="code" type="text" label="Mã loại xét nghiệm" />
-            <ValidatedInput control={control} name="name" type="text" label="Đơn vị" />
+          <Flex
+            as="form"
+            id="update-form"
+            onSubmit={handleSubmit(onSubmit)}
+            flexDir="column"
+            gap={2}
+          >
+            <ValidatedInput control={control} name="code" type="text" label="Mã xét nghiệm" />
+            <ValidatedInput control={control} name="name" type="text" label="Tên loại xét nghiệm" />
             <ValidatedInput control={control} name="lowerBound" type="number" label="Ngưỡng thấp" />
             <ValidatedInput control={control} name="upperBound" type="number" label="Ngưỡng cao" />
             <ValidatedSelect control={control} name="unitId" label="Đơn vị">

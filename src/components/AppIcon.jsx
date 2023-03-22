@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import {
+  AddressBook,
   ArrowCounterClockwise,
   BoundingBox,
   CaretDoubleLeft,
@@ -12,17 +13,21 @@ import {
   ChartLine,
   Check,
   DotsThreeOutlineVertical,
+  Envelope,
   EyedropperSample,
   FileText,
   FirstAidKit,
   FloppyDisk,
   Funnel,
+  GenderIntersex,
   House,
+  IdentificationCard,
   MagnifyingGlass,
   Moon,
   NotePencil,
   Pen,
   Percent,
+  Phone,
   Pill,
   Plus,
   Question,
@@ -70,6 +75,11 @@ const libIcons = {
   percent: Percent,
   'bounding-box': BoundingBox,
   'eyedropper-sample': EyedropperSample,
+  'address-book': AddressBook,
+  phone: Phone,
+  envelope: Envelope,
+  'identification-card': IdentificationCard,
+  'gender-intersex': GenderIntersex,
   // add more icons here
 };
 

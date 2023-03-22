@@ -27,14 +27,14 @@ const routes = [
     path: '/test-manage',
   },
   {
-    name: 'Nhóm xét nghiệm',
-    icon: 'bounding-box',
-    path: '/test-group-mgmt',
-  },
-  {
     name: 'Loại xét nghiệm',
     icon: 'eyedropper-sample',
     path: '/test-category',
+  },
+  {
+    name: 'Nhóm xét nghiệm',
+    icon: 'bounding-box',
+    path: '/test-group-mgmt',
   },
   {
     name: 'Đơn vị',

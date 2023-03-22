@@ -37,7 +37,10 @@ function PatientEdit() {
       .required('Vui lòng nhập căn cước công dân')
       .length(12, 'Vui lòng nhập căn cước công dân 12 số'),
     code: yup.string().required('Vui lòng nhập mã bệnh nhân'),
-    phoneNo: yup.string().required('Vui lòng nhập số điện thoại').length(10, 'Số điện thoại không hợp lệ'),
+    phoneNo: yup
+      .string()
+      .required('Vui lòng nhập số điện thoại')
+      .length(10, 'Số điện thoại không hợp lệ'),
     address: yup.string().required('Vui lòng nhập địa chỉ'),
     email: yup.string().email().notRequired(),
     sex: yup.number().required('Vui lòng chọn giới tính'),
@@ -109,7 +112,13 @@ function PatientEdit() {
         </DrawerHeader>
 
         <DrawerBody>
-          <Flex as="form" id="update-form" onSubmit={handleSubmit(onSubmit)} flexDir="column" gap={2}>
+          <Flex
+            as="form"
+            id="update-form"
+            onSubmit={handleSubmit(onSubmit)}
+            flexDir="column"
+            gap={2}
+          >
             <ValidatedInput control={control} name="fullName" type="text" label="Họ & tên" />
             <ValidatedInput control={control} name="personalId" type="text" label="CCCD" />
             <ValidatedInput control={control} name="code" type="text" label="Mã bệnh nhân" />
@@ -118,9 +127,9 @@ function PatientEdit() {
             <ValidatedInput control={control} name="address" type="text" label="Địa chỉ" />
             <ValidatedInput control={control} name="email" type="text" label="Email" />
             <ValidatedSelect control={control} name="sex" label="Giới tính">
-              <option value="0">Nữ</option>
+              <option value="0">Khác</option>
+              <option value="2">Nữ</option>
               <option value="1">Nam</option>
-              <option value="2">Khác</option>
             </ValidatedSelect>
           </Flex>
         </DrawerBody>
