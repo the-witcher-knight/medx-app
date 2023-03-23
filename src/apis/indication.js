@@ -16,7 +16,7 @@ const indicationAPI = {
     return axiosInstance.get(`/${id}`);
   },
   create(values) {
-    return axiosInstance.post('/', values);
+    return axiosInstance.post('', values);
   },
   update(values) {
     return axiosInstance.put(`/${values.id}`, values);

@@ -40,7 +40,7 @@ const initUnitColumns = () => {
 
 const filterFields = [
   {
-    id: 'name',
+    id: 'Name',
     icon: 'address-book',
     label: 'Tên đơn vị',
   },

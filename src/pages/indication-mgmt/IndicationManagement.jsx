@@ -40,7 +40,7 @@ const initIndicationColumns = () => {
 
 const filterFields = [
   {
-    id: 'name',
+    id: 'Name',
     icon: 'sticker',
     label: 'Tên chỉ định',
   },

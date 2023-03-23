@@ -48,12 +48,12 @@ const initTestGroupColumns = () => {
 
 const filterFields = [
   {
-    id: 'name',
+    id: 'Name',
     icon: 'address-book',
     label: 'Tên nhóm xét nghiệm',
   },
   {
-    id: 'parrentGroupId',
+    id: 'ParrentGroupId',
     icon: 'bounding-box',
     label: 'ID nhóm cha',
   },

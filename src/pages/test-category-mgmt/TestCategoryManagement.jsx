@@ -60,37 +60,37 @@ const initTestCategoryColumns = () => {
 
 const filterFields = [
   {
-    id: 'name',
+    id: 'Name',
     icon: 'address-book',
     label: 'Tên loại',
   },
   {
-    id: 'code',
+    id: 'Code',
     icon: 'eyedropper-sample',
     label: 'Mã xét nghiệm',
   },
   {
-    id: 'lowerBound',
+    id: 'LowerBound',
     icon: 'caret-down',
     label: 'Ngưỡng thấp',
   },
   {
-    id: 'upperBound',
+    id: 'UpperBound',
     icon: 'caret-up',
     label: 'Ngưỡng cao',
   },
   {
-    id: 'unitId',
+    id: 'UnitId',
     icon: 'percent',
     label: 'Mã đơn vị',
   },
   {
-    id: 'groupId',
+    id: 'GroupId',
     icon: 'bounding-box',
     label: 'Mã nhóm xét nghiệm',
   },
   {
-    id: 'price',
+    id: 'Price',
     icon: 'currency-dollar',
     label: 'Giá tiền',
   },

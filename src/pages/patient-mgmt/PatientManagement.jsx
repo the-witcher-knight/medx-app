@@ -85,32 +85,32 @@ const initPatientColumns = () => {
 
 const filterFields = [
   {
-    id: 'fullName',
+    id: 'FullName',
     icon: 'address-book',
     label: 'Tên bệnh nhân',
   },
   {
-    id: 'phoneNo',
+    id: 'PhoneNo',
     icon: 'phone',
     label: 'Số điện thoại',
   },
   {
-    id: 'code',
+    id: 'Code',
     icon: 'smiley-nervous',
     label: 'Mã bệnh nhân',
   },
   {
-    id: 'personalId',
+    id: 'PersonalId',
     icon: 'identification-card',
     label: 'CCCD',
   },
   {
-    id: 'email',
+    id: 'Email',
     icon: 'envelope',
     label: 'Email',
   },
   {
-    id: 'sex',
+    id: 'Sex',
     icon: 'gender-intersex',
     label: 'Giới tính',
   },
