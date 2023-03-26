@@ -16,6 +16,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { GenderConstant } from 'constants';
 import { createPatient, fetchPatient, updatePatient } from 'store/patientSlice';
 import * as yup from 'yup';
 
@@ -32,10 +33,7 @@ function PatientEdit() {
 
   const schema = yup.object().shape({
     fullName: yup.string().required('Vui lòng nhập họ tên'),
-    personalId: yup
-      .string()
-      .required('Vui lòng nhập căn cước công dân')
-      .length(12, 'Vui lòng nhập căn cước công dân 12 số'),
+    personalId: yup.string().required('Vui lòng nhập căn cước công dân'),
     code: yup.string().required('Vui lòng nhập mã bệnh nhân'),
     phoneNo: yup
       .string()
@@ -127,9 +125,11 @@ function PatientEdit() {
             <ValidatedInput control={control} name="address" type="text" label="Địa chỉ" />
             <ValidatedInput control={control} name="email" type="text" label="Email" />
             <ValidatedSelect control={control} name="sex" label="Giới tính">
-              <option value="0">Khác</option>
-              <option value="2">Nữ</option>
-              <option value="1">Nam</option>
+              {Object.keys(GenderConstant).map((gender) => (
+                <option key={`gender_${gender}`} value={GenderConstant[gender]}>
+                  {gender}
+                </option>
+              ))}
             </ValidatedSelect>
           </Flex>
         </DrawerBody>

@@ -31,6 +31,15 @@ export const fetchPatient = createAsyncThunk('patient/fetchOne', async (id) => {
   return resp.data;
 });
 
+export const getPatientByPersonalID = createAsyncThunk(
+  'patient/fetchByPersonalID',
+  async (personalID) => {
+    const resp = await patientAPI.getByPersonalID(personalID);
+
+    return resp.data;
+  }
+);
+
 /**
  * Create a patient
  */
@@ -117,7 +126,21 @@ const patientSlice = createSlice({
         state.loading = false;
         state.error = action.error;
       })
-      .addCase(updatePatient.pending, (state) => {
+      .addCase(getPatientByPersonalID.fulfilled, (state, action) => {
+        const { data, isSuccess, message } = action.payload;
+
+        state.loading = false;
+        if (!isSuccess) {
+          state.error = { message };
+        } else {
+          state.entity = data;
+        }
+      })
+      .addCase(getPatientByPersonalID.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
+      })
+      .addCase(getPatientByPersonalID.pending, (state) => {
         state.loading = true;
         state.error = null;
       })

@@ -19,6 +19,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { toastify } from 'common/toastify';
+import { GenderConstant } from 'constants';
 import dayjs from 'dayjs';
 import { fetchPatients } from 'store/patientSlice';
 
@@ -56,7 +57,7 @@ const initPatientColumns = () => {
     columnHelper.accessor('sex', {
       header: 'Giới tính',
       cell(info) {
-        const gender = ['Nữ', 'Nam', 'Khác'];
+        const gender = Object.keys(GenderConstant);
         return gender[info.getValue()];
       },
     }),
@@ -66,19 +67,7 @@ const initPatientColumns = () => {
     }),
     columnHelper.accessor('id', {
       header: '',
-      cell: (info) => (
-        <ActionButtonGroup path="/patient" id={info.getValue()}>
-          {(location) => (
-            <ActionButton
-              location={location}
-              path="/test-manage/new"
-              colorScheme="orange"
-              icon="note-pencil"
-              label="Làm xét nghiệm"
-            />
-          )}
-        </ActionButtonGroup>
-      ),
+      cell: (info) => <ActionButtonGroup path="/patient" id={info.getValue()} />,
     }),
   ];
 };

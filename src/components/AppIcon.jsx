@@ -12,6 +12,7 @@ import {
   CaretUp,
   ChartLine,
   Check,
+  CheckSquareOffset,
   CurrencyDollar,
   DotsThreeOutlineVertical,
   Envelope,
@@ -20,8 +21,10 @@ import {
   FirstAidKit,
   FloppyDisk,
   Funnel,
+  GearSix,
   GenderIntersex,
   House,
+  IdentificationBadge,
   IdentificationCard,
   MagnifyingGlass,
   Moon,
@@ -31,6 +34,7 @@ import {
   Phone,
   Pill,
   Plus,
+  Printer,
   Question,
   SignOut,
   SmileyNervous,
@@ -84,6 +88,10 @@ const libIcons = {
   'gender-intersex': GenderIntersex,
   sticker: Sticker,
   'currency-dollar': CurrencyDollar,
+  'check-square-offset': CheckSquareOffset,
+  'identification-badge': IdentificationBadge,
+  'gear-six': GearSix,
+  printer: Printer,
   // add more icons here
 };
 

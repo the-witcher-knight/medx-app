@@ -1,5 +1,5 @@
 import axios from 'axios';
-import API_URL from 'constants';
+import { API_URL } from 'constants';
 
 const axiosInstance = axios.create({
   baseURL: `${API_URL}/Indication`,
@@ -16,7 +16,7 @@ const indicationAPI = {
     return axiosInstance.get(`/${id}`);
   },
   create(values) {
-    return axiosInstance.post('', values);
+    return axiosInstance.post('/', values);
   },
   update(values) {
     return axiosInstance.put(`/${values.id}`, values);

@@ -16,6 +16,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { GenderConstant } from 'constants';
 import { createDoctor, fetchDoctor, updateDoctor } from 'store/doctorSlice';
 import * as yup from 'yup';
 
@@ -29,7 +30,10 @@ function DoctorEdit() {
 
   const schema = yup.object().shape({
     fullName: yup.string().required('Vui lòng nhập họ tên'),
-    phoneNo: yup.string().required('Vui lòng nhập số điện thoại').length(10, 'Số điện thoại không hợp lệ'),
+    phoneNo: yup
+      .string()
+      .required('Vui lòng nhập số điện thoại')
+      .length(10, 'Số điện thoại không hợp lệ'),
     address: yup.string().required('Vui lòng nhập địa chỉ'),
     email: yup.string().email().required('Vui lòng nhập email'),
     title: yup.string().required('Vui lòng nhập tiêu đề'),
@@ -102,16 +106,24 @@ function DoctorEdit() {
         </DrawerHeader>
 
         <DrawerBody>
-          <Flex as="form" id="update-form" onSubmit={handleSubmit(onSubmit)} flexDir="column" gap={2}>
+          <Flex
+            as="form"
+            id="update-form"
+            onSubmit={handleSubmit(onSubmit)}
+            flexDir="column"
+            gap={2}
+          >
             <ValidatedInput control={control} name="fullName" type="text" label="Họ & tên" />
             <ValidatedInput control={control} name="phoneNo" type="text" label="Số điện thoại" />
             <ValidatedInput control={control} name="address" type="text" label="Địa chỉ" />
             <ValidatedInput control={control} name="email" type="text" label="Email" />
             <ValidatedInput control={control} name="title" type="text" label="Chức danh" />
             <ValidatedSelect control={control} name="sex" label="Giới tính">
-              <option value="0">Nữ</option>
-              <option value="1">Nam</option>
-              <option value="2">Khác</option>
+              {Object.keys(GenderConstant).map((gender) => (
+                <option key={`gender_${gender}`} value={GenderConstant[gender]}>
+                  {gender}
+                </option>
+              ))}
             </ValidatedSelect>
           </Flex>
         </DrawerBody>

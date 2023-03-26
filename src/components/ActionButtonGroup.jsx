@@ -35,6 +35,8 @@ function ActionButtonGroup({ path, id, children }) {
         icon="pen"
       />
 
+      {render && render(location)}
+
       <ActionButton
         location={location}
         path={`${path}/${id}/delete`}
@@ -42,8 +44,6 @@ function ActionButtonGroup({ path, id, children }) {
         label="Xóa"
         icon="trash"
       />
-
-      {render && render(location)}
     </Stack>
   );
 }

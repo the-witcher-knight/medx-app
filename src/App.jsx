@@ -7,6 +7,7 @@ import IndicationMgmt from 'pages/indication-mgmt';
 import PatientMgmt from 'pages/patient-mgmt';
 import TestCategoryMgmt from 'pages/test-category-mgmt';
 import TestGroupMgmt from 'pages/test-group-mgmt';
+import TestMgmt from 'pages/test-mgmt';
 import UnitMgmt from 'pages/unit-mgmt';
 
 import { AppContainer, AppFooter, AppSidebar, AppTopbar } from 'components';
@@ -114,7 +115,7 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/patient/*" element={<PatientMgmt />} />
             <Route path="/doctor/*" element={<DoctorMgmt />} />
-            {/* <Route path="/test-manage/*" element={<TestMgmt />} /> */}
+            <Route path="/test-manage/*" element={<TestMgmt />} />
             <Route path="/unit/*" element={<UnitMgmt />} />
             <Route path="/test-group-mgmt/*" element={<TestGroupMgmt />} />
             <Route path="/test-category/*" element={<TestCategoryMgmt />} />

@@ -19,41 +19,133 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { toastify } from 'common/toastify';
-import { fetchIndications } from 'store/indicationSlice';
+import { GenderConstant } from 'constants';
+import TestStatus from 'constants/test-status';
+import dayjs from 'dayjs';
+import { fetchTests } from 'store/testManageSlice';
 
 import { ActionButtonGroup, AppIcon, DataGrid, FilterGroup, withSuspense } from 'components';
+import { ActionButton } from 'components/ActionButtonGroup';
 
-const initIndicationColumns = () => {
+const initTestColumns = () => {
   const columnHelper = createColumnHelper();
 
   return [
-    columnHelper.accessor('name', {
-      header: 'Tên chỉ mục',
+    columnHelper.accessor('code', {
+      header: 'Mã bệnh nhân',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('patientName', {
+      header: 'Tên bệnh nhân',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('personalId', {
+      header: 'CCCD',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('testStatus', {
+      header: 'Tình trạng xét nghiệm',
+      cell(info) {
+        const status = Object.keys(TestStatus)
+          .filter((k) => TestStatus[k].value === info.getValue())
+          .map((k) => TestStatus[k].name);
+
+        return status;
+      },
+    }),
+    columnHelper.accessor('dayOfTest', {
+      header: 'Ngày xét nghiệm',
+      cell: (info) => dayjs(info.getValue()).format('YYYY-MM-DD HH:mm'),
+    }),
+    columnHelper.accessor('doctorName', {
+      header: 'Tên bác sĩ',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('sex', {
+      header: 'Giới tính',
+      cell(info) {
+        const gender = Object.keys(GenderConstant);
+        return gender[info.getValue()];
+      },
+    }),
+    columnHelper.accessor('phoneNo', {
+      header: 'Số điện thoại',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('email', {
+      header: 'Email',
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor('id', {
       header: '',
-      cell: (info) => <ActionButtonGroup path="/indication" id={info.getValue()} />,
+      cell: (info) => (
+        <ActionButtonGroup path="/test-manage" id={info.getValue()}>
+          {(location) => (
+            <ActionButton
+              location={location}
+              path={`/test-manage/detail/${info.getValue()}`}
+              colorScheme="orange"
+              icon="note-pencil"
+              label="Nhập thông tin xét nghiệm"
+            />
+          )}
+        </ActionButtonGroup>
+      ),
     }),
   ];
 };
 
 const filterFields = [
   {
-    id: 'Name',
-    icon: 'sticker',
-    label: 'Tên chỉ định',
+    id: 'PersonalId',
+    icon: 'identification-card',
+    label: 'CCCD',
+  },
+  {
+    id: 'PatientName',
+    icon: 'address-book',
+    label: 'Tên bệnh nhân',
+  },
+  {
+    id: 'TestStatus',
+    icon: 'check-square-offset',
+    label: 'Tình trạng xét nghiệm',
+  },
+  {
+    id: 'PatientId',
+    icon: 'identification-badge',
+    label: 'ID bệnh nhân',
+  },
+  {
+    id: 'PhoneNo',
+    icon: 'phone',
+    label: 'Số điện thoại',
+  },
+  {
+    id: 'Code',
+    icon: 'smiley-nervous',
+    label: 'Mã bệnh nhân',
+  },
+  {
+    id: 'Email',
+    icon: 'envelope',
+    label: 'Email',
+  },
+  {
+    id: 'Sex',
+    icon: 'gender-intersex',
+    label: 'Giới tính',
   },
 ];
 
-function IndicationManagement() {
+function TestManagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const columns = useMemo(() => initIndicationColumns(), []);
-  const { entities, loading, error } = useSelector((state) => state.indication);
-  const [sorting, setSorting] = useState([{ id: 'id', desc: false }]);
+  const columns = useMemo(() => initTestColumns(), []);
+  const { entities, loading, error } = useSelector((state) => state.testManage);
+  const [sorting, setSorting] = useState([{ id: 'code', desc: false }]);
   const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
     pageIndex: 1,
@@ -74,7 +166,7 @@ function IndicationManagement() {
 
   useEffect(() => {
     dispatch(
-      fetchIndications({
+      fetchTests({
         filters,
         sortBy: { fieldName: sorting[0]?.id, accending: !sorting[0]?.desc },
         pageIndex: pagination.pageIndex,
@@ -91,9 +183,9 @@ function IndicationManagement() {
 
   const handleRefresh = () => {
     dispatch(
-      fetchIndications({
+      fetchTests({
         filters,
-        sortBy: { fieldName: 'id', accending: true },
+        sortBy: { fieldName: 'fullName', accending: true },
         pageIndex: 1,
         pageSize: 30,
       })
@@ -112,7 +204,7 @@ function IndicationManagement() {
     <Box sx={{ display: 'flex', flexDir: 'column', gap: 3 }}>
       <Flex alignItems="center" p={2}>
         <Heading flex={3} as="h2" size="md" color={useColorModeValue('teal.500', 'teal.300')}>
-          Quản lý chỉ định xét nghiệm
+          Quản lý xét nghiệm
         </Heading>
 
         <Flex flex={1} gap={2}>
@@ -168,7 +260,7 @@ function IndicationManagement() {
         </Flex>
       </Flex>
 
-      <Flex alignItems="center" justifyContent="space-between" p={2}>
+      <Flex alignItems="start" justifyContent="space-between" p={2}>
         <Flex gap={2}>
           <FilterGroup
             fields={filterFields}
@@ -195,10 +287,10 @@ function IndicationManagement() {
           </FilterGroup>
         </Flex>
 
-        <HStack>
+        <HStack p={2}>
           <Button size="sm" variant="solid" colorScheme="teal" onClick={handleCreate}>
             <AppIcon icon="plus" size={16} weight="bold" />
-            &nbsp;Thêm chỉ mục
+            &nbsp;Thêm xét nghiệm mới
           </Button>
         </HStack>
       </Flex>
@@ -219,4 +311,4 @@ function IndicationManagement() {
   );
 }
 
-export default withSuspense(IndicationManagement, 'Quản lý đơn vị xét nghiệm');
+export default withSuspense(TestManagement, 'Quản lý xét nghiệm');

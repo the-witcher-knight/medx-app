@@ -19,6 +19,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { toastify } from 'common/toastify';
+import { GenderConstant } from 'constants';
 import { fetchDoctors } from 'store/doctorSlice';
 
 import { ActionButtonGroup, AppIcon, DataGrid, FilterGroup, withSuspense } from 'components';
@@ -46,7 +47,7 @@ const initDoctorColumns = () => {
     columnHelper.accessor('sex', {
       header: 'Giới tính',
       cell(info) {
-        const gender = ['Nữ', 'Nam', 'Khác'];
+        const gender = Object.keys(GenderConstant);
         return gender[info.getValue()];
       },
     }),
