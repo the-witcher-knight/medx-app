@@ -117,7 +117,7 @@ function DoctorManagement() {
   const handleRefresh = () => {
     dispatch(
       fetchDoctors({
-        filters,
+        filters: [],
         sortBy: { fieldName: 'fullName', accending: true },
         pageIndex: 1,
         pageSize: 30,

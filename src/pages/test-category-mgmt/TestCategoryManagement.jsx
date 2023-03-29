@@ -142,7 +142,7 @@ function TestCategoryManagement() {
   const handleRefresh = () => {
     dispatch(
       fetchTestCategories({
-        filters,
+        filters: [],
         sortBy: { fieldName: 'name', accending: true },
         pageIndex: 1,
         pageSize: 30,

@@ -92,7 +92,7 @@ function UnitManagement() {
   const handleRefresh = () => {
     dispatch(
       fetchUnits({
-        filters,
+        filters: [],
         sortBy: { fieldName: 'id', accending: true },
         pageIndex: 1,
         pageSize: 30,

@@ -22,6 +22,7 @@ import { toastify } from 'common/toastify';
 import { fetchTestGroups } from 'store/testGroupSlice';
 
 import { ActionButtonGroup, AppIcon, DataGrid, FilterGroup, withSuspense } from 'components';
+import { FilterGroupSelect } from 'components/FilterGroup';
 
 const initTestGroupColumns = () => {
   const columnHelper = createColumnHelper();
@@ -46,19 +47,6 @@ const initTestGroupColumns = () => {
   ];
 };
 
-const filterFields = [
-  {
-    id: 'Name',
-    icon: 'address-book',
-    label: 'Tên nhóm xét nghiệm',
-  },
-  {
-    id: 'ParrentGroupId',
-    icon: 'bounding-box',
-    label: 'ID nhóm cha',
-  },
-];
-
 function TestGroupManagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -66,12 +54,42 @@ function TestGroupManagement() {
 
   const columns = useMemo(() => initTestGroupColumns(), []);
   const { entities, loading, error } = useSelector((state) => state.testGroup);
-  const [sorting, setSorting] = useState([{ id: 'name', desc: false }]);
+  const [sorting, setSorting] = useState([{ id: 'CreatedOn', desc: true }]);
   const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
     pageIndex: 1,
     pageSize: 30,
   });
+
+  const filterFields = useMemo(
+    () => [
+      {
+        id: 'Name',
+        icon: 'address-book',
+        label: 'Tên nhóm xét nghiệm',
+      },
+      {
+        id: 'ParrentGroupId',
+        icon: 'bounding-box',
+        label: 'ID nhóm cha',
+        render: (control) => (
+          <FilterGroupSelect
+            control={control}
+            name="ParentGroupId"
+            label="ID nhóm cha"
+            icon="bounding-box"
+          >
+            {entities.map((entity) => (
+              <option key={`test_group_${entity.id}`} value={entity.id}>
+                {entity.name}_{entity.id}
+              </option>
+            ))}
+          </FilterGroupSelect>
+        ),
+      },
+    ],
+    []
+  );
 
   const tableDef = useReactTable({
     columns,
@@ -105,8 +123,8 @@ function TestGroupManagement() {
   const handleRefresh = () => {
     dispatch(
       fetchTestGroups({
-        filters,
-        sortBy: { fieldName: 'name', accending: true },
+        filters: [],
+        sortBy: { fieldName: 'CreatedOn', accending: false },
         pageIndex: 1,
         pageSize: 30,
       })

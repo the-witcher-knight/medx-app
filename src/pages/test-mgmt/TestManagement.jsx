@@ -22,10 +22,12 @@ import { toastify } from 'common/toastify';
 import { GenderConstant } from 'constants';
 import TestStatus from 'constants/test-status';
 import dayjs from 'dayjs';
+import { fetchDoctors } from 'store/doctorSlice';
 import { fetchTests } from 'store/testManageSlice';
 
 import { ActionButtonGroup, AppIcon, DataGrid, FilterGroup, withSuspense } from 'components';
 import { ActionButton } from 'components/ActionButtonGroup';
+import { FilterGroupGender, FilterGroupSelect } from 'components/FilterGroup';
 
 const initTestColumns = () => {
   const columnHelper = createColumnHelper();
@@ -95,49 +97,6 @@ const initTestColumns = () => {
   ];
 };
 
-const filterFields = [
-  {
-    id: 'PersonalId',
-    icon: 'identification-card',
-    label: 'CCCD',
-  },
-  {
-    id: 'PatientName',
-    icon: 'address-book',
-    label: 'Tên bệnh nhân',
-  },
-  {
-    id: 'TestStatus',
-    icon: 'check-square-offset',
-    label: 'Tình trạng xét nghiệm',
-  },
-  {
-    id: 'PatientId',
-    icon: 'identification-badge',
-    label: 'ID bệnh nhân',
-  },
-  {
-    id: 'PhoneNo',
-    icon: 'phone',
-    label: 'Số điện thoại',
-  },
-  {
-    id: 'Code',
-    icon: 'smiley-nervous',
-    label: 'Mã bệnh nhân',
-  },
-  {
-    id: 'Email',
-    icon: 'envelope',
-    label: 'Email',
-  },
-  {
-    id: 'Sex',
-    icon: 'gender-intersex',
-    label: 'Giới tính',
-  },
-];
-
 function TestManagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -151,6 +110,85 @@ function TestManagement() {
     pageIndex: 1,
     pageSize: 30,
   });
+
+  const doctorState = useSelector((state) => state.doctor);
+
+  const filterFields = useMemo(
+    () => [
+      {
+        id: 'PersonalId',
+        icon: 'identification-card',
+        label: 'CCCD',
+      },
+      {
+        id: 'PatientName',
+        icon: 'address-book',
+        label: 'Tên bệnh nhân',
+      },
+      {
+        id: 'TestStatus',
+        icon: 'check-square-offset',
+        label: 'Tình trạng xét nghiệm',
+        render: (control) => (
+          <FilterGroupSelect
+            control={control}
+            name="TestStatus"
+            icon="check-square-offset"
+            label="Tình trạng"
+          >
+            {Object.keys(TestStatus).map((k) => (
+              <option key={`test_status_${k}`} value={TestStatus[k].value}>
+                {TestStatus[k].name}
+              </option>
+            ))}
+          </FilterGroupSelect>
+        ),
+      },
+      {
+        id: 'PhoneNo',
+        icon: 'phone',
+        label: 'Số điện thoại',
+      },
+      {
+        id: 'Code',
+        icon: 'smiley-nervous',
+        label: 'Mã bệnh nhân',
+      },
+      {
+        id: 'Email',
+        icon: 'envelope',
+        label: 'Email',
+      },
+      {
+        id: 'Sex',
+        icon: 'gender-intersex',
+        label: 'Giới tính',
+        render: (control) => (
+          <FilterGroupGender
+            control={control}
+            name="Sex"
+            icon="gender-intersex"
+            label="Giới tính"
+          />
+        ),
+      },
+      {
+        id: 'DoctorId',
+        icon: 'first-aid-kit',
+        label: 'Bác sĩ',
+        render: (control) => (
+          <FilterGroupSelect control={control} name="DoctorId" icon="first-aid-kit" label="Bác sĩ">
+            {doctorState.entities.map((doctor) => (
+              <option key={`doctor_${doctor.id}`} value={doctor.id}>
+                {doctor.fullName}
+              </option>
+            ))}
+          </FilterGroupSelect>
+        ),
+      },
+    ],
+    [doctorState.entities]
+  );
 
   const tableDef = useReactTable({
     columns,
@@ -176,6 +214,17 @@ function TestManagement() {
   }, [filters, sorting, pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
+    dispatch(
+      fetchDoctors({
+        filters,
+        sortBy: { fieldName: 'fullName', accending: false },
+        pageIndex: 1,
+        pageSize: 30,
+      })
+    );
+  }, []);
+
+  useEffect(() => {
     if (error) {
       toastify({ title: 'Lỗi', description: error.message, status: 'error' });
     }
@@ -184,7 +233,7 @@ function TestManagement() {
   const handleRefresh = () => {
     dispatch(
       fetchTests({
-        filters,
+        filters: [],
         sortBy: { fieldName: 'fullName', accending: true },
         pageIndex: 1,
         pageSize: 30,

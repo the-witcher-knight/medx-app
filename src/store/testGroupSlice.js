@@ -53,7 +53,7 @@ export const updateTestGroup = createAsyncThunk('testGroup/updateOne', async (va
  * Delete a test group
  */
 export const deleteTestGroup = createAsyncThunk('testGroup/deleteOne', async (id) => {
-  const resp = await testGroupAPI.delete;
+  const resp = await testGroupAPI.delete(id);
 
   return resp.data;
 });
@@ -141,7 +141,7 @@ const testGroupSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteTestGroup.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
+        const { isSuccess, message } = action.payload;
         const { arg } = action.meta;
 
         state.loading = false;

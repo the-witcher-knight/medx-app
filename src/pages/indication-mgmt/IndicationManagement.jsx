@@ -92,7 +92,7 @@ function IndicationManagement() {
   const handleRefresh = () => {
     dispatch(
       fetchIndications({
-        filters,
+        filters: [],
         sortBy: { fieldName: 'id', accending: true },
         pageIndex: 1,
         pageSize: 30,

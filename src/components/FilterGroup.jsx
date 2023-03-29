@@ -11,15 +11,17 @@ import {
   WrapItem,
 } from '@chakra-ui/react';
 
+import { GenderConstant } from '../constants';
+
 import AppIcon from './AppIcon';
 
-function FilterGroupItem({ control, icon, name, label }) {
+export function FilterGroupItem({ control, icon, name, label }) {
   return (
     <Controller
       name={name}
       control={control}
       render={({ field: { onChange, onBlur, value, ref } }) => (
-        <InputGroup size="sm" borderRadius="md">
+        <InputGroup size="sm" borderRadius="md" maxWidth="max-content">
           <InputLeftElement pointerEvents="none">
             <AppIcon icon={icon} />
           </InputLeftElement>
@@ -33,6 +35,7 @@ function FilterGroupItem({ control, icon, name, label }) {
             onBlur={onBlur}
             value={value}
             ref={ref}
+            width="12rem"
           />
         </InputGroup>
       )}
@@ -40,7 +43,37 @@ function FilterGroupItem({ control, icon, name, label }) {
   );
 }
 
-function FilterGroupGender({ control, icon, name, label }) {
+export function FilterGroupSelect({ control, icon, name, label, children }) {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field: { onChange, onBlur, value, ref } }) => (
+        <InputGroup size="sm" borderRadius="md">
+          <InputLeftElement pointerEvents="none">
+            <AppIcon icon={icon} />
+          </InputLeftElement>
+
+          <Input
+            as={Select}
+            placeholder={label}
+            onChange={onChange}
+            onBlur={onBlur}
+            variant="flushed"
+            value={value}
+            ref={ref}
+            size="sm"
+            width="12rem"
+          >
+            {children}
+          </Input>
+        </InputGroup>
+      )}
+    />
+  );
+}
+
+export function FilterGroupGender({ control, icon, name, label }) {
   return (
     <Controller
       name={name}
@@ -60,10 +93,11 @@ function FilterGroupGender({ control, icon, name, label }) {
             value={value}
             ref={ref}
             size="sm"
+            width="12rem"
           >
-            <option value={0}>Không xác định</option>
-            <option value={1}>Nam</option>
-            <option value={2}>Nữ</option>
+            <option value={GenderConstant['Khác']}>Không xác định</option>
+            <option value={GenderConstant.Nam}>Nam</option>
+            <option value={GenderConstant['Nữ']}>Nữ</option>
           </Input>
         </InputGroup>
       )}
@@ -98,13 +132,8 @@ function FilterGroup({ fields, onFilter, children, sx }) {
     <Wrap as="form" id="search-form" sx={sx} spacing="2" onSubmit={handleSubmit(onSubmit)}>
       {fields.map((field) => (
         <WrapItem key={`filter_${field.id}`}>
-          {field.id === 'sex' ? (
-            <FilterGroupGender
-              control={control}
-              icon={field.icon}
-              name={field.id}
-              label={field.label}
-            />
+          {field.render ? (
+            field.render(control)
           ) : (
             <FilterGroupItem
               control={control}
