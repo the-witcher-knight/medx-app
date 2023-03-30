@@ -13,9 +13,11 @@ import {
   ChartLine,
   Check,
   CheckSquareOffset,
+  Copy,
   CurrencyDollar,
   DotsThreeOutlineVertical,
   Envelope,
+  Eye,
   EyedropperSample,
   FileText,
   FirstAidKit,
@@ -92,6 +94,8 @@ const libIcons = {
   'identification-badge': IdentificationBadge,
   'gear-six': GearSix,
   printer: Printer,
+  eye: Eye,
+  copy: Copy,
   // add more icons here
 };
 

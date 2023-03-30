@@ -31,7 +31,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import dayjs from 'dayjs';
 import { fetchDoctors } from 'store/doctorSlice';
 import { fetchIndications } from 'store/indicationSlice';
-import { getPatientByPersonalID } from 'store/patientSlice';
+import { fetchPatientByPersonalID } from 'store/patientSlice';
 import {
   createTest,
   editIndication,
@@ -177,7 +177,7 @@ function TestEdit() {
 
   const getPatient = () => {
     if (patientPersonalIDRef.current.value !== '') {
-      dispatch(getPatientByPersonalID(patientPersonalIDRef.current.value));
+      dispatch(fetchPatientByPersonalID(patientPersonalIDRef.current.value));
     }
   };
 
