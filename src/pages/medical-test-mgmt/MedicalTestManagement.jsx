@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -27,6 +27,7 @@ import {
   Thead,
   Tooltip,
   Tr,
+  useCheckboxGroup,
   useColorModeValue,
   Wrap,
   WrapItem,
@@ -38,13 +39,22 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import reportAPI from 'apis/report';
+import CurrencyFormatter from 'common/money-formatter';
 import { GenderConstant } from 'constants';
 import TestStatus from 'constants/test-status';
 import dayjs from 'dayjs';
 import { fetchDoctors } from 'store/doctorSlice';
 import { fetchIndications } from 'store/indicationSlice';
 import { fetchPatientByCode, fetchPatientByPersonalID } from 'store/patientSlice';
-import { createTest, fetchTest, fetchTests } from 'store/testManageSlice';
+import {
+  createTest,
+  fetchTest,
+  fetchTestDetails,
+  fetchTestIndications,
+  fetchTests,
+  updateTestDetail,
+  updateTestIndication,
+} from 'store/testManageSlice';
 
 import { AppIcon, DataGrid, withFormController, withSuspense } from 'components';
 import { FilterGroupGender, FilterGroupSelect } from 'components/FilterGroup';
@@ -212,6 +222,34 @@ function MixtureForm({ fields, onSearch, onFilter, children, sx }) {
   );
 }
 
+function TestDetailResultForm({ data, onSave }) {
+  const inputRef = useRef();
+
+  const handleSaveDetail = () => {
+    const newData = { ...data };
+    if (typeof inputRef.current.value === 'number') {
+      newData.result = inputRef.current.value;
+    }
+
+    if (typeof inputRef.current.value === 'string') {
+      newData.resultText = inputRef.current.value;
+    }
+
+    onSave(newData);
+  };
+
+  return (
+    <InputGroup size="md" width="15rem">
+      <Input pr="4.5rem" defaultValue={data.resultText || data.result} ref={inputRef} />
+      <InputRightElement width="3rem">
+        <Button size="sm" type="button" onClick={handleSaveDetail}>
+          <AppIcon icon="floppy-disk" weight="bold" />
+        </Button>
+      </InputRightElement>
+    </InputGroup>
+  );
+}
+
 const initTestColumns = (handleClickView, handleClickPrint) => {
   const columnHelper = createColumnHelper();
 
@@ -311,7 +349,9 @@ function MedicalTestManagement() {
 
   // Search + Input form state
 
-  const formMethods = useForm();
+  const mixtureFormMethods = useForm();
+
+  const [selectedTestID, setSelectedTestID] = useState();
 
   // Test data
 
@@ -320,7 +360,10 @@ function MedicalTestManagement() {
   const handleCreateTest = () => {};
 
   const handleClickView = (testID) => {
+    setSelectedTestID(testID);
     dispatch(fetchTest(testID));
+    dispatch(fetchTestDetails(testID));
+    dispatch(fetchTestIndications(testID));
   };
 
   const handleClickPrint = (type) => (testID) => {
@@ -335,7 +378,7 @@ function MedicalTestManagement() {
     // TODO: Validate for all field
 
     // eslint-disable-next-line no-console
-    console.log(formMethods.getValues());
+    console.log(mixtureFormMethods.getValues());
     // console.log({ doctorId, diagnose, dayOfTest, personalId, patientName, phoneNumber });
     // dispatch(createTest({ doctorId, diagnose, dayOfTest, personalId, patientName, phoneNumber }));
   };
@@ -356,7 +399,7 @@ function MedicalTestManagement() {
   };
 
   const columns = useMemo(() => initTestColumns(handleClickView, handleClickPrint), []);
-  const { entities, entity, loading, error } = useSelector((state) => state.testManage);
+  const testManageState = useSelector((state) => state.testManage);
   const [sorting, setSorting] = useState([{ id: 'CreatedOn', desc: true }]);
   const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
@@ -366,13 +409,13 @@ function MedicalTestManagement() {
 
   const tableDef = useReactTable({
     columns,
-    data: entities,
+    data: testManageState.entities,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     state: {
       sorting,
-      loading,
+      loading: testManageState.loading,
     },
   });
 
@@ -388,12 +431,17 @@ function MedicalTestManagement() {
   }, [filters, sorting, pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
-    if (entity) {
-      Object.keys(entity).forEach((k) => {
-        formMethods.setValue(k, entity[k]);
+    if (testManageState.entity) {
+      Object.keys(testManageState.entity).forEach((k) => {
+        mixtureFormMethods.setValue(k, testManageState.entity[k]);
       });
     }
-  }, [entity]);
+  }, [testManageState.entity]);
+
+  const handleSaveDetail = (data) => {
+    const { id, result, resultText } = data;
+    dispatch(updateTestDetail({ id, result, resultText }));
+  };
 
   const handleRefresh = () => {
     dispatch(
@@ -409,6 +457,9 @@ function MedicalTestManagement() {
   // Indication state
 
   const indicationState = useSelector((state) => state.indication);
+  const indicationsMethods = useCheckboxGroup({
+    defaultValue: [''],
+  });
 
   useEffect(() => {
     dispatch(
@@ -420,6 +471,23 @@ function MedicalTestManagement() {
       })
     );
   }, []);
+
+  useEffect(() => {
+    const inds = testManageState.testIndications || [];
+    indicationsMethods.setValue(inds);
+  }, [testManageState.testIndications]);
+
+  const handleSaveTestIndications = () => {
+    dispatch(
+      updateTestIndication({
+        testId: selectedTestID,
+        testIndications: indicationsMethods.value.map((v) => ({
+          indicationId: v,
+          testStatus: 1,
+        })),
+      })
+    );
+  };
 
   const handleRefreshIndications = () => {
     dispatch(
@@ -453,6 +521,14 @@ function MedicalTestManagement() {
 
   const patientState = useSelector((state) => state.patient);
 
+  useEffect(() => {
+    if (patientState.entity) {
+      Object.keys(patientState.entity).forEach((k) => {
+        mixtureFormMethods.setValue(k, patientState.entity[k]);
+      });
+    }
+  }, [patientState.entity]);
+
   return (
     <Box sx={{ display: 'flex', flexDir: 'column', gap: 3 }}>
       <Heading flex={3} as="h2" size="md" p={2} color={useColorModeValue('teal.500', 'teal.300')}>
@@ -461,7 +537,7 @@ function MedicalTestManagement() {
 
       <Flex direction="column" alignItems="start" justifyContent="space-between" p={2}>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <FormProvider {...formMethods}>
+        <FormProvider {...mixtureFormMethods}>
           <MixtureForm
             fields={filterFields}
             onSearch={handleSearchPatient}
@@ -492,7 +568,7 @@ function MedicalTestManagement() {
             variant="solid"
             colorScheme="telegram"
             onClick={handleRefresh}
-            isLoading={loading}
+            isLoading={testManageState.loading}
           >
             <AppIcon icon="arrow-counter-clockwise" size={16} weight="bold" />
           </Button>
@@ -530,20 +606,32 @@ function MedicalTestManagement() {
                   <Th>Mã xét nghiệm</Th>
                   <Th>Tên xét nghiệm</Th>
                   <Th>Kết quả</Th>
-                  <Th>Chỉ số bình thường</Th>
-                  <Th>Đơn vị</Th>
+                  <Th>Giá tiền</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td>xxx</Td>
-                  <Td>Xét tùm lum</Td>
-                  <Td>
-                    <Input />
-                  </Td>
-                  <Td>Chỉ số bình dương</Td>
-                  <Td>Đơn vị</Td>
-                </Tr>
+                {testManageState.testDetails && testManageState.testDetails.length > 0 ? (
+                  testManageState.testDetails.map((tdetail) => (
+                    <Tr key={`test_detail_${tdetail.id}`}>
+                      <Td textOverflow="ellipsis">
+                        <Tooltip label={tdetail.id}>
+                          <Text width="5rem" overflow="hidden">
+                            {tdetail.testCategoryId}
+                          </Text>
+                        </Tooltip>
+                      </Td>
+                      <Td>{tdetail.testCategoryName}</Td>
+                      <Td>
+                        <TestDetailResultForm data={tdetail} onSave={handleSaveDetail} />
+                      </Td>
+                      <Td>{CurrencyFormatter.format(tdetail.price)}</Td>
+                    </Tr>
+                  ))
+                ) : (
+                  <Tr>
+                    <Td colSpan={4}>Không có dữ liệu</Td>
+                  </Tr>
+                )}
               </Tbody>
             </Table>
           </TableContainer>
@@ -557,23 +645,42 @@ function MedicalTestManagement() {
             <Text as="h5">Chỉ định xét nghiệm:</Text>
           </Flex>
 
-          <Tooltip label="Tải lại chỉ định xét nghiệm">
-            <Button
-              colorScheme="telegram"
-              isLoading={indicationState.loading}
-              size="sm"
-              onClick={handleRefreshIndications}
-            >
-              <AppIcon icon="arrow-counter-clockwise" weight="bold" />
-            </Button>
-          </Tooltip>
+          <HStack spacing={2}>
+            <Tooltip label="Lưu">
+              <Button
+                colorScheme="teal"
+                isLoading={indicationState.loading}
+                size="sm"
+                onClick={handleSaveTestIndications}
+              >
+                <AppIcon icon="floppy-disk" weight="bold" />
+              </Button>
+            </Tooltip>
+
+            <Tooltip label="Tải lại chỉ định xét nghiệm">
+              <Button
+                colorScheme="telegram"
+                isLoading={indicationState.loading}
+                size="sm"
+                onClick={handleRefreshIndications}
+              >
+                <AppIcon icon="arrow-counter-clockwise" weight="bold" />
+              </Button>
+            </Tooltip>
+          </HStack>
         </Flex>
 
         {indicationState.entities.length > 0 ? (
           <Wrap sx={{ p: 2 }} spacing={2}>
             {indicationState.entities.map((idc) => (
               <WrapItem key={`indication_${idc.id}`}>
-                <Checkbox value={idc.id}>{idc.name}</Checkbox>
+                <Checkbox
+                  value={idc.id}
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...indicationsMethods.getCheckboxProps({ value: idc.id })}
+                >
+                  {idc.name}
+                </Checkbox>
               </WrapItem>
             ))}
           </Wrap>

@@ -34,10 +34,10 @@ import { fetchIndications } from 'store/indicationSlice';
 import { fetchPatientByPersonalID } from 'store/patientSlice';
 import {
   createTest,
-  editIndication,
   fetchTest,
-  getIndications as fetchTestIndications,
+  fetchTestIndications,
   updateTest,
+  updateTestIndication,
 } from 'store/testManageSlice';
 import * as yup from 'yup';
 
@@ -164,7 +164,7 @@ function TestEdit() {
       .map((k) => ({ indicationId: k }));
 
     const saveData = { testId: entity.id, testIndications: testInds };
-    dispatch(editIndication(saveData));
+    dispatch(updateTestIndication(saveData));
   };
 
   const handleClose = () => {
