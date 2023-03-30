@@ -44,7 +44,7 @@ export const fetchIndication = createAsyncThunk('indication/fetchOne', async (id
  * Update a indication
  */
 export const updateIndication = createAsyncThunk('indication/updateOne', async (values) => {
-  const resp = await fetchIndication.update(values);
+  const resp = await indicationAPI.update(values);
 
   return resp.data;
 });
