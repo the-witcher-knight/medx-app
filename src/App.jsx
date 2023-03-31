@@ -5,6 +5,7 @@ import DoctorMgmt from 'pages/doctor-mgmt';
 import Home from 'pages/home';
 import IndicationMgmt from 'pages/indication-mgmt';
 import PatientMgmt from 'pages/patient-mgmt';
+import SignIn from 'pages/sign-in';
 import TestCategoryMgmt from 'pages/test-category-mgmt';
 import TestGroupMgmt from 'pages/test-group-mgmt';
 import TestMgmt from 'pages/test-mgmt';
@@ -113,6 +114,7 @@ function App() {
           <Routes location={location}>
             <Route index element={<Home />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/sign-in" element={<SignIn />} />
             <Route path="/patient/*" element={<PatientMgmt />} />
             <Route path="/doctor/*" element={<DoctorMgmt />} />
             <Route path="/test-manage/*" element={<TestMgmt />} />
