@@ -4,6 +4,7 @@ import {
   AddressBook,
   ArrowCounterClockwise,
   BoundingBox,
+  Calendar,
   CaretDoubleLeft,
   CaretDoubleRight,
   CaretDown,
@@ -13,9 +14,11 @@ import {
   ChartLine,
   Check,
   CheckSquareOffset,
+  Copy,
   CurrencyDollar,
   DotsThreeOutlineVertical,
   Envelope,
+  Eye,
   EyedropperSample,
   FileText,
   FirstAidKit,
@@ -27,6 +30,7 @@ import {
   IdentificationBadge,
   IdentificationCard,
   MagnifyingGlass,
+  MapPin,
   Moon,
   NotePencil,
   Pen,
@@ -92,6 +96,10 @@ const libIcons = {
   'identification-badge': IdentificationBadge,
   'gear-six': GearSix,
   printer: Printer,
+  eye: Eye,
+  copy: Copy,
+  calendar: Calendar,
+  'map-pin': MapPin,
   // add more icons here
 };
 

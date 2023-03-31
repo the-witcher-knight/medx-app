@@ -12,9 +12,7 @@ import {
   DrawerOverlay,
   Flex,
   Input,
-  List,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
@@ -24,7 +22,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 
-import { AppIcon, ValidatedInput, withSuspense } from 'components';
+import { AppIcon, withSuspense } from 'components';
 
 function TestDetail() {
   const { testID } = useParams();

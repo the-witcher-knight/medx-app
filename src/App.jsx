@@ -4,6 +4,7 @@ import { Box } from '@chakra-ui/react';
 import DoctorMgmt from 'pages/doctor-mgmt';
 import Home from 'pages/home';
 import IndicationMgmt from 'pages/indication-mgmt';
+import MedicalTestMgmt from 'pages/medical-test-mgmt';
 import PatientMgmt from 'pages/patient-mgmt';
 import TestCategoryMgmt from 'pages/test-category-mgmt';
 import TestGroupMgmt from 'pages/test-group-mgmt';
@@ -47,16 +48,6 @@ const routes = [
     name: 'Đơn vị',
     icon: 'percent',
     path: '/unit',
-  },
-  {
-    name: 'Báo cáo',
-    icon: 'file-text',
-    path: '/report',
-  },
-  {
-    name: 'Thống kê',
-    icon: 'chart-line',
-    path: '/statistic',
   },
   {
     name: 'Bác sĩ',
@@ -115,15 +106,13 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/patient/*" element={<PatientMgmt />} />
             <Route path="/doctor/*" element={<DoctorMgmt />} />
-            <Route path="/test-manage/*" element={<TestMgmt />} />
+            <Route path="/test-manage/*" element={<MedicalTestMgmt />} />
             <Route path="/unit/*" element={<UnitMgmt />} />
             <Route path="/test-group-mgmt/*" element={<TestGroupMgmt />} />
             <Route path="/test-category/*" element={<TestCategoryMgmt />} />
             <Route path="/indication/*" element={<IndicationMgmt />} />
             {/* Add more routes here */}
           </Routes>
-
-          <AppFooter />
         </AppContainer>
       </Box>
     </Box>

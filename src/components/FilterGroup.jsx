@@ -15,7 +15,7 @@ import { GenderConstant } from '../constants';
 
 import AppIcon from './AppIcon';
 
-export function FilterGroupItem({ control, icon, name, label }) {
+export function FilterGroupItem({ control, icon, name, label, type }) {
   return (
     <Controller
       name={name}
@@ -27,7 +27,7 @@ export function FilterGroupItem({ control, icon, name, label }) {
           </InputLeftElement>
 
           <Input
-            type="text"
+            type={type}
             variant="flushed"
             w="max-content"
             placeholder={label}
@@ -95,9 +95,15 @@ export function FilterGroupGender({ control, icon, name, label }) {
             size="sm"
             width="12rem"
           >
-            <option value={GenderConstant['Khác']}>Không xác định</option>
-            <option value={GenderConstant.Nam}>Nam</option>
-            <option value={GenderConstant['Nữ']}>Nữ</option>
+            <option key="sex_unidentify" value={GenderConstant['Khác']}>
+              Không xác định
+            </option>
+            <option key="sex_male" value={GenderConstant.Nam}>
+              Nam
+            </option>
+            <option key="sex_female" value={GenderConstant['Nữ']}>
+              Nữ
+            </option>
           </Input>
         </InputGroup>
       )}

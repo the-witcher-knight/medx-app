@@ -5,6 +5,8 @@ const initialState = {
   entity: null,
   entities: [],
   testIndications: [],
+  testDetails: [],
+  pagination: null,
   loading: false,
   error: null,
 };
@@ -59,25 +61,31 @@ export const deleteTest = createAsyncThunk('testManage/deleteOne', async (id) =>
 /**
  * Add indication for a test
  */
-export const editIndication = createAsyncThunk('testManage/editIndication', async (values) => {
-  const resp = await testManageAPI.editIndication(values);
+export const updateTestIndication = createAsyncThunk(
+  'testManage/editIndication',
+  async (values) => {
+    const resp = await testManageAPI.editIndication(values);
 
-  return resp.data;
-});
+    return resp.data;
+  }
+);
 
 /**
  * Get all indication of a test
  */
-export const getIndications = createAsyncThunk('testManage/getIndication', async (testID) => {
-  const resp = await testManageAPI.getIndications(testID);
+export const fetchTestIndications = createAsyncThunk(
+  'testManage/fetchTestIndications',
+  async (testID) => {
+    const resp = await testManageAPI.getIndications(testID);
 
-  return resp.data;
-});
+    return resp.data;
+  }
+);
 
 /**
  * Get details of a test
  */
-export const getTestDetails = createAsyncThunk('testManage/getTestDetails', async (testID) => {
+export const fetchTestDetails = createAsyncThunk('testManage/getTestDetails', async (testID) => {
   const resp = await testManageAPI.getTestDetails(testID);
 
   return resp.data;
@@ -109,6 +117,11 @@ const testManageSlice = createSlice({
           state.error = { message };
         } else {
           state.entities = data.data;
+          state.pagination = {
+            currentPage: data.currentPage,
+            totalPages: data.totalPages,
+            totalRows: data.totalRows,
+          };
         }
       })
       .addCase(fetchTests.rejected, (state, action) => {
@@ -190,21 +203,73 @@ const testManageSlice = createSlice({
         state.loading = false;
         state.error = action.error;
       })
-      .addCase(getIndications.pending, (state) => {
+      .addCase(fetchTestIndications.pending, (state) => {
         state.loading = false;
         state.error = null;
       })
-      .addCase(getIndications.fulfilled, (state, action) => {
+      .addCase(fetchTestIndications.fulfilled, (state, action) => {
         const { data, isSuccess, message } = action.payload;
 
         state.loading = false;
         if (!isSuccess) {
           state.error = { message };
         } else {
-          state.entities = data.data;
+          state.testIndications = data;
         }
       })
-      .addCase(getIndications.rejected, (state, action) => {
+      .addCase(fetchTestIndications.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
+      })
+      .addCase(updateTestIndication.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateTestIndication.fulfilled, (state, action) => {
+        const { data, isSuccess, message } = action.payload;
+
+        state.loading = false;
+        if (!isSuccess) {
+          state.error = { message };
+        } else {
+          state.testIndications = data.testIndications;
+        }
+      })
+      .addCase(updateTestIndication.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
+      })
+      .addCase(fetchTestDetails.pending, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(fetchTestDetails.fulfilled, (state, action) => {
+        const { data, isSuccess, message } = action.payload;
+
+        state.loading = false;
+        if (!isSuccess) {
+          state.error = { message };
+        } else {
+          state.testDetails = data;
+        }
+      })
+      .addCase(fetchTestDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
+      })
+      .addCase(updateTestDetail.pending, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(updateTestDetail.fulfilled, (state, action) => {
+        const { isSuccess, message } = action.payload;
+
+        state.loading = false;
+        if (!isSuccess) {
+          state.error = { message };
+        }
+      })
+      .addCase(updateTestDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
       });

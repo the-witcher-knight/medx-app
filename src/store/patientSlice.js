@@ -31,7 +31,7 @@ export const fetchPatient = createAsyncThunk('patient/fetchOne', async (id) => {
   return resp.data;
 });
 
-export const getPatientByPersonalID = createAsyncThunk(
+export const fetchPatientByPersonalID = createAsyncThunk(
   'patient/fetchByPersonalID',
   async (personalID) => {
     const resp = await patientAPI.getByPersonalID(personalID);
@@ -39,6 +39,12 @@ export const getPatientByPersonalID = createAsyncThunk(
     return resp.data;
   }
 );
+
+export const fetchPatientByCode = createAsyncThunk('patient/fetchByCode', async (code) => {
+  const resp = await patientAPI.getByCode(code);
+
+  return resp.data;
+});
 
 /**
  * Create a patient
@@ -126,7 +132,7 @@ const patientSlice = createSlice({
         state.loading = false;
         state.error = action.error;
       })
-      .addCase(getPatientByPersonalID.fulfilled, (state, action) => {
+      .addCase(fetchPatientByPersonalID.fulfilled, (state, action) => {
         const { data, isSuccess, message } = action.payload;
 
         state.loading = false;
@@ -136,11 +142,29 @@ const patientSlice = createSlice({
           state.entity = data;
         }
       })
-      .addCase(getPatientByPersonalID.rejected, (state, action) => {
+      .addCase(fetchPatientByPersonalID.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
       })
-      .addCase(getPatientByPersonalID.pending, (state) => {
+      .addCase(fetchPatientByPersonalID.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPatientByCode.fulfilled, (state, action) => {
+        const { data, isSuccess, message } = action.payload;
+
+        state.loading = false;
+        if (!isSuccess) {
+          state.error = { message };
+        } else {
+          state.entity = data;
+        }
+      })
+      .addCase(fetchPatientByCode.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
+      })
+      .addCase(fetchPatientByCode.pending, (state) => {
         state.loading = true;
         state.error = null;
       })

@@ -31,13 +31,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import dayjs from 'dayjs';
 import { fetchDoctors } from 'store/doctorSlice';
 import { fetchIndications } from 'store/indicationSlice';
-import { getPatientByPersonalID } from 'store/patientSlice';
+import { fetchPatientByPersonalID } from 'store/patientSlice';
 import {
   createTest,
-  editIndication,
   fetchTest,
-  getIndications as fetchTestIndications,
+  fetchTestIndications,
   updateTest,
+  updateTestIndication,
 } from 'store/testManageSlice';
 import * as yup from 'yup';
 
@@ -164,7 +164,7 @@ function TestEdit() {
       .map((k) => ({ indicationId: k }));
 
     const saveData = { testId: entity.id, testIndications: testInds };
-    dispatch(editIndication(saveData));
+    dispatch(updateTestIndication(saveData));
   };
 
   const handleClose = () => {
@@ -177,7 +177,7 @@ function TestEdit() {
 
   const getPatient = () => {
     if (patientPersonalIDRef.current.value !== '') {
-      dispatch(getPatientByPersonalID(patientPersonalIDRef.current.value));
+      dispatch(fetchPatientByPersonalID(patientPersonalIDRef.current.value));
     }
   };
 

@@ -8,7 +8,7 @@ export const toastify = ({
   status,
   duration = 2000,
   isClosable = true,
-  position = 'bottom-left',
+  position = 'top-right',
 }) =>
   toast({
     title,

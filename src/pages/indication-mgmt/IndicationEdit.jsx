@@ -3,7 +3,12 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Button,
+  Checkbox,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -14,6 +19,7 @@ import {
   Flex,
   Stack,
   Text,
+  useCheckboxGroup,
   useDisclosure,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -21,7 +27,7 @@ import { createIndication, fetchIndication, updateIndication } from 'store/indic
 import { fetchTestCategories } from 'store/testCategorySlice';
 import * as yup from 'yup';
 
-import { AppIcon, ValidatedCheck, ValidatedInput, withSuspense } from 'components';
+import { AppIcon, ValidatedInput, withSuspense } from 'components';
 
 function IndicationEdit() {
   const { id } = useParams();
@@ -35,7 +41,6 @@ function IndicationEdit() {
   const { handleSubmit, setValue, reset, control } = useForm({
     defaultValues: {
       name: '',
-      tests: [],
     },
     resolver: yupResolver(schema),
   });
@@ -44,11 +49,13 @@ function IndicationEdit() {
   const { entity, loading, error } = useSelector((state) => state.indication);
   const testCategoryState = useSelector((state) => state.testCategory);
 
+  const checkBoxMethods = useCheckboxGroup();
+
   useEffect(() => {
     dispatch(
       fetchTestCategories({
         filters: [],
-        sortBy: { fieldName: 'name', accending: true },
+        sortBy: { fieldName: 'createdOn', accending: false },
         pageIndex: 1,
         pageSize: 10000,
       })
@@ -72,15 +79,16 @@ function IndicationEdit() {
     }
   }, [entity]);
 
-  const onSubmit = (values) => {
-    const tests = Object.keys(values)
-      .filter((k) => k !== 'name' && values[k] === true)
-      .map((k) => ({ testCategoryId: k }));
+  useEffect(() => {
+    const testCates = testCategoryState.tests || [];
+    checkBoxMethods.setValue(testCates);
+  }, [testCategoryState.tests]);
 
+  const onSubmit = (values) => {
     if (id) {
-      dispatch(updateIndication({ id, name: values.name, tests }));
+      dispatch(updateIndication({ id, name: values.name, tests: checkBoxMethods.value }));
     } else {
-      dispatch(createIndication({ name: values.name, tests }));
+      dispatch(createIndication({ name: values.name, tests: checkBoxMethods.value }));
     }
     reset();
   };
@@ -98,14 +106,7 @@ function IndicationEdit() {
       <DrawerContent>
         <DrawerCloseButton />
         <DrawerHeader>
-          {id ? (
-            <>
-              Cập nhật chỉ mục xét nghiệm mới&nbsp;
-              <Text as="sub">{id}</Text>
-            </>
-          ) : (
-            'Tạo chỉ mục xét nghiệm mới'
-          )}
+          {id ? 'Cập nhật chỉ định xét nghiệm' : 'Tạo chỉ mục xét nghiệm mới'}
         </DrawerHeader>
 
         <DrawerBody>
@@ -128,22 +129,32 @@ function IndicationEdit() {
                 Các loại xét nghiệm:
               </Text>
 
-              <Stack
-                sx={{
-                  overflowY: 'auto',
-                  height: '40rem',
-                }}
-                spacing={2}
-              >
-                {testCategoryState.entities.map((category) => (
-                  <ValidatedCheck
-                    key={`test_category_${category.id}`}
-                    control={control}
-                    name={category.id}
-                    label={category.name}
-                  />
-                ))}
-              </Stack>
+              {testCategoryState.entities.length > 0 ? (
+                <Stack
+                  sx={{
+                    overflowY: 'auto',
+                    height: '40rem',
+                  }}
+                  spacing={2}
+                >
+                  {testCategoryState.entities.map((cate) => (
+                    <Checkbox
+                      key={`test_category_${cate.name}`}
+                      value={cate.id}
+                      // eslint-disable-next-line react/jsx-props-no-spreading
+                      {...checkBoxMethods.getCheckboxProps({ value: cate.id })}
+                    >
+                      {cate.name}
+                    </Checkbox>
+                  ))}
+                </Stack>
+              ) : (
+                <Alert status="warning">
+                  <AlertIcon />
+                  <AlertTitle>Hiện không có dữ liệu loại xét nghiệm!</AlertTitle>
+                  <AlertDescription>Vui lòng tải lại trang.</AlertDescription>
+                </Alert>
+              )}
             </Flex>
           </Flex>
         </DrawerBody>
