@@ -34,7 +34,6 @@ function PatientEdit() {
   const schema = yup.object().shape({
     fullName: yup.string().required('Vui lòng nhập họ tên'),
     personalId: yup.string().required('Vui lòng nhập căn cước công dân'),
-    code: yup.string().required('Vui lòng nhập mã bệnh nhân'),
     phoneNo: yup
       .string()
       .required('Vui lòng nhập số điện thoại')
@@ -119,7 +118,6 @@ function PatientEdit() {
           >
             <ValidatedInput control={control} name="fullName" type="text" label="Họ & tên" />
             <ValidatedInput control={control} name="personalId" type="text" label="CCCD" />
-            <ValidatedInput control={control} name="code" type="text" label="Mã bệnh nhân" />
             <ValidatedInput control={control} name="phoneNo" type="text" label="Số điện thoại" />
             <ValidatedInput control={control} name="birthday" type="date" label="Ngày sinh" />
             <ValidatedInput control={control} name="address" type="text" label="Địa chỉ" />

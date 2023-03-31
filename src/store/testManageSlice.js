@@ -6,6 +6,7 @@ const initialState = {
   entities: [],
   testIndications: [],
   testDetails: [],
+  pagination: null,
   loading: false,
   error: null,
 };
@@ -116,6 +117,11 @@ const testManageSlice = createSlice({
           state.error = { message };
         } else {
           state.entities = data.data;
+          state.pagination = {
+            currentPage: data.currentPage,
+            totalPages: data.totalPages,
+            totalRows: data.totalRows,
+          };
         }
       })
       .addCase(fetchTests.rejected, (state, action) => {

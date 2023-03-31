@@ -4,6 +4,7 @@ import {
   AddressBook,
   ArrowCounterClockwise,
   BoundingBox,
+  Calendar,
   CaretDoubleLeft,
   CaretDoubleRight,
   CaretDown,
@@ -29,6 +30,7 @@ import {
   IdentificationBadge,
   IdentificationCard,
   MagnifyingGlass,
+  MapPin,
   Moon,
   NotePencil,
   Pen,
@@ -96,6 +98,8 @@ const libIcons = {
   printer: Printer,
   eye: Eye,
   copy: Copy,
+  calendar: Calendar,
+  'map-pin': MapPin,
   // add more icons here
 };
 

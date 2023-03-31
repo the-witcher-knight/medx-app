@@ -50,16 +50,6 @@ const routes = [
     path: '/unit',
   },
   {
-    name: 'Báo cáo',
-    icon: 'file-text',
-    path: '/report',
-  },
-  {
-    name: 'Thống kê',
-    icon: 'chart-line',
-    path: '/statistic',
-  },
-  {
     name: 'Bác sĩ',
     icon: 'first-aid-kit',
     path: '/doctor',
@@ -123,8 +113,6 @@ function App() {
             <Route path="/indication/*" element={<IndicationMgmt />} />
             {/* Add more routes here */}
           </Routes>
-
-          <AppFooter />
         </AppContainer>
       </Box>
     </Box>

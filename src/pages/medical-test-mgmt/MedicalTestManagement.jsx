@@ -18,6 +18,7 @@ import {
   InputGroup,
   InputLeftElement,
   InputRightElement,
+  Select,
   Table,
   TableContainer,
   Tbody,
@@ -52,12 +53,14 @@ import {
   fetchTestDetails,
   fetchTestIndications,
   fetchTests,
+  updateTest,
   updateTestDetail,
   updateTestIndication,
 } from 'store/testManageSlice';
 
 import { AppIcon, DataGrid, withFormController, withSuspense } from 'components';
-import { FilterGroupGender, FilterGroupSelect } from 'components/FilterGroup';
+import { FilterGroupGender, FilterGroupItem, FilterGroupSelect } from 'components/FilterGroup';
+import LinearPagination from 'components/LinearPagination';
 
 import './MedicalTestManagement.css';
 
@@ -86,13 +89,22 @@ const initTestFilter = (doctors) => [
   },
   {
     id: 'address',
-    icon: 'envelope',
+    icon: 'map-pin',
     label: 'Địa chỉ',
   },
   {
     id: 'birthday',
-    icon: 'envelope',
+    icon: 'calendar',
     label: 'Ngày sinh',
+    render: (control) => (
+      <FilterGroupItem
+        control={control}
+        icon="calendar"
+        name="birthdayy"
+        label="Ngày sinh"
+        type="date"
+      />
+    ),
   },
   {
     id: 'email',
@@ -169,6 +181,7 @@ const FormInput = React.forwardRef(
         <InputRightElement>
           <Button
             size="sm"
+            h="1.5rem"
             colorScheme="gray"
             onClick={() => {
               onSearch(name)(value);
@@ -355,9 +368,33 @@ function MedicalTestManagement() {
 
   // Test data
 
-  const handleFilterTest = () => {};
+  const handleFilterTest = () => {
+    const { doctorId, patientName, testStatus, phoneNo, personalId, code, email, sex } =
+      mixtureFormMethods.getValues();
 
-  const handleCreateTest = () => {};
+    const filterObj = { doctorId, patientName, testStatus, phoneNo, personalId, code, email, sex };
+
+    const testFilters = Object.keys(filterObj)
+      .filter((k) => filterObj[k] !== undefined && filterObj[k] !== '')
+      .map((k) => ({ fieldName: k, value: filterObj[k] }));
+
+    dispatch(
+      fetchTests({
+        filters: testFilters,
+        sortBy: { fieldName: 'createdOn', accending: false },
+        pageIndex: 1,
+        pageSize: 50,
+      })
+    );
+  };
+
+  const handleSaveTest = () => {
+    const { patientName, personalId, doctorId, diagnose, phoneNumber, dayOfTest } =
+      mixtureFormMethods.getValues();
+    const saveData = { patientName, personalId, doctorId, diagnose, phoneNumber, dayOfTest };
+
+    dispatch(updateTest({ id: selectedTestID, ...saveData }));
+  };
 
   const handleClickView = (testID) => {
     setSelectedTestID(testID);
@@ -367,20 +404,15 @@ function MedicalTestManagement() {
   };
 
   const handleClickPrint = (type) => (testID) => {
-    // eslint-disable-next-line no-console
-    console.log(reportAPI.get({ type, testID }).then((res) => res.data));
+    reportAPI.get({ testName: type, testID }).then((res) => res.data);
   };
 
   const handleClickDuplicate = () => {
-    // const { doctorId, diagnose, dayOfTest, personalId, patientName, phoneNumber } =
-    //   formMethods.getValues();
+    const { patientName, personalId, doctorId, diagnose, phoneNumber, dayOfTest } =
+      mixtureFormMethods.getValues();
+    const saveData = { patientName, personalId, doctorId, diagnose, phoneNumber, dayOfTest };
 
-    // TODO: Validate for all field
-
-    // eslint-disable-next-line no-console
-    console.log(mixtureFormMethods.getValues());
-    // console.log({ doctorId, diagnose, dayOfTest, personalId, patientName, phoneNumber });
-    // dispatch(createTest({ doctorId, diagnose, dayOfTest, personalId, patientName, phoneNumber }));
+    dispatch(createTest(saveData));
   };
 
   const handleSearchPatient = (type) => {
@@ -400,11 +432,11 @@ function MedicalTestManagement() {
 
   const columns = useMemo(() => initTestColumns(handleClickView, handleClickPrint), []);
   const testManageState = useSelector((state) => state.testManage);
-  const [sorting, setSorting] = useState([{ id: 'CreatedOn', desc: true }]);
+  const [sorting, setSorting] = useState([{ id: 'code', desc: true }]);
   const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
     pageIndex: 1,
-    pageSize: 30,
+    pageSize: 20,
   });
 
   const tableDef = useReactTable({
@@ -441,6 +473,15 @@ function MedicalTestManagement() {
   const handleSaveDetail = (data) => {
     const { id, result, resultText } = data;
     dispatch(updateTestDetail({ id, result, resultText }));
+  };
+
+  const handlePageChange = (pageNum) => {
+    setPagination((pgn) => ({ pageIndex: pageNum, pageSize: pgn.pageSize }));
+  };
+
+  const handlePageSizeChange = (e) => {
+    const { value } = e.target;
+    setPagination((pgn) => ({ pageIndex: pgn.pageIndex, pageSize: value }));
   };
 
   const handleRefresh = () => {
@@ -550,27 +591,48 @@ function MedicalTestManagement() {
         </FormProvider>
 
         <HStack p={2} spacing={2} alignItems="end">
-          <Button size="sm" variant="solid" colorScheme="gray" onClick={handleFilterTest}>
-            <AppIcon icon="manifying-glass" size={16} weight="bold" />
-            &nbsp;Tìm xét nghiệm
-          </Button>
+          <Tooltip label="Tìm xét nghiệm">
+            <Button variant="solid" colorScheme="gray" onClick={handleFilterTest}>
+              <AppIcon icon="manifying-glass" size={40} />
+            </Button>
+          </Tooltip>
 
-          <Button size="sm" variant="solid" colorScheme="teal" onClick={handleCreateTest}>
-            <AppIcon icon="floppy-disk" size={16} weight="bold" />
-          </Button>
+          <Tooltip label="Lưu xét nghiệm">
+            <Button variant="solid" colorScheme="teal" onClick={handleSaveTest}>
+              <AppIcon icon="floppy-disk" size={40} />
+            </Button>
+          </Tooltip>
 
-          <Button size="sm" variant="solid" colorScheme="messenger" onClick={handleClickDuplicate}>
-            <AppIcon icon="copy" size={16} weight="bold" />
-          </Button>
+          <Tooltip label="Tạo xét nghiệm từ bệnh nhân">
+            <Button variant="solid" colorScheme="messenger" onClick={handleClickDuplicate}>
+              <AppIcon icon="copy" size={40} />
+            </Button>
+          </Tooltip>
+
+          <LinearPagination
+            onPageChange={handlePageChange}
+            currentPage={pagination.pageIndex}
+            pageSize={pagination.pageSize}
+            totalPages={testManageState.pagination?.totalPages}
+          />
+
+          <Tooltip label="Số dòng mỗi trang">
+            <Select onChange={handlePageSizeChange}>
+              {[20, 50, 100].map((pSize) => (
+                <option key={`pagination_${pSize}`} value={pSize}>
+                  {pSize}
+                </option>
+              ))}
+            </Select>
+          </Tooltip>
 
           <Button
-            size="sm"
             variant="solid"
             colorScheme="telegram"
             onClick={handleRefresh}
             isLoading={testManageState.loading}
           >
-            <AppIcon icon="arrow-counter-clockwise" size={16} weight="bold" />
+            <AppIcon icon="arrow-counter-clockwise" size={40} />
           </Button>
         </HStack>
       </Flex>
@@ -603,7 +665,6 @@ function MedicalTestManagement() {
             <Table variant="striped">
               <Thead>
                 <Tr>
-                  <Th>Mã xét nghiệm</Th>
                   <Th>Tên xét nghiệm</Th>
                   <Th>Kết quả</Th>
                   <Th>Giá tiền</Th>
@@ -613,13 +674,6 @@ function MedicalTestManagement() {
                 {testManageState.testDetails && testManageState.testDetails.length > 0 ? (
                   testManageState.testDetails.map((tdetail) => (
                     <Tr key={`test_detail_${tdetail.id}`}>
-                      <Td textOverflow="ellipsis">
-                        <Tooltip label={tdetail.id}>
-                          <Text width="5rem" overflow="hidden">
-                            {tdetail.testCategoryId}
-                          </Text>
-                        </Tooltip>
-                      </Td>
                       <Td>{tdetail.testCategoryName}</Td>
                       <Td>
                         <TestDetailResultForm data={tdetail} onSave={handleSaveDetail} />
