@@ -8,6 +8,7 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Badge,
   Box,
   Button,
   Checkbox,
@@ -269,39 +270,47 @@ const initTestColumns = (handleClickView, handleClickPrint) => {
   return [
     columnHelper.accessor('id', {
       header: '',
-      cell: (info) => (
-        <HStack>
-          <Tooltip label="Xem chi tiết">
-            <Button
-              type="button"
-              colorScheme="gray"
-              onClick={() => handleClickView(info.getValue())}
-            >
-              <AppIcon icon="eye" />
-            </Button>
-          </Tooltip>
+      cell(info) {
+        const onClickEye = () => {
+          info.table.toggleAllRowsSelected(false);
+          handleClickView(info.getValue());
+          info.row.toggleSelected(true);
+        };
 
-          <Tooltip label="In hóa đơn">
-            <Button
-              type="button"
-              colorScheme="gray"
-              onClick={() => handleClickPrint('TestReceipt')(info.getValue())}
-            >
-              <AppIcon icon="currency-dollar" />
-            </Button>
-          </Tooltip>
+        return (
+          <HStack>
+            <Tooltip label="Xem chi tiết">
+              <Button
+                type="button"
+                colorScheme={info.row.getIsSelected() ? 'teal' : 'gray'}
+                onClick={onClickEye}
+              >
+                <AppIcon icon="eye" />
+              </Button>
+            </Tooltip>
 
-          <Tooltip label="In kết quả">
-            <Button
-              type="button"
-              colorScheme="gray"
-              onClick={() => handleClickPrint('TestResult')(info.getValue())}
-            >
-              <AppIcon icon="printer" />
-            </Button>
-          </Tooltip>
-        </HStack>
-      ),
+            <Tooltip label="In hóa đơn">
+              <Button
+                type="button"
+                colorScheme="gray"
+                onClick={() => handleClickPrint('TestReceipt')(info.getValue())}
+              >
+                <AppIcon icon="currency-dollar" />
+              </Button>
+            </Tooltip>
+
+            <Tooltip label="In kết quả">
+              <Button
+                type="button"
+                colorScheme="gray"
+                onClick={() => handleClickPrint('TestResult')(info.getValue())}
+              >
+                <AppIcon icon="printer" />
+              </Button>
+            </Tooltip>
+          </HStack>
+        );
+      },
     }),
     columnHelper.accessor('code', {
       header: 'Mã bệnh nhân',
@@ -324,9 +333,9 @@ const initTestColumns = (handleClickView, handleClickPrint) => {
       cell(info) {
         const status = Object.keys(TestStatus)
           .filter((k) => TestStatus[k].value === info.getValue())
-          .map((k) => TestStatus[k].name);
+          .map((k) => TestStatus[k]);
 
-        return status;
+        return <Badge colorScheme={status[0].colorScheme}>{status[0].name}</Badge>;
       },
     }),
     columnHelper.accessor('dayOfTest', {
@@ -375,7 +384,7 @@ function MedicalTestManagement() {
     const filterObj = { doctorId, patientName, testStatus, phoneNo, personalId, code, email, sex };
 
     const testFilters = Object.keys(filterObj)
-      .filter((k) => filterObj[k] !== undefined && filterObj[k] !== '')
+      .filter((k) => filterObj[k] !== undefined && filterObj[k] !== '' && filterObj[k] !== null)
       .map((k) => ({ fieldName: k, value: filterObj[k] }));
 
     dispatch(
@@ -445,6 +454,7 @@ function MedicalTestManagement() {
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    enableRowSelection: true,
     state: {
       sorting,
       loading: testManageState.loading,
@@ -572,10 +582,6 @@ function MedicalTestManagement() {
 
   return (
     <Box sx={{ display: 'flex', flexDir: 'column', gap: 3 }}>
-      <Heading flex={3} as="h2" size="md" p={2} color={useColorModeValue('teal.500', 'teal.300')}>
-        Quản lý xét nghiệm
-      </Heading>
-
       <Flex direction="column" alignItems="start" justifyContent="space-between" p={2}>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...mixtureFormMethods}>
