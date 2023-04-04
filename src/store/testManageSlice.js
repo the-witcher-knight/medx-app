@@ -6,7 +6,7 @@ const initialState = {
   entities: [],
   testIndications: [],
   testDetails: [],
-  pagination: null,
+  page: null,
   loading: false,
   error: null,
 };
@@ -117,10 +117,11 @@ const testManageSlice = createSlice({
           state.error = { message };
         } else {
           state.entities = data.data;
-          state.pagination = {
+          state.page = {
             currentPage: data.currentPage,
             totalPages: data.totalPages,
             totalRows: data.totalRows,
+            totalPrice: data.totalPrice,
           };
         }
       })

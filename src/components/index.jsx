@@ -14,3 +14,4 @@ export { default as withSuspense } from './withSuspense';
 export { default as ActionButtonGroup } from './ActionButtonGroup';
 export { default as FilterGroup } from './FilterGroup';
 export { default as withFormController } from './withFormController';
+export { default as LinearPagination } from './LinearPagination';

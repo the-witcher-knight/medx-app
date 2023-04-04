@@ -13,7 +13,6 @@ import {
   Button,
   Checkbox,
   Flex,
-  Heading,
   HStack,
   Input,
   InputGroup,
@@ -30,7 +29,6 @@ import {
   Tooltip,
   Tr,
   useCheckboxGroup,
-  useColorModeValue,
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
@@ -42,6 +40,7 @@ import {
 } from '@tanstack/react-table';
 import reportAPI from 'apis/report';
 import CurrencyFormatter from 'common/money-formatter';
+import { toastify } from 'common/toastify';
 import { GenderConstant } from 'constants';
 import TestStatus from 'constants/test-status';
 import dayjs from 'dayjs';
@@ -335,7 +334,11 @@ const initTestColumns = (handleClickView, handleClickPrint) => {
           .filter((k) => TestStatus[k].value === info.getValue())
           .map((k) => TestStatus[k]);
 
-        return <Badge colorScheme={status[0].colorScheme}>{status[0].name}</Badge>;
+        return (
+          <Badge sx={{ p: 1, borderRadius: '3rem' }} colorScheme={status[0].colorSchema}>
+            {status[0].name}
+          </Badge>
+        );
       },
     }),
     columnHelper.accessor('dayOfTest', {
@@ -398,11 +401,20 @@ function MedicalTestManagement() {
   };
 
   const handleSaveTest = () => {
-    const { patientName, personalId, doctorId, diagnose, phoneNumber, dayOfTest } =
-      mixtureFormMethods.getValues();
-    const saveData = { patientName, personalId, doctorId, diagnose, phoneNumber, dayOfTest };
+    const values = mixtureFormMethods.getValues();
 
-    dispatch(updateTest({ id: selectedTestID, ...saveData }));
+    dispatch(
+      updateTest({
+        id: selectedTestID,
+        patientName: values.patientName,
+        code: values.code,
+        doctorId: values.doctorId,
+        diagnose: values.diagnose,
+        phoneNumber: values.phoneNumber,
+        dayOfTest: values.dayOfTest,
+        testStatus: Number(values.testStatus),
+      })
+    );
   };
 
   const handleClickView = (testID) => {
@@ -480,6 +492,16 @@ function MedicalTestManagement() {
     }
   }, [testManageState.entity]);
 
+  useEffect(() => {
+    if (testManageState.error) {
+      toastify({
+        title: 'Lỗi quản lý xét nghiệm',
+        description: testManageState.error.message,
+        status: 'error',
+      });
+    }
+  }, [testManageState.error]);
+
   const handleSaveDetail = (data) => {
     const { id, result, resultText } = data;
     dispatch(updateTestDetail({ id, result, resultText }));
@@ -524,9 +546,12 @@ function MedicalTestManagement() {
   }, []);
 
   useEffect(() => {
-    const inds = testManageState.testIndications || [];
+    const inds = indicationState.entities
+      .filter((indication) => testManageState.testIndications.includes(indication.id))
+      .map((indication) => indication.id);
+
     indicationsMethods.setValue(inds);
-  }, [testManageState.testIndications]);
+  }, [indicationState.entities, testManageState.testIndications]);
 
   const handleSaveTestIndications = () => {
     dispatch(
@@ -582,7 +607,7 @@ function MedicalTestManagement() {
 
   return (
     <Box sx={{ display: 'flex', flexDir: 'column', gap: 3 }}>
-      <Flex direction="column" alignItems="start" justifyContent="space-between" p={2}>
+      <Flex direction="column" alignItems="start" justifyContent="space-between" gap={3} p={2}>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...mixtureFormMethods}>
           <MixtureForm
@@ -592,34 +617,50 @@ function MedicalTestManagement() {
               // eslint-disable-next-line no-console
               console.log(values);
             }}
-            sx={{ p: 2 }}
           />
         </FormProvider>
 
-        <HStack p={2} spacing={2} alignItems="end">
+        <HStack spacing={2} alignItems="end">
           <Tooltip label="Tìm xét nghiệm">
             <Button variant="solid" colorScheme="gray" onClick={handleFilterTest}>
-              <AppIcon icon="manifying-glass" size={40} />
+              <AppIcon icon="manifying-glass" />
             </Button>
           </Tooltip>
 
           <Tooltip label="Lưu xét nghiệm">
             <Button variant="solid" colorScheme="teal" onClick={handleSaveTest}>
-              <AppIcon icon="floppy-disk" size={40} />
+              <AppIcon icon="floppy-disk" />
             </Button>
           </Tooltip>
 
           <Tooltip label="Tạo xét nghiệm từ bệnh nhân">
             <Button variant="solid" colorScheme="messenger" onClick={handleClickDuplicate}>
-              <AppIcon icon="copy" size={40} />
+              <AppIcon icon="copy" />
             </Button>
           </Tooltip>
 
+          <Button
+            variant="solid"
+            colorScheme="telegram"
+            onClick={handleRefresh}
+            isLoading={testManageState.loading}
+          >
+            <AppIcon icon="arrow-counter-clockwise" />
+          </Button>
+
+          <Input
+            disabled
+            w="10rem"
+            value={CurrencyFormatter.format(testManageState.page?.totalPrice || 0)}
+          />
+        </HStack>
+
+        <HStack spacing={2}>
           <LinearPagination
             onPageChange={handlePageChange}
             currentPage={pagination.pageIndex}
             pageSize={pagination.pageSize}
-            totalPages={testManageState.pagination?.totalPages}
+            totalPages={testManageState.page?.totalPages}
           />
 
           <Tooltip label="Số dòng mỗi trang">
@@ -631,15 +672,6 @@ function MedicalTestManagement() {
               ))}
             </Select>
           </Tooltip>
-
-          <Button
-            variant="solid"
-            colorScheme="telegram"
-            onClick={handleRefresh}
-            isLoading={testManageState.loading}
-          >
-            <AppIcon icon="arrow-counter-clockwise" size={40} />
-          </Button>
         </HStack>
       </Flex>
 

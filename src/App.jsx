@@ -95,8 +95,8 @@ function App() {
         />
         <AppContainer ml={{ base: 0, md: sideWidth }}>
           <Routes location={location}>
-            <Route index element={<MedicalTestMgmt />} />
-            <Route path="/home" element={<MedicalTestMgmt />} />
+            <Route path="/*" element={<MedicalTestMgmt />} />
+            <Route path="/home/*" element={<MedicalTestMgmt />} />
             <Route path="/patient/*" element={<PatientMgmt />} />
             <Route path="/doctor/*" element={<DoctorMgmt />} />
             <Route path="/unit/*" element={<UnitMgmt />} />
