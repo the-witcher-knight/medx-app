@@ -23,6 +23,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { toastify } from 'common/toastify';
 import { createIndication, fetchIndication, updateIndication } from 'store/indicationSlice';
 import { fetchTestCategories } from 'store/testCategorySlice';
 import * as yup from 'yup';
@@ -46,7 +47,7 @@ function IndicationEdit() {
   });
 
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
-  const { entity, loading, error } = useSelector((state) => state.indication);
+  const { entity, loading } = useSelector((state) => state.indication);
   const testCategoryState = useSelector((state) => state.testCategory);
 
   const checkBoxMethods = useCheckboxGroup();
@@ -80,17 +81,25 @@ function IndicationEdit() {
   }, [entity]);
 
   useEffect(() => {
-    const testCates = testCategoryState.tests || [];
-    checkBoxMethods.setValue(testCates);
-  }, [testCategoryState.tests]);
+    const indicationTests = entity?.tests.map((test) => test.testCategoryId);
+    const values = testCategoryState.entities
+      .filter((cate) => indicationTests.includes(cate.id))
+      .map((cate) => cate.id);
+
+    checkBoxMethods.setValue(values);
+  }, [testCategoryState.entities, entity]);
 
   const onSubmit = (values) => {
+    const tests = checkBoxMethods.value.map((cateID) => ({
+      testCategoryId: cateID,
+      indicationId: id,
+    }));
+
     if (id) {
-      dispatch(updateIndication({ id, name: values.name, tests: checkBoxMethods.value }));
+      dispatch(updateIndication({ id, name: values.name, tests }));
     } else {
-      dispatch(createIndication({ name: values.name, tests: checkBoxMethods.value }));
+      dispatch(createIndication({ name: values.name, tests }));
     }
-    reset();
   };
 
   const handleClose = () => {
@@ -98,6 +107,11 @@ function IndicationEdit() {
     setTimeout(() => {
       navigate(location.state?.background?.pathname || -1);
     }, 500);
+  };
+
+  const onNextIndication = () => {
+    reset();
+    checkBoxMethods.setValue([]);
   };
 
   return (
@@ -167,6 +181,10 @@ function IndicationEdit() {
           <Button variant="ghost" mr={3} onClick={handleClose}>
             <AppIcon icon="x" weight="fill" size={24} />
             &nbsp;Hủy
+          </Button>
+          <Button type="button" colorScheme="yellow" onClick={onNextIndication} hidden={!!id}>
+            <AppIcon icon="skip-forward" weight="fill" size={24} />
+            &nbsp;Tiếp tục
           </Button>
         </DrawerFooter>
       </DrawerContent>

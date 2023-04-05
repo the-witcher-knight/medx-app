@@ -85,7 +85,11 @@ function IndicationManagement() {
 
   useEffect(() => {
     if (error) {
-      toastify({ title: 'Lỗi', description: error.message, status: 'error' });
+      toastify({
+        title: 'Lỗi quản lý chỉ định xét nghiệm',
+        description: error.message,
+        status: 'error',
+      });
     }
   }, [error]);
 

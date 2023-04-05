@@ -233,7 +233,7 @@ const testManageSlice = createSlice({
         if (!isSuccess) {
           state.error = { message };
         } else {
-          state.testIndications = data.testIndications;
+          state.testIndications = data;
         }
       })
       .addCase(updateTestIndication.rejected, (state, action) => {

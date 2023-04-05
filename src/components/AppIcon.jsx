@@ -41,6 +41,7 @@ import {
   Printer,
   Question,
   SignOut,
+  SkipForward,
   SmileyNervous,
   Sticker,
   Sun,
@@ -100,6 +101,7 @@ const libIcons = {
   copy: Copy,
   calendar: Calendar,
   'map-pin': MapPin,
+  'skip-forward': SkipForward,
   // add more icons here
 };
 

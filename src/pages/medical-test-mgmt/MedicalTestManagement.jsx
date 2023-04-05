@@ -369,8 +369,6 @@ const initTestColumns = (handleClickView, handleClickPrint) => {
 
 function MedicalTestManagement() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
 
   // Search + Input form state
 
@@ -379,43 +377,6 @@ function MedicalTestManagement() {
   const [selectedTestID, setSelectedTestID] = useState();
 
   // Test data
-
-  const handleFilterTest = () => {
-    const { doctorId, patientName, testStatus, phoneNo, personalId, code, email, sex } =
-      mixtureFormMethods.getValues();
-
-    const filterObj = { doctorId, patientName, testStatus, phoneNo, personalId, code, email, sex };
-
-    const testFilters = Object.keys(filterObj)
-      .filter((k) => filterObj[k] !== undefined && filterObj[k] !== '' && filterObj[k] !== null)
-      .map((k) => ({ fieldName: k, value: filterObj[k] }));
-
-    dispatch(
-      fetchTests({
-        filters: testFilters,
-        sortBy: { fieldName: 'createdOn', accending: false },
-        pageIndex: 1,
-        pageSize: 50,
-      })
-    );
-  };
-
-  const handleSaveTest = () => {
-    const values = mixtureFormMethods.getValues();
-
-    dispatch(
-      updateTest({
-        id: selectedTestID,
-        patientName: values.patientName,
-        code: values.code,
-        doctorId: values.doctorId,
-        diagnose: values.diagnose,
-        phoneNumber: values.phoneNumber,
-        dayOfTest: values.dayOfTest,
-        testStatus: Number(values.testStatus),
-      })
-    );
-  };
 
   const handleClickView = (testID) => {
     setSelectedTestID(testID);
@@ -426,14 +387,6 @@ function MedicalTestManagement() {
 
   const handleClickPrint = (type) => (testID) => {
     reportAPI.get({ testName: type, testID }).then((res) => res.data);
-  };
-
-  const handleClickDuplicate = () => {
-    const { patientName, personalId, doctorId, diagnose, phoneNumber, dayOfTest } =
-      mixtureFormMethods.getValues();
-    const saveData = { patientName, personalId, doctorId, diagnose, phoneNumber, dayOfTest };
-
-    dispatch(createTest(saveData));
   };
 
   const handleSearchPatient = (type) => {
@@ -454,7 +407,6 @@ function MedicalTestManagement() {
   const columns = useMemo(() => initTestColumns(handleClickView, handleClickPrint), []);
   const testManageState = useSelector((state) => state.testManage);
   const [sorting, setSorting] = useState([{ id: 'code', desc: true }]);
-  const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
     pageIndex: 1,
     pageSize: 20,
@@ -476,13 +428,13 @@ function MedicalTestManagement() {
   useEffect(() => {
     dispatch(
       fetchTests({
-        filters,
+        filters: [],
         sortBy: { fieldName: sorting[0]?.id, accending: !sorting[0]?.desc },
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
       })
     );
-  }, [filters, sorting, pagination.pageIndex, pagination.pageSize]);
+  }, [sorting, pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
     if (testManageState.entity) {
@@ -512,19 +464,7 @@ function MedicalTestManagement() {
   };
 
   const handlePageSizeChange = (e) => {
-    const { value } = e.target;
-    setPagination((pgn) => ({ pageIndex: pgn.pageIndex, pageSize: value }));
-  };
-
-  const handleRefresh = () => {
-    dispatch(
-      fetchTests({
-        filters: [],
-        sortBy: { fieldName: 'CreatedOn', accending: false },
-        pageIndex: 1,
-        pageSize: 30,
-      })
-    );
+    setPagination((pgn) => ({ pageSize: e.target.value, pageIndex: pgn.pageIndex }));
   };
 
   // Indication state
@@ -546,11 +486,11 @@ function MedicalTestManagement() {
   }, []);
 
   useEffect(() => {
-    const inds = indicationState.entities
+    const values = indicationState.entities
       .filter((indication) => testManageState.testIndications.includes(indication.id))
       .map((indication) => indication.id);
 
-    indicationsMethods.setValue(inds);
+    indicationsMethods.setValue(values);
   }, [indicationState.entities, testManageState.testIndications]);
 
   const handleSaveTestIndications = () => {
@@ -604,6 +544,82 @@ function MedicalTestManagement() {
       });
     }
   }, [patientState.entity]);
+
+  const handleFilterTest = () => {
+    const values = mixtureFormMethods.getValues();
+
+    const filterObj = {
+      doctorId: values.doctorId,
+      patientName: values.patientName,
+      testStatus: values.testStatus,
+      phoneNo: values.phoneNo,
+      personalId: values.personalId,
+      code: values.code,
+      email: values.email,
+      sex: values.sex,
+    };
+
+    // Transfer to filters array
+    const testFilters = Object.keys(filterObj)
+      .filter((k) => filterObj[k] !== undefined && filterObj[k] !== '' && filterObj[k] !== null)
+      .map((k) => ({ fieldName: k, value: filterObj[k] }));
+
+    dispatch(
+      fetchTests({
+        filters: testFilters,
+        sortBy: { fieldName: 'createdOn', accending: false },
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+      })
+    );
+  };
+
+  const handleSaveTest = () => {
+    const values = mixtureFormMethods.getValues();
+
+    dispatch(
+      updateTest({
+        id: selectedTestID,
+        patientName: values.patientName,
+        code: values.code,
+        doctorId: values.doctorId,
+        diagnose: values.diagnose,
+        phoneNumber: values.phoneNumber,
+        dayOfTest: values.dayOfTest,
+        testStatus: Number(values.testStatus),
+      })
+    );
+  };
+
+  const handleClickDuplicate = () => {
+    const values = mixtureFormMethods.getValues();
+
+    dispatch(
+      createTest({
+        patientName: values.patientName,
+        personalId: values.personalId,
+        doctorId: values.doctorId,
+        diagnose: values.diagnose,
+        phoneNumber: values.phoneNumber,
+        dayOfTest: values.dayOfTest,
+      })
+    );
+  };
+
+  const handleRefresh = () => {
+    dispatch(
+      fetchTests({
+        filters: [],
+        sortBy: { fieldName: 'CreatedOn', accending: false },
+        pageIndex: 1,
+        pageSize: 20,
+      })
+    );
+
+    mixtureFormMethods.reset();
+    indicationsMethods.setValue([]);
+    setPagination({ pageIndex: 1, pageSize: 20 });
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDir: 'column', gap: 3 }}>
