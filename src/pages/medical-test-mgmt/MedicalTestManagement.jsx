@@ -371,7 +371,21 @@ function MedicalTestManagement() {
 
   // Search + Input form state
 
-  const mixtureFormMethods = useForm();
+  const mixtureFormMethods = useForm({
+    defaultValues: {
+      fullName: '',
+      phoneNo: '',
+      code: '',
+      personalId: '',
+      address: '',
+      birthday: '',
+      email: '',
+      sex: '',
+      diagnose: '',
+      testStatus: '',
+      doctorId: '',
+    },
+  });
 
   const [selectedTestID, setSelectedTestID] = useState(null);
 
@@ -385,7 +399,11 @@ function MedicalTestManagement() {
   };
 
   const handleClickPrint = (type) => (testID) => {
-    reportAPI.get({ testName: type, testID }).then((res) => res.data);
+    reportAPI.get({ testName: type, testID }).then((res) => {
+      const newTab = window.open();
+      newTab.document.write(res.data.data);
+      newTab.window.print();
+    });
   };
 
   const handleSearchPatient = (type) => {
@@ -440,7 +458,7 @@ function MedicalTestManagement() {
       const values = {
         fullName: testManageState.entity.patientName,
         address: testManageState.entity.address,
-        birthday: testManageState.entity.birthDay,
+        birthday: dayjs(testManageState.entity.birthDay).format('yyyy-MM-dd'),
         code: testManageState.entity.code,
         diagnose: testManageState.entity.diagnose,
         doctorId: testManageState.entity.doctorId,
@@ -591,6 +609,25 @@ function MedicalTestManagement() {
   const handleSaveTest = () => {
     const values = mixtureFormMethods.getValues();
 
+    if (values.doctorId === null || values.doctorId === undefined || values.doctorId === '') {
+      mixtureFormMethods.setError('doctorId', { message: 'Vui lòng chọn lại bác sĩ' });
+      return;
+    }
+
+    if (values.testStatus === null || values.testStatus === undefined || values.testStatus === '') {
+      mixtureFormMethods.setError('testStatus', {
+        message: 'Vui lòng chọn lại tình trạng',
+      });
+      return;
+    }
+
+    if (values.diagnose === null || values.diagnose === undefined || values.diagnose === '') {
+      mixtureFormMethods.setError('diagnose', { message: 'vui lòng nhập chuẩn đoán' });
+      return;
+    }
+
+    mixtureFormMethods.clearErrors();
+
     if (selectedTestID !== null) {
       dispatch(
         updateTest({
@@ -627,6 +664,23 @@ function MedicalTestManagement() {
 
   const handleClickCreate = () => {
     const values = mixtureFormMethods.getValues();
+
+    if (values.doctorId === null || values.doctorId === undefined || values.doctorId === '') {
+      mixtureFormMethods.setError('doctorId', { message: 'Vui lòng chọn lại bác sĩ' });
+      return;
+    }
+
+    if (values.testStatus === null || values.testStatus === undefined || values.testStatus === '') {
+      mixtureFormMethods.setError('testStatus', {
+        message: 'Vui lòng chọn lại tình trạng',
+      });
+      return;
+    }
+
+    if (values.diagnose === null || values.diagnose === undefined || values.diagnose === '') {
+      mixtureFormMethods.setError('diagnose', { message: 'vui lòng nhập chuẩn đoán' });
+      return;
+    }
 
     dispatch(
       createTest({

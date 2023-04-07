@@ -2,6 +2,8 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Button,
+  FormControl,
+  FormErrorMessage,
   Input,
   InputGroup,
   InputLeftElement,
@@ -48,26 +50,29 @@ export function FilterGroupSelect({ control, icon, name, label, children }) {
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, onBlur, value, ref } }) => (
-        <InputGroup size="sm" borderRadius="md">
-          <InputLeftElement pointerEvents="none">
-            <AppIcon icon={icon} />
-          </InputLeftElement>
+      render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
+        <FormControl isInvalid={!!error}>
+          <InputGroup size="sm" borderRadius="md">
+            <InputLeftElement pointerEvents="none">
+              <AppIcon icon={icon} />
+            </InputLeftElement>
 
-          <Input
-            as={Select}
-            placeholder={label}
-            onChange={onChange}
-            onBlur={onBlur}
-            variant="flushed"
-            value={value}
-            ref={ref}
-            size="sm"
-            width="12rem"
-          >
-            {children}
-          </Input>
-        </InputGroup>
+            <Input
+              as={Select}
+              placeholder={label}
+              onChange={onChange}
+              onBlur={onBlur}
+              variant="flushed"
+              value={value}
+              ref={ref}
+              size="sm"
+              width="12rem"
+            >
+              {children}
+            </Input>
+          </InputGroup>
+          {error && <FormErrorMessage>{error?.message}</FormErrorMessage>}
+        </FormControl>
       )}
     />
   );
