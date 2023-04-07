@@ -42,6 +42,7 @@ import { toastify } from 'common/toastify';
 import { GenderConstant } from 'constants';
 import TestStatus from 'constants/test-status';
 import dayjs from 'dayjs';
+import { X } from 'phosphor-react';
 import { fetchDoctors } from 'store/doctorSlice';
 import { fetchIndications } from 'store/indicationSlice';
 import { fetchPatientByCode, fetchPatientByPersonalID } from 'store/patientSlice';
@@ -311,7 +312,7 @@ const initTestColumns = (onClickView, onClickPrint, onChangeStatus) => {
       },
     }),
     columnHelper.accessor('testStatus', {
-      header: 'Tình trạng xét nghiệm',
+      header: 'Tình trạng',
       cell(info) {
         const status = Object.keys(TestStatus)
           .filter((k) => TestStatus[k].value === info.getValue())
@@ -320,18 +321,17 @@ const initTestColumns = (onClickView, onClickPrint, onChangeStatus) => {
         return (
           <Select
             sx={{ p: 1 }}
+            value={status[0]?.value}
             background={status[0]?.colorSchema || 'gray'}
-            // textColor="white"
+            variant="flushed"
+            size="sm"
+            width="10rem"
             onChange={(e) =>
               onChangeStatus({
                 testId: info.row.original.id,
                 status: e.target.value,
               })
             }
-            variant="flushed"
-            defaultValue={status[0]?.value}
-            size="sm"
-            width="12rem"
           >
             {Object.keys(TestStatus).map((k) => (
               <option key={`test_status_${k}`} value={TestStatus[k].value}>
@@ -406,6 +406,9 @@ function MedicalTestManagement() {
   });
 
   const [selectedTestID, setSelectedTestID] = useState(null);
+  const [updateStatusSuccess, setUpdateStatusSuccess] = useState(null);
+  const searchTypeRef = useRef();
+  const searchDateRef = useRef();
 
   // Test data
 
@@ -441,6 +444,7 @@ function MedicalTestManagement() {
 
   const handleChangeStatus = ({ testId, status }) => {
     dispatch(updateTestStatus({ testId, status }));
+    setUpdateStatusSuccess(true);
   };
 
   const columns = useMemo(
@@ -629,13 +633,27 @@ function MedicalTestManagement() {
 
     dispatch(
       fetchTests({
-        filters: testFilters,
+        filters: [
+          { fieldName: 'timeType', value: searchTypeRef.current.value },
+          {
+            fieldName: 'day',
+            value: searchDateRef.current.value,
+          },
+          ...testFilters,
+        ],
         sortBy: { fieldName: 'createdOn', accending: false },
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
       })
     );
   };
+
+  useEffect(() => {
+    if (updateStatusSuccess) {
+      handleFilterTest();
+      setUpdateStatusSuccess(null);
+    }
+  }, [updateStatusSuccess]);
 
   const handleSaveTest = () => {
     const values = mixtureFormMethods.getValues();
@@ -762,6 +780,14 @@ function MedicalTestManagement() {
         </FormProvider>
 
         <HStack spacing={2} alignItems="end">
+          <Select width="max-content" ref={searchTypeRef}>
+            <option value="day">Tìm theo ngày</option>
+            <option value="month">Tìm theo tháng</option>
+            <option value="year">Tìm theo năm</option>
+          </Select>
+
+          <Input width="max-content" type="date" ref={searchDateRef} />
+
           <Tooltip label="Tìm xét nghiệm">
             <Button variant="solid" colorScheme="gray" onClick={handleFilterTest}>
               <AppIcon icon="manifying-glass" />
