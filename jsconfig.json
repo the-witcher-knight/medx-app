@@ -10,7 +10,6 @@
     "removeComments": false,
     "noImplicitAny": false,
     "resolveJsonModule": true,
-    "suppressImplicitAnyIndexErrors": true,
     "outDir": "build",
     "lib": ["dom", "dom.iterable", "esnext"],
     "types": ["node", "jest"],

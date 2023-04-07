@@ -600,8 +600,11 @@ function MedicalTestManagement() {
           doctorId: values.doctorId,
           diagnose: values.diagnose,
           phoneNumber: values.phoneNo,
-          birthday: values.birthday,
+          birthDay: values.birthday,
           testStatus: Number(values.testStatus),
+          address: values.address,
+          email: values.email,
+          personalId: values.personalId,
         })
       );
     } else {
@@ -612,8 +615,11 @@ function MedicalTestManagement() {
           doctorId: values.doctorId,
           diagnose: values.diagnose,
           phoneNumber: values.phoneNo,
-          birthday: values.birthday,
+          birthDay: values.birthday,
           testStatus: Number(values.testStatus),
+          address: values.address,
+          email: values.email,
+          personalId: values.personalId,
         })
       );
     }
@@ -624,7 +630,6 @@ function MedicalTestManagement() {
 
     dispatch(
       createTest({
-        personalId: values.personalId,
         patientName: values.fullName,
         doctorId: values.doctorId,
         diagnose: values.diagnose,
@@ -632,6 +637,9 @@ function MedicalTestManagement() {
         birthday: values.birthday,
         testStatus: Number(values.testStatus),
         code: values.code !== '' ? values.code : null,
+        address: values.address,
+        email: values.email,
+        personalId: values.personalId,
       })
     );
   };
