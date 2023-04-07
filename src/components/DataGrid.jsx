@@ -54,7 +54,7 @@ function DataGrid({ tableDef, variant = 'striped', sx }) {
         <Tbody>
           {tableDef.getRowModel().rows?.length > 0 &&
             tableDef.getRowModel().rows.map((row) => (
-              <Tr key={row.id}>
+              <Tr key={row.id} className={row}>
                 {row.getVisibleCells().map((cell) => {
                   // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
                   const { meta } = cell.column.columnDef;

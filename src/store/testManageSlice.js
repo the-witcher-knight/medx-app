@@ -100,6 +100,12 @@ export const updateTestDetail = createAsyncThunk('testManage/updateTestDetail', 
   return resp.data;
 });
 
+export const updateTestStatus = createAsyncThunk('testManage/updateTestStatus', async (values) => {
+  const resp = await testManageAPI.updateTestStatus(values);
+
+  return resp.data;
+});
+
 const testManageSlice = createSlice({
   name: 'testManage',
   initialState,
@@ -271,6 +277,22 @@ const testManageSlice = createSlice({
         }
       })
       .addCase(updateTestDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error;
+      })
+      .addCase(updateTestStatus.pending, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(updateTestStatus.fulfilled, (state, action) => {
+        const { isSuccess, message } = action.payload;
+
+        state.loading = false;
+        if (!isSuccess) {
+          state.error = { message };
+        }
+      })
+      .addCase(updateTestStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
       });

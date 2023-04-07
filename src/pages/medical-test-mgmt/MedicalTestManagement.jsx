@@ -7,7 +7,6 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
-  Badge,
   Box,
   Button,
   Checkbox,
@@ -55,6 +54,7 @@ import {
   updateTest,
   updateTestDetail,
   updateTestIndication,
+  updateTestStatus,
 } from 'store/testManageSlice';
 
 import { AppIcon, DataGrid, withFormController, withSuspense } from 'components';
@@ -262,7 +262,7 @@ function TestDetailResultForm({ data, onSave }) {
   );
 }
 
-const initTestColumns = (handleClickView, handleClickPrint) => {
+const initTestColumns = (onClickView, onClickPrint, onChangeStatus) => {
   const columnHelper = createColumnHelper();
 
   return [
@@ -271,7 +271,7 @@ const initTestColumns = (handleClickView, handleClickPrint) => {
       cell(info) {
         const onClickEye = () => {
           info.table.toggleAllRowsSelected(false);
-          handleClickView(info.getValue());
+          onClickView(info.getValue());
           info.row.toggleSelected(true);
         };
 
@@ -291,7 +291,7 @@ const initTestColumns = (handleClickView, handleClickPrint) => {
               <Button
                 type="button"
                 colorScheme="gray"
-                onClick={() => handleClickPrint('TestReceipt')(info.getValue())}
+                onClick={() => onClickPrint('TestReceipt')(info.getValue())}
               >
                 <AppIcon icon="currency-dollar" />
               </Button>
@@ -301,12 +301,44 @@ const initTestColumns = (handleClickView, handleClickPrint) => {
               <Button
                 type="button"
                 colorScheme="gray"
-                onClick={() => handleClickPrint('TestResult')(info.getValue())}
+                onClick={() => onClickPrint('TestResult')(info.getValue())}
               >
                 <AppIcon icon="printer" />
               </Button>
             </Tooltip>
           </HStack>
+        );
+      },
+    }),
+    columnHelper.accessor('testStatus', {
+      header: 'Tình trạng xét nghiệm',
+      cell(info) {
+        const status = Object.keys(TestStatus)
+          .filter((k) => TestStatus[k].value === info.getValue())
+          .map((k) => TestStatus[k]);
+
+        return (
+          <Select
+            sx={{ p: 1 }}
+            background={status[0]?.colorSchema || 'gray'}
+            color="white"
+            onChange={(e) =>
+              onChangeStatus({
+                testId: info.row.original.id,
+                status: e.target.value,
+              })
+            }
+            variant="flushed"
+            defaultValue={status[0]?.value}
+            size="sm"
+            width="12rem"
+          >
+            {Object.keys(TestStatus).map((k) => (
+              <option key={`test_status_${k}`} value={TestStatus[k].value}>
+                {TestStatus[k].name}
+              </option>
+            ))}
+          </Select>
         );
       },
     }),
@@ -325,20 +357,6 @@ const initTestColumns = (handleClickView, handleClickPrint) => {
     columnHelper.accessor('diagnose', {
       header: 'Chuẩn đoán',
       cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor('testStatus', {
-      header: 'Tình trạng xét nghiệm',
-      cell(info) {
-        const status = Object.keys(TestStatus)
-          .filter((k) => TestStatus[k].value === info.getValue())
-          .map((k) => TestStatus[k]);
-
-        return (
-          <Badge sx={{ p: 1, borderRadius: '3rem' }} colorScheme={status[0]?.colorSchema || 'gray'}>
-            {status[0]?.name}
-          </Badge>
-        );
-      },
     }),
     columnHelper.accessor('dayOfTest', {
       header: 'Ngày xét nghiệm',
@@ -421,7 +439,14 @@ function MedicalTestManagement() {
     }
   };
 
-  const columns = useMemo(() => initTestColumns(handleClickView, handleClickPrint), []);
+  const handleChangeStatus = ({ testId, status }) => {
+    dispatch(updateTestStatus({ testId, status }));
+  };
+
+  const columns = useMemo(
+    () => initTestColumns(handleClickView, handleClickPrint, handleChangeStatus),
+    []
+  );
   const testManageState = useSelector((state) => state.testManage);
   const [sorting, setSorting] = useState([{ id: 'code', desc: true }]);
   const [pagination, setPagination] = useState({
@@ -524,6 +549,10 @@ function MedicalTestManagement() {
 
     indicationsMethods.setValue(values);
   }, [indicationState.entities, testManageState.testIndications]);
+
+  useEffect(() => {
+    dispatch(fetchTestDetails(selectedTestID));
+  }, [testManageState.testIndications]);
 
   const handleSaveTestIndications = () => {
     dispatch(

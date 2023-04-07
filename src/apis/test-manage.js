@@ -36,6 +36,9 @@ const testManageAPI = {
   updateTestDetail(values) {
     return axiosInstance.put('/details', values);
   },
+  updateTestStatus(values) {
+    return axiosInstance.put('/status', values);
+  },
 };
 
 export default testManageAPI;
