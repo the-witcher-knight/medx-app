@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
 import Split from 'react-split';
 import {
   Alert,
@@ -100,7 +99,7 @@ const initTestFilter = (doctors) => [
       <FilterGroupItem
         control={control}
         icon="calendar"
-        name="birthdayy"
+        name="birthday"
         label="Ngày sinh"
         type="date"
       />
@@ -335,8 +334,8 @@ const initTestColumns = (handleClickView, handleClickPrint) => {
           .map((k) => TestStatus[k]);
 
         return (
-          <Badge sx={{ p: 1, borderRadius: '3rem' }} colorScheme={status[0].colorSchema}>
-            {status[0].name}
+          <Badge sx={{ p: 1, borderRadius: '3rem' }} colorScheme={status[0]?.colorSchema || 'gray'}>
+            {status[0]?.name}
           </Badge>
         );
       },
@@ -374,7 +373,7 @@ function MedicalTestManagement() {
 
   const mixtureFormMethods = useForm();
 
-  const [selectedTestID, setSelectedTestID] = useState();
+  const [selectedTestID, setSelectedTestID] = useState(null);
 
   // Test data
 
@@ -438,8 +437,23 @@ function MedicalTestManagement() {
 
   useEffect(() => {
     if (testManageState.entity) {
-      Object.keys(testManageState.entity).forEach((k) => {
-        mixtureFormMethods.setValue(k, testManageState.entity[k]);
+      const values = {
+        fullName: testManageState.entity.patientName,
+        address: testManageState.entity.address,
+        birthday: testManageState.entity.birthDay,
+        code: testManageState.entity.code,
+        diagnose: testManageState.entity.diagnose,
+        doctorId: testManageState.entity.doctorId,
+        doctorName: testManageState.entity.doctorName,
+        email: testManageState.entity.email,
+        phoneNo: testManageState.entity.phoneNumber,
+        sex: testManageState.entity.sex,
+        testStatus: testManageState.entity.testStatus,
+        personalId: testManageState.entity.personalId,
+      };
+
+      Object.keys(values).forEach((k) => {
+        mixtureFormMethods.setValue(k, values[k]);
       });
     }
   }, [testManageState.entity]);
@@ -562,7 +576,7 @@ function MedicalTestManagement() {
     // Transfer to filters array
     const testFilters = Object.keys(filterObj)
       .filter((k) => filterObj[k] !== undefined && filterObj[k] !== '' && filterObj[k] !== null)
-      .map((k) => ({ fieldName: k, value: filterObj[k] }));
+      .map((k) => ({ fieldName: k, value: String(filterObj[k]) }));
 
     dispatch(
       fetchTests({
@@ -577,31 +591,47 @@ function MedicalTestManagement() {
   const handleSaveTest = () => {
     const values = mixtureFormMethods.getValues();
 
-    dispatch(
-      updateTest({
-        id: selectedTestID,
-        patientName: values.patientName,
-        code: values.code,
-        doctorId: values.doctorId,
-        diagnose: values.diagnose,
-        phoneNumber: values.phoneNumber,
-        dayOfTest: values.dayOfTest,
-        testStatus: Number(values.testStatus),
-      })
-    );
+    if (selectedTestID !== null) {
+      dispatch(
+        updateTest({
+          id: selectedTestID,
+          patientName: values.fullName,
+          code: values.code,
+          doctorId: values.doctorId,
+          diagnose: values.diagnose,
+          phoneNumber: values.phoneNo,
+          birthday: values.birthday,
+          testStatus: Number(values.testStatus),
+        })
+      );
+    } else {
+      dispatch(
+        createTest({
+          patientName: values.fullName,
+          code: values.code,
+          doctorId: values.doctorId,
+          diagnose: values.diagnose,
+          phoneNumber: values.phoneNo,
+          birthday: values.birthday,
+          testStatus: Number(values.testStatus),
+        })
+      );
+    }
   };
 
-  const handleClickDuplicate = () => {
+  const handleClickCreate = () => {
     const values = mixtureFormMethods.getValues();
 
     dispatch(
       createTest({
-        patientName: values.patientName,
         personalId: values.personalId,
+        patientName: values.fullName,
         doctorId: values.doctorId,
         diagnose: values.diagnose,
-        phoneNumber: values.phoneNumber,
-        dayOfTest: values.dayOfTest,
+        phoneNumber: values.phoneNo,
+        birthday: values.birthday,
+        testStatus: Number(values.testStatus),
+        code: values.code !== '' ? values.code : null,
       })
     );
   };
@@ -619,6 +649,8 @@ function MedicalTestManagement() {
     mixtureFormMethods.reset();
     indicationsMethods.setValue([]);
     setPagination({ pageIndex: 1, pageSize: 20 });
+    setSelectedTestID(null);
+    tableDef.toggleAllRowsSelected(false);
   };
 
   return (
@@ -643,15 +675,15 @@ function MedicalTestManagement() {
             </Button>
           </Tooltip>
 
-          <Tooltip label="Lưu xét nghiệm">
-            <Button variant="solid" colorScheme="teal" onClick={handleSaveTest}>
-              <AppIcon icon="floppy-disk" />
+          <Tooltip label="Tạo xét nghiệm mới">
+            <Button variant="solid" colorScheme="messenger" onClick={handleClickCreate}>
+              <AppIcon icon="plus" />
             </Button>
           </Tooltip>
 
-          <Tooltip label="Tạo xét nghiệm từ bệnh nhân">
-            <Button variant="solid" colorScheme="messenger" onClick={handleClickDuplicate}>
-              <AppIcon icon="copy" />
+          <Tooltip label="Lưu xét nghiệm">
+            <Button variant="solid" colorScheme="teal" onClick={handleSaveTest}>
+              <AppIcon icon="floppy-disk" />
             </Button>
           </Tooltip>
 
