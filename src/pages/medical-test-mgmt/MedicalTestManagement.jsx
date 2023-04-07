@@ -321,7 +321,7 @@ const initTestColumns = (onClickView, onClickPrint, onChangeStatus) => {
           <Select
             sx={{ p: 1 }}
             background={status[0]?.colorSchema || 'gray'}
-            color="white"
+            // textColor="white"
             onChange={(e) =>
               onChangeStatus({
                 testId: info.row.original.id,
@@ -551,7 +551,9 @@ function MedicalTestManagement() {
   }, [indicationState.entities, testManageState.testIndications]);
 
   useEffect(() => {
-    dispatch(fetchTestDetails(selectedTestID));
+    if (selectedTestID) {
+      dispatch(fetchTestDetails(selectedTestID));
+    }
   }, [testManageState.testIndications]);
 
   const handleSaveTestIndications = () => {
