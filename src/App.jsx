@@ -1,6 +1,9 @@
-import React from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
+import StorageAPI from 'common/storageAPI';
+import { AuthLoginKey } from 'constants';
+import { SignIn } from 'pages/auth';
 import DoctorMgmt from 'pages/doctor-mgmt';
 import IndicationMgmt from 'pages/indication-mgmt';
 import MedicalTestMgmt from 'pages/medical-test-mgmt';
@@ -8,6 +11,7 @@ import PatientMgmt from 'pages/patient-mgmt';
 import TestCategoryMgmt from 'pages/test-category-mgmt';
 import TestGroupMgmt from 'pages/test-group-mgmt';
 import UnitMgmt from 'pages/unit-mgmt';
+import UserMgmt from 'pages/user-mgmt';
 
 import { AppContainer, AppSidebar, AppTopbar } from 'components';
 
@@ -56,7 +60,14 @@ const routes = [
 
 function App() {
   const sideWidth = '3.3rem';
+  const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (!StorageAPI.local.get(AuthLoginKey)) {
+      navigate('/auth/signin');
+    }
+  }, []);
 
   return (
     <Box
@@ -103,6 +114,8 @@ function App() {
             <Route path="/test-group-mgmt/*" element={<TestGroupMgmt />} />
             <Route path="/test-category/*" element={<TestCategoryMgmt />} />
             <Route path="/indication/*" element={<IndicationMgmt />} />
+            <Route path="/user/*" element={<UserMgmt />} />
+            <Route path="/auth/signin" element={<SignIn />} />
             {/* Add more routes here */}
           </Routes>
         </AppContainer>

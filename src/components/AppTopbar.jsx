@@ -17,6 +17,8 @@ import {
   useColorMode,
   useColorModeValue,
 } from '@chakra-ui/react';
+import StorageAPI from 'common/storageAPI';
+import { AuthLoginKey } from 'constants';
 
 import AppIcon from './AppIcon';
 
@@ -44,6 +46,10 @@ function AppTopbar({ routes, ...rest }) {
     }
   }, [location]);
 
+  const onClickSignOut = () => {
+    StorageAPI.local.remove(AuthLoginKey);
+  };
+
   return (
     <Box {...rest}>
       <Flex sx={{ alignItems: 'center', px: 2 }} gap={2}>
@@ -68,8 +74,9 @@ function AppTopbar({ routes, ...rest }) {
           <Menu>
             <MenuButton as={Avatar} variant="outline" size="sm" />
             <MenuList>
-              <MenuItem icon={<AppIcon icon="user-list" size={24} />}>Thông tin cá nhân</MenuItem>
-              <MenuItem icon={<AppIcon icon="sign-out" size={24} />}>Đăng xuất</MenuItem>
+              <MenuItem icon={<AppIcon icon="sign-out" size={24} />} onClick={onClickSignOut}>
+                Đăng xuất
+              </MenuItem>
             </MenuList>
           </Menu>
         </HStack>
