@@ -83,7 +83,7 @@ function IndicationEdit() {
   useEffect(() => {
     const indicationTests = entity?.tests.map((test) => test.testCategoryId);
     const values = testCategoryState.entities
-      .filter((cate) => indicationTests.includes(cate.id))
+      .filter((cate) => indicationTests?.includes(cate.id))
       .map((cate) => cate.id);
 
     checkBoxMethods.setValue(values);
