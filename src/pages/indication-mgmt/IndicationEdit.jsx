@@ -23,7 +23,6 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { toastify } from 'common/toastify';
 import { createIndication, fetchIndication, updateIndication } from 'store/indicationSlice';
 import { fetchTestCategories } from 'store/testCategorySlice';
 import * as yup from 'yup';

@@ -8,6 +8,7 @@ const initialState = {
   testDetails: [],
   page: null,
   loading: false,
+  testDetailUploading: null,
   error: null,
 };
 
@@ -247,7 +248,7 @@ const testManageSlice = createSlice({
         state.error = action.error;
       })
       .addCase(fetchTestDetails.pending, (state) => {
-        state.loading = false;
+        state.loading = true;
         state.error = null;
       })
       .addCase(fetchTestDetails.fulfilled, (state, action) => {
@@ -265,23 +266,23 @@ const testManageSlice = createSlice({
         state.error = action.error;
       })
       .addCase(updateTestDetail.pending, (state) => {
-        state.loading = false;
+        state.testDetailUploading = true;
         state.error = null;
       })
       .addCase(updateTestDetail.fulfilled, (state, action) => {
         const { isSuccess, message } = action.payload;
 
-        state.loading = false;
+        state.testDetailUploading = false;
         if (!isSuccess) {
           state.error = { message };
         }
       })
       .addCase(updateTestDetail.rejected, (state, action) => {
-        state.loading = false;
+        state.testDetailUploading = null;
         state.error = action.error;
       })
       .addCase(updateTestStatus.pending, (state) => {
-        state.loading = false;
+        state.loading = true;
         state.error = null;
       })
       .addCase(updateTestStatus.fulfilled, (state, action) => {

@@ -17,6 +17,7 @@ import {
   InputLeftElement,
   InputRightElement,
   Select,
+  Spinner,
   Table,
   TableContainer,
   Tbody,
@@ -42,7 +43,6 @@ import { toastify } from 'common/toastify';
 import { GenderConstant } from 'constants';
 import TestStatus from 'constants/test-status';
 import dayjs from 'dayjs';
-import { X } from 'phosphor-react';
 import { fetchDoctors } from 'store/doctorSlice';
 import { fetchIndications } from 'store/indicationSlice';
 import { fetchPatientByCode, fetchPatientByPersonalID } from 'store/patientSlice';
@@ -235,7 +235,7 @@ function MixtureForm({ fields, onSearch, onFilter, children, sx }) {
   );
 }
 
-function TestDetailResultForm({ data, onSave }) {
+function TestDetailResultForm({ data, onSave, isLoading }) {
   const inputRef = useRef();
 
   const handleSaveDetail = () => {
@@ -251,13 +251,21 @@ function TestDetailResultForm({ data, onSave }) {
     onSave(newData);
   };
 
+  const handlePressEnter = (e) => {
+    if (e.keyCode === 13) {
+      handleSaveDetail();
+    }
+  };
+
   return (
-    <InputGroup size="md" width="15rem">
+    <InputGroup size="md" width="15rem" onKeyDown={handlePressEnter}>
       <Input pr="4.5rem" defaultValue={data.resultText || data.result} ref={inputRef} />
-      <InputRightElement width="3rem">
-        <Button size="sm" type="button" onClick={handleSaveDetail}>
+      <InputRightElement>
+        {isLoading ? (
+          <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" />
+        ) : (
           <AppIcon icon="floppy-disk" weight="bold" />
-        </Button>
+        )}
       </InputRightElement>
     </InputGroup>
   );
@@ -384,11 +392,16 @@ const initTestColumns = (onClickView, onClickPrint, onChangeStatus) => {
   ];
 };
 
+// ===========================================
+// ============== Main Component =============
+// ===========================================
 function MedicalTestManagement() {
   const dispatch = useDispatch();
 
-  // Search + Input form state
+  const [selectedTestID, setSelectedTestID] = useState(null);
+  const [updateStatusSuccess, setUpdateStatusSuccess] = useState(null);
 
+  // Form methods
   const mixtureFormMethods = useForm({
     defaultValues: {
       fullName: '',
@@ -398,19 +411,14 @@ function MedicalTestManagement() {
       address: '',
       birthday: '',
       email: '',
-      sex: '',
-      diagnose: '',
-      testStatus: '',
+      sex: 4,
+      diagnose: 'KTSK',
+      testStatus: TestStatus.Pennding.value,
       doctorId: '',
+      searchType: 'day',
+      searchDate: dayjs().format('YYYY-MM-DD'),
     },
   });
-
-  const [selectedTestID, setSelectedTestID] = useState(null);
-  const [updateStatusSuccess, setUpdateStatusSuccess] = useState(null);
-  const searchTypeRef = useRef();
-  const searchDateRef = useRef();
-
-  // Test data
 
   const handleClickView = (testID) => {
     setSelectedTestID(testID);
@@ -487,7 +495,7 @@ function MedicalTestManagement() {
       const values = {
         fullName: testManageState.entity.patientName,
         address: testManageState.entity.address,
-        birthday: dayjs(testManageState.entity.birthDay).format('yyyy-MM-dd'),
+        birthday: dayjs(testManageState.entity.birthDay).format('YYYY-MM-DD'),
         code: testManageState.entity.code,
         diagnose: testManageState.entity.diagnose,
         doctorId: testManageState.entity.doctorId,
@@ -515,9 +523,11 @@ function MedicalTestManagement() {
     }
   }, [testManageState.error]);
 
+  const [theUploadDetail, setTheUploadDetail] = useState(null); // For show loading button in test detail
   const handleSaveDetail = (data) => {
     const { id, result, resultText } = data;
     dispatch(updateTestDetail({ id, result, resultText }));
+    setTheUploadDetail(id);
   };
 
   const handlePageChange = (pageNum) => {
@@ -529,7 +539,6 @@ function MedicalTestManagement() {
   };
 
   // Indication state
-
   const indicationState = useSelector((state) => state.indication);
   const indicationsMethods = useCheckboxGroup({
     defaultValue: [''],
@@ -583,10 +592,8 @@ function MedicalTestManagement() {
     );
   };
 
-  // Doctor start
-
+  // Doctor state
   const doctorState = useSelector((state) => state.doctor);
-
   const filterFields = useMemo(() => initTestFilter(doctorState.entities), [doctorState.entities]);
 
   useEffect(() => {
@@ -601,7 +608,6 @@ function MedicalTestManagement() {
   }, []);
 
   // Patient state
-
   const patientState = useSelector((state) => state.patient);
 
   useEffect(() => {
@@ -624,6 +630,8 @@ function MedicalTestManagement() {
       code: values.code,
       email: values.email,
       sex: values.sex,
+      timeType: values.searchType,
+      day: values.searchDate,
     };
 
     // Transfer to filters array
@@ -633,14 +641,7 @@ function MedicalTestManagement() {
 
     dispatch(
       fetchTests({
-        filters: [
-          { fieldName: 'timeType', value: searchTypeRef.current.value },
-          {
-            fieldName: 'day',
-            value: searchDateRef.current.value,
-          },
-          ...testFilters,
-        ],
+        filters: testFilters,
         sortBy: { fieldName: 'createdOn', accending: false },
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
@@ -711,7 +712,7 @@ function MedicalTestManagement() {
     }
   };
 
-  const handleClickCreate = () => {
+  const handleCreateTest = () => {
     const values = mixtureFormMethods.getValues();
 
     if (values.doctorId === null || values.doctorId === undefined || values.doctorId === '') {
@@ -764,6 +765,30 @@ function MedicalTestManagement() {
     tableDef.toggleAllRowsSelected(false);
   };
 
+  // Helper components
+
+  const SearchTypeInput = withFormController(
+    // eslint-disable-next-line react/no-unstable-nested-components
+    React.forwardRef(({ ...props }, ref) => (
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      <Select width="max-content" ref={ref} {...props}>
+        <option value="day">Tìm theo ngày</option>
+        <option value="month">Tìm theo tháng</option>
+        <option value="year">Tìm theo năm</option>
+      </Select>
+    )),
+    mixtureFormMethods.control
+  );
+
+  const SearchDateInput = withFormController(
+    // eslint-disable-next-line react/no-unstable-nested-components
+    React.forwardRef(({ ...props }, ref) => (
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      <Input width="max-content" type="date" ref={ref} {...props} />
+    )),
+    mixtureFormMethods.control
+  );
+
   return (
     <Box sx={{ display: 'flex', flexDir: 'column', gap: 3 }}>
       <Flex direction="column" alignItems="start" justifyContent="space-between" gap={3} p={2}>
@@ -780,13 +805,9 @@ function MedicalTestManagement() {
         </FormProvider>
 
         <HStack spacing={2} alignItems="end">
-          <Select width="max-content" ref={searchTypeRef}>
-            <option value="day">Tìm theo ngày</option>
-            <option value="month">Tìm theo tháng</option>
-            <option value="year">Tìm theo năm</option>
-          </Select>
+          <SearchTypeInput name="searchType" />
 
-          <Input width="max-content" type="date" ref={searchDateRef} />
+          <SearchDateInput name="searchDate" />
 
           <Tooltip label="Tìm xét nghiệm">
             <Button variant="solid" colorScheme="gray" onClick={handleFilterTest}>
@@ -795,7 +816,7 @@ function MedicalTestManagement() {
           </Tooltip>
 
           <Tooltip label="Tạo xét nghiệm mới">
-            <Button variant="solid" colorScheme="messenger" onClick={handleClickCreate}>
+            <Button variant="solid" colorScheme="messenger" onClick={handleCreateTest}>
               <AppIcon icon="plus" />
             </Button>
           </Tooltip>
@@ -864,6 +885,7 @@ function MedicalTestManagement() {
               m: 2,
               h: '27rem',
               minH: { base: '10rem', md: '27rem' },
+              overflow: 'auto',
               resize: 'vertical',
             }}
           >
@@ -881,7 +903,13 @@ function MedicalTestManagement() {
                     <Tr key={`test_detail_${tdetail.id}`}>
                       <Td>{tdetail.testCategoryName}</Td>
                       <Td>
-                        <TestDetailResultForm data={tdetail} onSave={handleSaveDetail} />
+                        <TestDetailResultForm
+                          data={tdetail}
+                          onSave={handleSaveDetail}
+                          isLoading={
+                            tdetail.id === theUploadDetail && testManageState.testDetailUploading
+                          }
+                        />
                       </Td>
                       <Td>{CurrencyFormatter.format(tdetail.price)}</Td>
                     </Tr>
