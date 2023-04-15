@@ -33,14 +33,14 @@ export const authSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(authenticate.pending, (state) => {
-        state.loggedIn = false;
         state.loading = true;
+        state.loggedIn = false;
         state.err = null;
         state.success = null;
       })
       .addCase(authenticate.fulfilled, (state) => {
         state.loading = false;
-        state.loggedIn = false;
+        state.loggedIn = true;
         state.err = null;
         state.success = true;
       })

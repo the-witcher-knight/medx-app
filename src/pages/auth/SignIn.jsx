@@ -15,10 +15,14 @@ import {
   Spinner,
   useDisclosure,
 } from '@chakra-ui/react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { toastify } from 'common/toastify';
+import withFormController from 'hocs/withFormController';
 import { login } from 'store/authSlice';
+import * as yup from 'yup';
 
-import { withFormController } from 'components';
+// eslint-disable-next-line react/jsx-props-no-spreading
+const ReferInput = React.forwardRef((props, ref) => <Input ref={ref} {...props} />);
 
 function SignIn() {
   const navigate = useNavigate();
@@ -26,11 +30,17 @@ function SignIn() {
   const dispatch = useDispatch();
 
   const { loggedIn, loading, err, success } = useSelector((state) => state.auth);
+
+  const schema = yup.object().shape({
+    userName: yup.string().required('Vui lòng nhập tên tài khoản'),
+    password: yup.string().required('Vui lòng nhập mật khẩu'),
+  });
   const { control, handleSubmit } = useForm({
     defaultValues: {
       userName: '',
       password: '',
     },
+    resolver: yupResolver(schema),
   });
 
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
@@ -45,7 +55,7 @@ function SignIn() {
     if (success || loggedIn) {
       navigate('/');
     }
-  }, [success]);
+  }, [success, loggedIn]);
 
   const onSubmit = (values) => {
     dispatch(login(values.userName, values.password));
@@ -58,14 +68,7 @@ function SignIn() {
     }, 500);
   };
 
-  const FormInput = withFormController(
-    // eslint-disable-next-line react/no-unstable-nested-components
-    React.forwardRef(({ ...props }, ref) => (
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      <Input ref={ref} {...props} />
-    )),
-    control
-  );
+  const FormField = withFormController(ReferInput, control);
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
@@ -103,9 +106,9 @@ function SignIn() {
               <Box fontSize="2xl">Đăng nhập</Box>
             </Flex>
             <Flex as="form" flexDir="column" gap="1rem" onSubmit={handleSubmit(onSubmit)}>
-              <FormInput name="userName" type="text" placeholder="Nhập tên tài khoản" />
+              <FormField name="userName" type="text" placeholder="Nhập tên tài khoản" />
 
-              <FormInput name="password" type="password" placeholder="Nhập tên tài khoản" />
+              <FormField name="password" type="password" placeholder="Nhập tên tài khoản" />
 
               <Button colorScheme="facebook" type="submit">
                 Đăng nhập
