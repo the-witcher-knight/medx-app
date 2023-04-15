@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
-import StorageAPI from 'common/storageAPI';
-import { AuthLoginKey } from 'constants';
 import { SignIn } from 'pages/auth';
 import DoctorMgmt from 'pages/doctor-mgmt';
 import IndicationMgmt from 'pages/indication-mgmt';
@@ -13,7 +12,7 @@ import TestGroupMgmt from 'pages/test-group-mgmt';
 import UnitMgmt from 'pages/unit-mgmt';
 import UserMgmt from 'pages/user-mgmt';
 
-import { AppContainer, AppSidebar, AppTopbar } from 'components';
+import { AppContainer, AppSidebar, AppTopbar, ProtectedRoute } from 'components';
 
 const routes = [
   {
@@ -60,14 +59,9 @@ const routes = [
 
 function App() {
   const sideWidth = '3.3rem';
-  const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    if (!StorageAPI.local.get(AuthLoginKey)) {
-      navigate('/auth/signin');
-    }
-  }, []);
+  const { loggedIn } = useSelector((state) => state.auth);
 
   return (
     <Box
@@ -106,15 +100,78 @@ function App() {
         />
         <AppContainer ml={{ base: 0, md: sideWidth }}>
           <Routes location={location}>
-            <Route path="/*" element={<MedicalTestMgmt />} />
-            <Route path="/home/*" element={<MedicalTestMgmt />} />
-            <Route path="/patient/*" element={<PatientMgmt />} />
-            <Route path="/doctor/*" element={<DoctorMgmt />} />
-            <Route path="/unit/*" element={<UnitMgmt />} />
-            <Route path="/test-group-mgmt/*" element={<TestGroupMgmt />} />
-            <Route path="/test-category/*" element={<TestCategoryMgmt />} />
-            <Route path="/indication/*" element={<IndicationMgmt />} />
-            <Route path="/user/*" element={<UserMgmt />} />
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <MedicalTestMgmt />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/home/*"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <MedicalTestMgmt />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/*"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <PatientMgmt />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/doctor/*"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <DoctorMgmt />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/unit/*"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <UnitMgmt />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/test-group-mgmt/*"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <TestGroupMgmt />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/test-category/*"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <TestCategoryMgmt />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/indication/*"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <IndicationMgmt />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/user/*"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <UserMgmt />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/auth/signin" element={<SignIn />} />
             {/* Add more routes here */}
           </Routes>

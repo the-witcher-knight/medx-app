@@ -46,7 +46,7 @@ function AppTopbar({ routes, ...rest }) {
     }
   }, [location]);
 
-  const onClickSignOut = () => {
+  const handleLogout = () => {
     StorageAPI.local.remove(AuthLoginKey);
   };
 
@@ -74,7 +74,7 @@ function AppTopbar({ routes, ...rest }) {
           <Menu>
             <MenuButton as={Avatar} variant="outline" size="sm" />
             <MenuList>
-              <MenuItem icon={<AppIcon icon="sign-out" size={24} />} onClick={onClickSignOut}>
+              <MenuItem icon={<AppIcon icon="sign-out" size={24} />} onClick={handleLogout}>
                 Đăng xuất
               </MenuItem>
             </MenuList>

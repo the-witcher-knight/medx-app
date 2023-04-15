@@ -1,59 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
   Flex,
   Highlight,
-  IconButton,
   Image,
   Input,
   Modal,
   ModalContent,
   ModalOverlay,
+  Spinner,
   useDisclosure,
 } from '@chakra-ui/react';
-import { authAPI } from 'apis';
-import StorageAPI from 'common/storageAPI';
 import { toastify } from 'common/toastify';
-import AuthLoginKey from 'constants/auth';
-import { Eye, EyeSlash } from 'phosphor-react';
+import { login } from 'store/authSlice';
 
-const PasswordInput = React.forwardRef(({ onChange, onBlur, value }, ref) => {
-  const [show, setShow] = React.useState(false);
-  const handleClick = () => setShow(!show);
-
-  return (
-    <Flex>
-      <Input
-        pr="3rem"
-        type={show ? 'text' : 'password'}
-        placeholder="Nhập mật khẩu"
-        onChange={onChange}
-        onBlur={onBlur}
-        value={value}
-        ref={ref}
-      />
-      <Box pos="relative">
-        <IconButton
-          variant="ghost"
-          aria-label="Search database"
-          icon={show ? <EyeSlash /> : <Eye />}
-          onClick={handleClick}
-          pos="absolute"
-          right="0"
-        />
-      </Box>
-    </Flex>
-  );
-});
+import { withFormController } from 'components';
 
 function SignIn() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [loginSuccess, setLoginSuccess] = useState(null);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+
+  const { loggedIn, loading, err, success } = useSelector((state) => state.auth);
   const { control, handleSubmit } = useForm({
     defaultValues: {
       userName: '',
@@ -64,28 +36,19 @@ function SignIn() {
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
 
   useEffect(() => {
-    if (error) {
-      toastify({ title: 'Lỗi', status: 'error', description: error?.message });
-      setError(null);
+    if (err) {
+      toastify({ title: 'Lỗi', status: 'error', description: err?.message });
     }
-  }, [error]);
+  }, [err]);
 
   useEffect(() => {
-    if (loginSuccess || StorageAPI.local.get(AuthLoginKey)) {
+    if (success || loggedIn) {
       navigate('/');
     }
-  }, [loginSuccess]);
+  }, [success]);
 
   const onSubmit = (values) => {
-    authAPI.login(values).then(
-      (resp) => {
-        StorageAPI.local.set(AuthLoginKey, resp.data);
-        setLoginSuccess(true);
-      },
-      (err) => {
-        setError(err);
-      }
-    );
+    dispatch(login(values.userName, values.password));
   };
 
   const handleClose = () => {
@@ -94,6 +57,15 @@ function SignIn() {
       navigate(location.state?.background?.pathname || -1);
     }, 500);
   };
+
+  const FormInput = withFormController(
+    // eslint-disable-next-line react/no-unstable-nested-components
+    React.forwardRef(({ ...props }, ref) => (
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      <Input ref={ref} {...props} />
+    )),
+    control
+  );
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
@@ -118,37 +90,22 @@ function SignIn() {
               alignItems="center"
               mb="1rem"
             >
-              <Image
-                boxSize="82px"
-                src="https://i.pinimg.com/564x/e5/6b/84/e56b841924ac729935e858cb59535fb7.jpg"
-                alt=""
-              />
+              {loading ? (
+                <Spinner boxSize="82px" colorScheme="telegram" />
+              ) : (
+                <Image
+                  boxSize="82px"
+                  src="https://i.pinimg.com/564x/e5/6b/84/e56b841924ac729935e858cb59535fb7.jpg"
+                  loading="lazy"
+                  alt=""
+                />
+              )}
               <Box fontSize="2xl">Đăng nhập</Box>
             </Flex>
             <Flex as="form" flexDir="column" gap="1rem" onSubmit={handleSubmit(onSubmit)}>
-              <Controller
-                name="userName"
-                control={control}
-                render={({ field: { onChange, onBlur, value, ref } }) => (
-                  <Input
-                    pr="4.5rem"
-                    type="text"
-                    placeholder="Nhập tên tài khoản"
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    value={value}
-                    ref={ref}
-                  />
-                )}
-              />
+              <FormInput name="userName" type="text" placeholder="Nhập tên tài khoản" />
 
-              <Controller
-                name="password"
-                control={control}
-                render={({ field: { onChange, onBlur, value, ref } }) => (
-                  <PasswordInput onChange={onChange} onBlur={onBlur} value={value} ref={ref} />
-                )}
-              />
+              <FormInput name="password" type="password" placeholder="Nhập tên tài khoản" />
 
               <Button colorScheme="facebook" type="submit">
                 Đăng nhập

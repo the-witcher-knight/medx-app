@@ -1,21 +1,23 @@
-import doctorSlice from './doctorSlice';
-import indicationSlice from './indicationSlice';
-import patientSlice from './patientSlice';
-import testCategorySlice from './testCategorySlice';
-import testGroupSlice from './testGroupSlice';
-import testManageSlice from './testManageSlice';
-import unitSlice from './unitSlice';
-import userSlice from './userSlice';
+import authReducer from './authSlice';
+import doctorReducer from './doctorSlice';
+import indicationReducer from './indicationSlice';
+import patientReducer from './patientSlice';
+import testCategoryReducer from './testCategorySlice';
+import testGroupReducer from './testGroupSlice';
+import testManageReducer from './testManageSlice';
+import unitReducer from './unitSlice';
+import userReducer from './userSlice';
 
 const rootReducer = {
-  patient: patientSlice,
-  doctor: doctorSlice,
-  unit: unitSlice,
-  testCategory: testCategorySlice,
-  testGroup: testGroupSlice,
-  indication: indicationSlice,
-  testManage: testManageSlice,
-  user: userSlice,
+  patient: patientReducer,
+  doctor: doctorReducer,
+  unit: unitReducer,
+  testCategory: testCategoryReducer,
+  testGroup: testGroupReducer,
+  indication: indicationReducer,
+  testManage: testManageReducer,
+  user: userReducer,
+  auth: authReducer,
 };
 
 export default rootReducer;
