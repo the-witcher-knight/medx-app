@@ -18,6 +18,7 @@ import {
   InputRightElement,
   Select,
   Spinner,
+  Switch,
   Table,
   TableContainer,
   Tbody,
@@ -159,7 +160,7 @@ const initTestFilter = (doctors) => [
   },
 ];
 
-const FormInput = React.forwardRef(
+const FormField = React.forwardRef(
   ({ icon, label, name, value, onSearch, hasSearch, ...props }, ref) => (
     <InputGroup size="sm" borderRadius="md" maxWidth="max-content">
       <InputLeftElement pointerEvents="none">
@@ -198,7 +199,7 @@ const FormInput = React.forwardRef(
 function MixtureForm({ fields, onSearch, onFilter, children, sx }) {
   const { handleSubmit, control, reset } = useFormContext();
 
-  const ControlledFormInput = withFormController(FormInput, control);
+  const ControlledFormInput = withFormController(FormField, control);
 
   if (fields.lenght === 0) {
     return null;
@@ -235,41 +236,30 @@ function MixtureForm({ fields, onSearch, onFilter, children, sx }) {
   );
 }
 
-function TestDetailResultForm({ data, onSave, isLoading }) {
-  const inputRef = useRef();
+const TestDetailResultForm = React.forwardRef(
+  ({ idx, data, onSave, onMoveNext, isLoading }, ref) => {
+    const handlePressEnter = (e) => {
+      if (e.keyCode === 13) {
+        onSave(data.id, idx);
 
-  const handleSaveDetail = () => {
-    const newData = { ...data };
-    if (typeof inputRef.current.value === 'number') {
-      newData.result = inputRef.current.value;
-    }
+        onMoveNext(idx);
+      }
+    };
 
-    if (typeof inputRef.current.value === 'string') {
-      newData.resultText = inputRef.current.value;
-    }
-
-    onSave(newData);
-  };
-
-  const handlePressEnter = (e) => {
-    if (e.keyCode === 13) {
-      handleSaveDetail();
-    }
-  };
-
-  return (
-    <InputGroup size="md" width="15rem" onKeyDown={handlePressEnter}>
-      <Input pr="4.5rem" defaultValue={data.resultText || data.result} ref={inputRef} />
-      <InputRightElement>
-        {isLoading ? (
-          <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" />
-        ) : (
-          <AppIcon icon="floppy-disk" weight="bold" />
-        )}
-      </InputRightElement>
-    </InputGroup>
-  );
-}
+    return (
+      <InputGroup size="md" width="15rem" onKeyDown={handlePressEnter}>
+        <Input pr="4.5rem" defaultValue={data.result} ref={ref} />
+        <InputRightElement>
+          {isLoading ? (
+            <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" />
+          ) : (
+            <AppIcon icon="floppy-disk" weight="bold" />
+          )}
+        </InputRightElement>
+      </InputGroup>
+    );
+  }
+);
 
 const initTestColumns = (onClickView, onClickPrint, onChangeStatus) => {
   const columnHelper = createColumnHelper();
@@ -392,9 +382,21 @@ const initTestColumns = (onClickView, onClickPrint, onChangeStatus) => {
   ];
 };
 
-// ===========================================
-// ============== Main Component =============
-// ===========================================
+const SelectRefered = React.forwardRef(({ children, ...props }, ref) => (
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  <Select ref={ref} {...props}>
+    {children}
+  </Select>
+));
+
+const InputRefered = React.forwardRef((props, ref) => (
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  <Input ref={ref} {...props} />
+));
+
+// ===========================================================================
+// ============================== Main Component =============================
+// ===========================================================================
 function MedicalTestManagement() {
   const dispatch = useDispatch();
 
@@ -524,10 +526,23 @@ function MedicalTestManagement() {
   }, [testManageState.error]);
 
   const [theUploadDetail, setTheUploadDetail] = useState(null); // For show loading button in test detail
-  const handleSaveDetail = (data) => {
-    const { id, result, resultText } = data;
-    dispatch(updateTestDetail({ id, result, resultText }));
+
+  const detailInputRefs = useRef([]);
+
+  useEffect(() => {
+    detailInputRefs.current = detailInputRefs.current.slice(0, testManageState.testDetails.length);
+  }, [testManageState.testDetails]);
+
+  const handleSaveDetail = (id, inputIdx) => {
+    dispatch(updateTestDetail({ id, result: detailInputRefs.current[inputIdx].value }));
     setTheUploadDetail(id);
+  };
+
+  const handleMoveNextInputDetail = (curr) => {
+    const nextIdx = curr + 1;
+    const nextInput = detailInputRefs.current[nextIdx];
+
+    nextInput.focus();
   };
 
   const handlePageChange = (pageNum) => {
@@ -767,27 +782,9 @@ function MedicalTestManagement() {
 
   // Helper components
 
-  const SearchTypeInput = withFormController(
-    // eslint-disable-next-line react/no-unstable-nested-components
-    React.forwardRef(({ ...props }, ref) => (
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      <Select width="max-content" ref={ref} {...props}>
-        <option value="day">Tìm theo ngày</option>
-        <option value="month">Tìm theo tháng</option>
-        <option value="year">Tìm theo năm</option>
-      </Select>
-    )),
-    mixtureFormMethods.control
-  );
+  const ControlledSelect = withFormController(SelectRefered, mixtureFormMethods.control);
 
-  const SearchDateInput = withFormController(
-    // eslint-disable-next-line react/no-unstable-nested-components
-    React.forwardRef(({ ...props }, ref) => (
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      <Input width="max-content" type="date" ref={ref} {...props} />
-    )),
-    mixtureFormMethods.control
-  );
+  const ControlledInput = withFormController(InputRefered, mixtureFormMethods.control);
 
   return (
     <Box sx={{ display: 'flex', flexDir: 'column', gap: 3 }}>
@@ -805,9 +802,13 @@ function MedicalTestManagement() {
         </FormProvider>
 
         <HStack spacing={2} alignItems="end">
-          <SearchTypeInput name="searchType" />
+          <ControlledSelect name="searchType" width="max-content">
+            <option value="day">Tìm theo ngày</option>
+            <option value="month">Tìm theo tháng</option>
+            <option value="year">Tìm theo năm</option>
+          </ControlledSelect>
 
-          <SearchDateInput name="searchDate" />
+          <ControlledInput name="searchDate" type="date" width="max-content" />
 
           <Tooltip label="Tìm xét nghiệm">
             <Button variant="solid" colorScheme="gray" onClick={handleFilterTest}>
@@ -894,23 +895,30 @@ function MedicalTestManagement() {
                 <Tr>
                   <Th>Tên xét nghiệm</Th>
                   <Th>Kết quả</Th>
+                  <Th>Âm tính</Th>
                   <Th>Giá tiền</Th>
                 </Tr>
               </Thead>
-              <Tbody>
+              <Tbody className="test-detail-container">
                 {testManageState.testDetails && testManageState.testDetails.length > 0 ? (
-                  testManageState.testDetails.map((tdetail) => (
+                  testManageState.testDetails.map((tdetail, idx) => (
                     <Tr key={`test_detail_${tdetail.id}`}>
                       <Td>{tdetail.testCategoryName}</Td>
                       <Td>
                         <TestDetailResultForm
                           data={tdetail}
+                          ref={(elem) => {
+                            detailInputRefs.current[idx] = elem;
+                          }}
+                          idx={idx}
                           onSave={handleSaveDetail}
+                          onMoveNext={handleMoveNextInputDetail}
                           isLoading={
                             tdetail.id === theUploadDetail && testManageState.testDetailUploading
                           }
                         />
                       </Td>
+                      <Td>{tdetail.isShowTrueFalseResult && <Switch />}</Td>
                       <Td>{CurrencyFormatter.format(tdetail.price)}</Td>
                     </Tr>
                   ))
