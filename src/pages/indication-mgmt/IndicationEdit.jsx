@@ -152,7 +152,7 @@ function IndicationEdit() {
                 >
                   {testCategoryState.entities.map((cate) => (
                     <Checkbox
-                      key={`test_category_${cate.name}`}
+                      key={`test_category_${cate.id}`}
                       value={cate.id}
                       // eslint-disable-next-line react/jsx-props-no-spreading
                       {...checkBoxMethods.getCheckboxProps({ value: cate.id })}

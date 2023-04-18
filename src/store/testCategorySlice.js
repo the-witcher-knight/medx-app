@@ -6,6 +6,7 @@ const initialState = {
   entities: [],
   units: [],
   groups: [],
+  uploadSuccess: null,
   loading: false,
   error: null,
 };
@@ -78,6 +79,8 @@ const testCategorySlice = createSlice({
         } else {
           state.entities = data.data;
         }
+
+        state.uploadSuccess = null;
       })
       .addCase(fetchTestCategories.rejected, (state, action) => {
         state.loading = false;
@@ -86,20 +89,21 @@ const testCategorySlice = createSlice({
       .addCase(createCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.uploadSuccess = null;
       })
       .addCase(createCategory.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
+        const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.uploadSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
-        } else {
-          state.entities.push(data);
         }
       })
       .addCase(createCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.uploadSuccess = false;
       })
       .addCase(fetchCategory.pending, (state) => {
         state.loading = true;
@@ -122,40 +126,40 @@ const testCategorySlice = createSlice({
       .addCase(updateCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.uploadSuccess = null;
       })
       .addCase(updateCategory.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
+        const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.uploadSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
-        } else {
-          const idx = state.entities.findIndex((entity) => entity.id === data.id);
-          state.entities[idx] = data;
         }
       })
       .addCase(updateCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.uploadSuccess = false;
       })
       .addCase(deleteCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.uploadSuccess = null;
       })
       .addCase(deleteCategory.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
-        const { arg } = action.meta;
+        const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.uploadSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
-        } else {
-          state.entities.filter((entity) => entity.id !== arg);
         }
       })
       .addCase(deleteCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.uploadSuccess = false;
       });
   },
 });

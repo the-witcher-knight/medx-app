@@ -109,16 +109,7 @@ function TestCategoryEdit() {
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader>
-          {id ? (
-            <>
-              Cập nhật loại xét nghiệm&nbsp;
-              <Text as="sub">{id}</Text>
-            </>
-          ) : (
-            'Tạo loại xét nghiệm mới'
-          )}
-        </DrawerHeader>
+        <DrawerHeader>{id ? 'Cập nhật loại xét nghiệm' : 'Tạo loại xét nghiệm mới'}</DrawerHeader>
 
         <DrawerBody>
           <Flex

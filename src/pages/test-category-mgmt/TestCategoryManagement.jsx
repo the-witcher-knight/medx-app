@@ -102,7 +102,7 @@ function TestCategoryManagement() {
   const location = useLocation();
 
   const columns = useMemo(() => initTestCategoryColumns(), []);
-  const { entities, loading, error } = useSelector((state) => state.testCategory);
+  const { entities, loading, uploadSuccess, error } = useSelector((state) => state.testCategory);
   const [sorting, setSorting] = useState([{ id: 'name', desc: false }]);
   const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
@@ -132,6 +132,19 @@ function TestCategoryManagement() {
       })
     );
   }, [filters, sorting, pagination.pageIndex, pagination.pageSize]);
+
+  useEffect(() => {
+    if (uploadSuccess) {
+      dispatch(
+        fetchTestCategories({
+          filters,
+          sortBy: { fieldName: sorting[0]?.id, accending: !sorting[0]?.desc },
+          pageIndex: pagination.pageIndex,
+          pageSize: pagination.pageSize,
+        })
+      );
+    }
+  }, [uploadSuccess]);
 
   useEffect(() => {
     if (error) {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
+import UserChangePassword from './UserChangePassword';
 import UserDeleteDialog from './UserDeleteDialog';
 import UserEdit from './UserEdit';
 import UserManagement from './UserManagement';
@@ -17,7 +18,7 @@ function UserMgmt() {
       {location.state?.background && (
         <Routes>
           <Route path="/new" element={<UserEdit />} />
-          <Route path="/:id/edit" element={<UserEdit />} />
+          <Route path="/:id/edit" element={<UserChangePassword />} />
           <Route path="/:id/delete" element={<UserDeleteDialog />} />
         </Routes>
       )}

@@ -31,7 +31,7 @@ const initUserColumns = () => {
       header: 'tên tài khoản',
       cell: (info) => info.getValue(),
     }),
-    columnHelper.accessor('emailAddress', {
+    columnHelper.accessor('email', {
       header: 'Email',
       cell: (info) => info.getValue(),
     }),
@@ -56,8 +56,8 @@ function UserManagement() {
   const location = useLocation();
 
   const columns = useMemo(() => initUserColumns(), []);
-  const { entities, loading, error } = useSelector((state) => state.doctor);
-  const [sorting, setSorting] = useState([{ id: 'UserName', desc: false }]);
+  const { entities, loading, error } = useSelector((state) => state.user);
+  const [sorting, setSorting] = useState([{ id: 'email', desc: false }]);
   const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
     pageIndex: 1,
