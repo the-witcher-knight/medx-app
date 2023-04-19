@@ -20,8 +20,11 @@ import {
 } from '@tanstack/react-table';
 import { toastify } from 'common/toastify';
 import { fetchTestCategories } from 'store/testCategorySlice';
+import { fetchTestGroups } from 'store/testGroupSlice';
+import { fetchUnits } from 'store/unitSlice';
 
 import { ActionButtonGroup, AppIcon, DataGrid, FilterGroup, withSuspense } from 'components';
+import { FilterGroupSelect } from 'components/FilterGroup';
 
 const initTestCategoryColumns = () => {
   const columnHelper = createColumnHelper();
@@ -51,6 +54,24 @@ const initTestCategoryColumns = () => {
       header: 'Giá',
       cell: (info) => info.getValue(),
     }),
+    columnHelper.accessor('isShowTrueFalseResult', {
+      header: 'Chọn kết quả',
+      cell: (info) =>
+        info.getValue() ? (
+          <AppIcon weight="bold" icon="check" />
+        ) : (
+          <AppIcon weight="bold" icon="x" />
+        ),
+    }),
+    columnHelper.accessor('isPrintReceipt', {
+      header: 'In hóa đơn',
+      cell: (info) =>
+        info.getValue() ? (
+          <AppIcon weight="bold" icon="check" />
+        ) : (
+          <AppIcon weight="bold" icon="x" />
+        ),
+    }),
     columnHelper.accessor('id', {
       header: '',
       cell: (info) => <ActionButtonGroup path="/test-category" id={info.getValue()} />,
@@ -58,39 +79,62 @@ const initTestCategoryColumns = () => {
   ];
 };
 
-const filterFields = [
+const initFilterFields = (units, groups) => [
   {
-    id: 'Name',
+    id: 'name',
     icon: 'address-book',
     label: 'Tên loại',
   },
   {
-    id: 'Code',
+    id: 'code',
     icon: 'eyedropper-sample',
     label: 'Mã xét nghiệm',
   },
   {
-    id: 'LowerBound',
+    id: 'lowerBound',
     icon: 'caret-down',
     label: 'Ngưỡng thấp',
   },
   {
-    id: 'UpperBound',
+    id: 'upperBound',
     icon: 'caret-up',
     label: 'Ngưỡng cao',
   },
   {
-    id: 'UnitId',
+    id: 'unitId',
     icon: 'percent',
     label: 'Mã đơn vị',
+    render: (control) => (
+      <FilterGroupSelect control={control} name="unitId" icon="percent" label="Mã đơn vị">
+        {units.map((u) => (
+          <option key={`unit_${u.id}`} value={u.id}>
+            {u.name}
+          </option>
+        ))}
+      </FilterGroupSelect>
+    ),
   },
   {
-    id: 'GroupId',
+    id: 'groupId',
     icon: 'bounding-box',
     label: 'Mã nhóm xét nghiệm',
+    render: (control) => (
+      <FilterGroupSelect
+        control={control}
+        name="groupId"
+        icon="bounding-box"
+        label="Mã nhóm xét nghiệm"
+      >
+        {groups.map((gr) => (
+          <option key={`unit_${gr.id}`} value={gr.id}>
+            {gr.name}
+          </option>
+        ))}
+      </FilterGroupSelect>
+    ),
   },
   {
-    id: 'Price',
+    id: 'price',
     icon: 'currency-dollar',
     label: 'Giá tiền',
   },
@@ -102,13 +146,20 @@ function TestCategoryManagement() {
   const location = useLocation();
 
   const columns = useMemo(() => initTestCategoryColumns(), []);
-  const { entities, loading, uploadSuccess, error } = useSelector((state) => state.testCategory);
+  const { entities, loading, updateSuccess, error } = useSelector((state) => state.testCategory);
   const [sorting, setSorting] = useState([{ id: 'name', desc: false }]);
   const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
     pageIndex: 1,
     pageSize: 30,
   });
+
+  const unitState = useSelector((state) => state.unit);
+  const testGroupState = useSelector((state) => state.testGroup);
+  const filterFields = useMemo(
+    () => initFilterFields(unitState.entities, testGroupState.entities),
+    [unitState.entities, testGroupState.entities]
+  );
 
   const tableDef = useReactTable({
     columns,
@@ -124,6 +175,23 @@ function TestCategoryManagement() {
 
   useEffect(() => {
     dispatch(
+      fetchUnits({
+        sortBy: { fieldName: 'name', accending: true },
+        pageIndex: 1,
+        pageSize: 10000,
+      })
+    );
+    dispatch(
+      fetchTestGroups({
+        sortBy: { fieldName: 'name', accending: true },
+        pageIndex: 1,
+        pageSize: 10000,
+      })
+    );
+  }, []);
+
+  useEffect(() => {
+    dispatch(
       fetchTestCategories({
         filters,
         sortBy: { fieldName: sorting[0]?.id, accending: !sorting[0]?.desc },
@@ -134,7 +202,7 @@ function TestCategoryManagement() {
   }, [filters, sorting, pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
-    if (uploadSuccess) {
+    if (updateSuccess) {
       dispatch(
         fetchTestCategories({
           filters,
@@ -144,7 +212,7 @@ function TestCategoryManagement() {
         })
       );
     }
-  }, [uploadSuccess]);
+  }, [updateSuccess]);
 
   useEffect(() => {
     if (error) {

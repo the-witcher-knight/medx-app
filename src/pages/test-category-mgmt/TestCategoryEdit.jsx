@@ -12,7 +12,6 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
-  Text,
   useDisclosure,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -21,7 +20,7 @@ import { fetchTestGroups } from 'store/testGroupSlice';
 import { fetchUnits } from 'store/unitSlice';
 import * as yup from 'yup';
 
-import { AppIcon, ValidatedInput, ValidatedSelect, withSuspense } from 'components';
+import { AppIcon, ValidatedCheck, ValidatedInput, ValidatedSelect, withSuspense } from 'components';
 
 function TestCategoryEdit() {
   const { id } = useParams();
@@ -47,12 +46,14 @@ function TestCategoryEdit() {
       unitId: '',
       groupId: '',
       price: 0,
+      isShowTrueFalseResult: false,
+      isPrintReceipt: false,
     },
     resolver: yupResolver(schema),
   });
 
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
-  const { entity, loading, error } = useSelector((state) => state.testCategory);
+  const { entity, loading } = useSelector((state) => state.testCategory);
   const testGroupSelector = useSelector((state) => state.testGroup);
   const unitSelector = useSelector((state) => state.unit);
 
@@ -124,6 +125,9 @@ function TestCategoryEdit() {
             <ValidatedInput control={control} name="lowerBound" type="number" label="Ngưỡng thấp" />
             <ValidatedInput control={control} name="upperBound" type="number" label="Ngưỡng cao" />
             <ValidatedSelect control={control} name="unitId" label="Đơn vị">
+              <option key="unit_none" value="">
+                none
+              </option>
               {unitSelector.entities.map((unit) => (
                 <option key={`unit_${unit.id}`} value={unit.id}>
                   {unit.name}
@@ -131,6 +135,9 @@ function TestCategoryEdit() {
               ))}
             </ValidatedSelect>
             <ValidatedSelect control={control} name="groupId" label="Nhóm xét nghiệm">
+              <option key="group_none" value="">
+                none
+              </option>
               {testGroupSelector.entities.map((gr) => (
                 <option key={`group_${gr.id}`} value={gr.id}>
                   {gr.name}
@@ -138,6 +145,12 @@ function TestCategoryEdit() {
               ))}
             </ValidatedSelect>
             <ValidatedInput control={control} name="price" type="number" label="Giá tiền" />
+            <ValidatedCheck
+              control={control}
+              name="isShowTrueFalseResult"
+              label="Cho chọn âm/dương tính"
+            />
+            <ValidatedCheck control={control} name="isPrintReceipt" label="Có in hóa đơn" />
           </Flex>
         </DrawerBody>
 

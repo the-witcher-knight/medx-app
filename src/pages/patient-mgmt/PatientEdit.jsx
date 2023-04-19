@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { GenderConstant } from 'constants';
+import dayjs from 'dayjs';
 import { createPatient, fetchPatient, updatePatient } from 'store/patientSlice';
 import * as yup from 'yup';
 
@@ -48,7 +49,7 @@ function PatientEdit() {
       personalId: '',
       code: '',
       phoneNo: '',
-      birthday: '',
+      birthday: dayjs().format('YYYY-MM-DD'),
       address: '',
       email: '',
       sex: 0,
@@ -57,7 +58,7 @@ function PatientEdit() {
   });
 
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
-  const { entity, loading, error } = useSelector((state) => state.patient);
+  const { entity, loading } = useSelector((state) => state.patient);
 
   useEffect(() => {
     if (id) {
@@ -69,6 +70,10 @@ function PatientEdit() {
     if (entity) {
       Object.keys(entity).forEach((key) => {
         if (key === 'id') {
+          return;
+        }
+        if (key === 'birthday') {
+          setValue(key, dayjs(entity[key]).format('YYYY-MM-DD'));
           return;
         }
         setValue(key, entity[key]);

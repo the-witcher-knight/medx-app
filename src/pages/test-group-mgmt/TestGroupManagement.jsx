@@ -64,24 +64,24 @@ function TestGroupManagement() {
   const filterFields = useMemo(
     () => [
       {
-        id: 'Name',
+        id: 'name',
         icon: 'address-book',
         label: 'Tên nhóm xét nghiệm',
       },
       {
-        id: 'ParrentGroupId',
+        id: 'parrentGroupId',
         icon: 'bounding-box',
         label: 'ID nhóm cha',
         render: (control) => (
           <FilterGroupSelect
             control={control}
-            name="ParentGroupId"
+            name="parentGroupId"
             label="ID nhóm cha"
             icon="bounding-box"
           >
             {entities.map((entity) => (
               <option key={`test_group_${entity.id}`} value={entity.id}>
-                {entity.name}_{entity.id}
+                {entity.name}
               </option>
             ))}
           </FilterGroupSelect>

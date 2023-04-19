@@ -44,7 +44,7 @@ const initUserColumns = () => {
 
 const filterFields = [
   {
-    id: 'UserName',
+    id: 'userName',
     icon: 'identification-card',
     label: 'Tên tài khoản',
   },

@@ -116,23 +116,23 @@ function TestManagement() {
   const filterFields = useMemo(
     () => [
       {
-        id: 'PersonalId',
+        id: 'personalId',
         icon: 'identification-card',
         label: 'CCCD',
       },
       {
-        id: 'PatientName',
+        id: 'patientName',
         icon: 'address-book',
         label: 'Tên bệnh nhân',
       },
       {
-        id: 'TestStatus',
+        id: 'testStatus',
         icon: 'check-square-offset',
         label: 'Tình trạng xét nghiệm',
         render: (control) => (
           <FilterGroupSelect
             control={control}
-            name="TestStatus"
+            name="testStatus"
             icon="check-square-offset"
             label="Tình trạng"
           >
@@ -145,39 +145,39 @@ function TestManagement() {
         ),
       },
       {
-        id: 'PhoneNo',
+        id: 'phoneNo',
         icon: 'phone',
         label: 'Số điện thoại',
       },
       {
-        id: 'Code',
+        id: 'code',
         icon: 'smiley-nervous',
         label: 'Mã bệnh nhân',
       },
       {
-        id: 'Email',
+        id: 'email',
         icon: 'envelope',
         label: 'Email',
       },
       {
-        id: 'Sex',
+        id: 'sex',
         icon: 'gender-intersex',
         label: 'Giới tính',
         render: (control) => (
           <FilterGroupGender
             control={control}
-            name="Sex"
+            name="sex"
             icon="gender-intersex"
             label="Giới tính"
           />
         ),
       },
       {
-        id: 'DoctorId',
+        id: 'doctorId',
         icon: 'first-aid-kit',
         label: 'Bác sĩ',
         render: (control) => (
-          <FilterGroupSelect control={control} name="DoctorId" icon="first-aid-kit" label="Bác sĩ">
+          <FilterGroupSelect control={control} name="doctorId" icon="first-aid-kit" label="Bác sĩ">
             {doctorState.entities.map((doctor) => (
               <option key={`doctor_${doctor.id}`} value={doctor.id}>
                 {doctor.fullName}

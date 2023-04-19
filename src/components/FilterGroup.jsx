@@ -134,7 +134,7 @@ function FilterGroup({ fields, onFilter, children, sx }) {
   const onSubmit = (values) => {
     const filters = Object.keys(values)
       .map((k) => ({ fieldName: k, value: values[k] }))
-      .filter((f) => f.value !== '');
+      .filter((f) => f.value !== '' && f.value !== null && f.value !== undefined);
 
     onFilter(filters);
   };

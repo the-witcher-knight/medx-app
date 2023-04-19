@@ -60,12 +60,12 @@ const initDoctorColumns = () => {
 
 const filterFields = [
   {
-    id: 'FullName',
+    id: 'fullName',
     icon: 'address-book',
     label: 'Tên bác sĩ',
   },
   {
-    id: 'PhoneNo',
+    id: 'phoneNo',
     icon: 'phone',
     label: 'Số điện thoại',
   },

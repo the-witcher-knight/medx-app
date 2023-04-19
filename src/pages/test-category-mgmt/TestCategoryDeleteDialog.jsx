@@ -24,7 +24,7 @@ function TestCategoryDeleteDialog() {
 
   const { id } = useParams();
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
-  const { loading, entity } = useSelector((state) => state.testCategory);
+  const { loading, entity, updateSuccess } = useSelector((state) => state.testCategory);
 
   useEffect(() => {
     if (id) {
@@ -42,6 +42,12 @@ function TestCategoryDeleteDialog() {
       navigate(location.state?.background?.pathname || -1);
     }, 500);
   };
+
+  useEffect(() => {
+    if (updateSuccess) {
+      handleClose();
+    }
+  }, [updateSuccess]);
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>

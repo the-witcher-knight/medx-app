@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import Split from 'react-split';
 import {
@@ -11,6 +11,8 @@ import {
   Button,
   Checkbox,
   Flex,
+  FormControl,
+  FormLabel,
   HStack,
   Input,
   InputGroup,
@@ -60,7 +62,7 @@ import {
 } from 'store/testManageSlice';
 
 import { AppIcon, DataGrid, withFormController, withSuspense } from 'components';
-import { FilterGroupGender, FilterGroupItem, FilterGroupSelect } from 'components/FilterGroup';
+import { FilterGroupItem, FilterGroupSelect } from 'components/FilterGroup';
 import LinearPagination from 'components/LinearPagination';
 
 import './MedicalTestManagement.css';
@@ -117,7 +119,25 @@ const initTestFilter = (doctors) => [
     icon: 'gender-intersex',
     label: 'Giới tính',
     render: (control) => (
-      <FilterGroupGender control={control} name="sex" icon="gender-intersex" label="Giới tính" />
+      <Controller
+        name="sex"
+        control={control}
+        render={({ field: { onChange, onBlur, value, ref } }) => (
+          <FormControl display="flex" alignItems="center" sx={{ mt: 1, alignItems: 'center' }}>
+            <FormLabel htmlFor="sex_type" mb="0">
+              Là nữ:
+            </FormLabel>
+            <Switch
+              id="sex_type"
+              size="sm"
+              onChange={onChange}
+              onBlur={onBlur}
+              value={value}
+              ref={ref}
+            />
+          </FormControl>
+        )}
+      />
     ),
   },
   {
@@ -413,7 +433,7 @@ function MedicalTestManagement() {
       address: '',
       birthday: '',
       email: '',
-      sex: 4,
+      sex: 0,
       diagnose: 'KTSK',
       testStatus: TestStatus.Pennding.value,
       doctorId: '',
@@ -504,7 +524,7 @@ function MedicalTestManagement() {
         doctorName: testManageState.entity.doctorName,
         email: testManageState.entity.email,
         phoneNo: testManageState.entity.phoneNumber,
-        sex: testManageState.entity.sex,
+        sex: Number(testManageState.entity.sex) > 0,
         testStatus: testManageState.entity.testStatus,
         personalId: testManageState.entity.personalId,
       };
@@ -536,6 +556,11 @@ function MedicalTestManagement() {
   const handleSaveDetail = (id, inputIdx) => {
     dispatch(updateTestDetail({ id, result: detailInputRefs.current[inputIdx].value }));
     setTheUploadDetail(id);
+  };
+
+  const handleUpdateTrueFalseTestDetail = (detailData, checked) => {
+    dispatch(updateTestDetail({ ...detailData, trueFalseResult: checked }));
+    setTheUploadDetail(detailData.id);
   };
 
   const handleMoveNextInputDetail = (curr) => {
@@ -628,6 +653,10 @@ function MedicalTestManagement() {
   useEffect(() => {
     if (patientState.entity) {
       Object.keys(patientState.entity).forEach((k) => {
+        if (k === 'sex') {
+          mixtureFormMethods.setValue(k, Number(patientState.entity[k]) > 0);
+          return;
+        }
         mixtureFormMethods.setValue(k, patientState.entity[k]);
       });
     }
@@ -644,7 +673,7 @@ function MedicalTestManagement() {
       personalId: values.personalId,
       code: values.code,
       email: values.email,
-      sex: values.sex,
+      sex: Number(values.sex),
       timeType: values.searchType,
       day: values.searchDate,
     };
@@ -707,6 +736,7 @@ function MedicalTestManagement() {
           address: values.address,
           email: values.email,
           personalId: values.personalId,
+          sex: Number(values.sex),
         })
       );
     } else {
@@ -722,6 +752,7 @@ function MedicalTestManagement() {
           address: values.address,
           email: values.email,
           personalId: values.personalId,
+          sex: Number(values.sex),
         })
       );
     }
@@ -759,6 +790,7 @@ function MedicalTestManagement() {
         address: values.address,
         email: values.email,
         personalId: values.personalId,
+        sex: Number(values.sex),
       })
     );
   };
@@ -895,7 +927,7 @@ function MedicalTestManagement() {
                 <Tr>
                   <Th>Tên xét nghiệm</Th>
                   <Th>Kết quả</Th>
-                  <Th>Âm tính</Th>
+                  <Th>Dương tính</Th>
                   <Th>Giá tiền</Th>
                 </Tr>
               </Thead>
@@ -918,7 +950,15 @@ function MedicalTestManagement() {
                           }
                         />
                       </Td>
-                      <Td>{tdetail.isShowTrueFalseResult && <Switch />}</Td>
+                      <Td>
+                        {tdetail.isShowTrueFalseResult && (
+                          <Switch
+                            onChange={(e) =>
+                              handleUpdateTrueFalseTestDetail(tdetail, e.target.checked)
+                            }
+                          />
+                        )}
+                      </Td>
                       <Td>{CurrencyFormatter.format(tdetail.price)}</Td>
                     </Tr>
                   ))
