@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { API_URL } from 'constants';
+import StorageAPI from 'common/storageAPI';
+import { API_URL, AuthLoginKey } from 'constants';
 
 const axiosInstance = axios.create({
   baseURL: `${API_URL}/TestGroup`,
@@ -7,6 +8,19 @@ const axiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const newCfg = { ...config };
+    const token = StorageAPI.local.get(AuthLoginKey);
+    if (token) {
+      newCfg.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return newCfg;
+  },
+  (err) => Promise.reject(err)
+);
 
 const testGroupAPI = {
   getAll({ filters, sortBy, pageIndex, pageSize }) {

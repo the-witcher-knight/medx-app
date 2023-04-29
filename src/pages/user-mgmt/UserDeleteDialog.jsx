@@ -25,7 +25,7 @@ function UserDeleteDialog() {
 
   const { id } = useParams();
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
-  const { loading, entity } = useSelector((state) => state.doctor);
+  const { loading, entity } = useSelector((state) => state.user);
 
   useEffect(() => {
     if (id) {
@@ -52,7 +52,7 @@ function UserDeleteDialog() {
         <ModalCloseButton />
         <ModalBody>
           <Text as="h4" fontSize="lg">
-            Bạn có chắc chắn muốn xóa người dùng &quot;{entity?.userName}&quot;?
+            Bạn có chắc chắn muốn xóa người dùng &quot;{entity?.email}&quot;?
           </Text>
         </ModalBody>
 

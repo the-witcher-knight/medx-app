@@ -9,6 +9,7 @@ import {
   HStack,
   Input,
   Select,
+  Stack,
   Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
@@ -18,13 +19,38 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { userAPI } from 'apis';
 import { toastify } from 'common/toastify';
 import { fetchUsers } from 'store/userSlice';
 
-import { ActionButtonGroup, AppIcon, DataGrid, FilterGroup, withSuspense } from 'components';
+import { AppIcon, DataGrid, FilterGroup, withSuspense } from 'components';
+import { ActionButton } from 'components/ActionButtonGroup';
 
-const initUserColumns = () => {
+const initUserColumns = (location) => {
   const columnHelper = createColumnHelper();
+
+  const handleResetPassword = (id) => {
+    userAPI.resetByID(id).then(
+      (resp) => {
+        // eslint-disable-next-line no-console
+        console.log(resp);
+        toastify({
+          title: 'Reset mật khẩu',
+          description: 'Reset mật khẩu cho user thành công',
+          status: 'success',
+        });
+      },
+      (err) => {
+        // eslint-disable-next-line no-console
+        console.log(err);
+        toastify({
+          title: 'Reset mật khẩu',
+          description: 'Reset mật khẩu cho user thất bại',
+          status: 'error',
+        });
+      }
+    );
+  };
 
   return [
     columnHelper.accessor('userName', {
@@ -37,7 +63,21 @@ const initUserColumns = () => {
     }),
     columnHelper.accessor('id', {
       header: '',
-      cell: (info) => <ActionButtonGroup path="/user" id={info.getValue()} />,
+      cell: (info) => (
+        <Stack direction="row" spacing={2}>
+          <Button colorScheme="teal" size="sm" onClick={() => handleResetPassword(info.getValue())}>
+            <AppIcon icon="pen" />
+          </Button>
+
+          <ActionButton
+            location={location}
+            path={`/user/${info.getValue()}/delete`}
+            colorScheme="red"
+            label="Xóa"
+            icon="trash"
+          />
+        </Stack>
+      ),
     }),
   ];
 };
@@ -55,7 +95,7 @@ function UserManagement() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const columns = useMemo(() => initUserColumns(), []);
+  const columns = useMemo(() => initUserColumns(location), []);
   const { entities, loading, error } = useSelector((state) => state.user);
   const [sorting, setSorting] = useState([{ id: 'email', desc: false }]);
   const [filters, setFilters] = useState([]);

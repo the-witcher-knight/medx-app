@@ -28,7 +28,7 @@ export const fetchUsers = createAsyncThunk('user/fetchAll', async (criteria) => 
 export const fetchUser = createAsyncThunk('user/fetchOne', async (id) => {
   const resp = await userAPI.getByID(id);
 
-  return resp.data;
+  return resp.data.result;
 });
 
 /**
