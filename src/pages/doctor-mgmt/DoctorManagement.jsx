@@ -77,7 +77,7 @@ function DoctorManagement() {
   const location = useLocation();
 
   const columns = useMemo(() => initDoctorColumns(), []);
-  const { entities, loading, error } = useSelector((state) => state.doctor);
+  const { entities, loading, updateSuccess, error } = useSelector((state) => state.doctor);
   const [sorting, setSorting] = useState([{ id: 'fullName', desc: false }]);
   const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
@@ -107,6 +107,19 @@ function DoctorManagement() {
       })
     );
   }, [filters, sorting, pagination.pageIndex, pagination.pageSize]);
+
+  useEffect(() => {
+    if (updateSuccess) {
+      dispatch(
+        fetchDoctors({
+          filters,
+          sortBy: { fieldName: sorting[0]?.id, accending: !sorting[0]?.desc },
+          pageIndex: pagination.pageIndex,
+          pageSize: pagination.pageSize,
+        })
+      );
+    }
+  }, [updateSuccess]);
 
   useEffect(() => {
     if (error) {

@@ -48,6 +48,7 @@ function AppTopbar({ routes, ...rest }) {
 
   const handleLogout = () => {
     StorageAPI.local.remove(AuthLoginKey);
+    window.location.reload(false); // Reload page
   };
 
   return (

@@ -4,6 +4,7 @@ import { doctorAPI } from 'apis';
 const initialState = {
   entity: null,
   entities: [],
+  updateSuccess: null,
   loading: false,
   error: null,
 };
@@ -76,6 +77,8 @@ const doctorSlice = createSlice({
         } else {
           state.entities = data.data;
         }
+
+        state.updateSuccess = null;
       })
       .addCase(fetchDoctors.rejected, (state, action) => {
         state.loading = false;
@@ -84,20 +87,21 @@ const doctorSlice = createSlice({
       .addCase(createDoctor.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.updateSuccess = null;
       })
       .addCase(createDoctor.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
+        const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.updateSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
-        } else {
-          state.entities.push(data);
         }
       })
       .addCase(createDoctor.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.updateSuccess = false;
       })
       .addCase(fetchDoctor.pending, (state) => {
         state.loading = true;
@@ -120,40 +124,40 @@ const doctorSlice = createSlice({
       .addCase(updateDoctor.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.updateSuccess = null;
       })
       .addCase(updateDoctor.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
+        const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.updateSuccess = true;
         if (!isSuccess) {
           state.error = { message };
-        } else {
-          const idx = state.entities.findIndex((entity) => entity.id === data.id);
-          state.entities[idx] = data;
         }
       })
       .addCase(updateDoctor.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.updateSuccess = false;
       })
       .addCase(deleteDoctor.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.updateSuccess = null;
       })
       .addCase(deleteDoctor.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
-        const { arg } = action.meta;
+        const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.updateSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
-        } else {
-          state.entities.filter((entity) => entity.id !== arg);
         }
       })
       .addCase(deleteDoctor.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.updateSuccess = false;
       });
   },
 });

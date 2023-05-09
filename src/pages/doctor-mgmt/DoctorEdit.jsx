@@ -30,14 +30,14 @@ function DoctorEdit() {
 
   const schema = yup.object().shape({
     fullName: yup.string().required('Vui lòng nhập họ tên'),
-    phoneNo: yup
-      .string()
-      .required('Vui lòng nhập số điện thoại')
-      .length(10, 'Số điện thoại không hợp lệ'),
-    address: yup.string().required('Vui lòng nhập địa chỉ'),
-    email: yup.string().email().required('Vui lòng nhập email'),
-    title: yup.string().required('Vui lòng nhập tiêu đề'),
-    sex: yup.number().required('Vui lòng chọn giới tính'),
+    // phoneNo: yup
+    //   .string()
+    //   .required('Vui lòng nhập số điện thoại')
+    //   .length(10, 'Số điện thoại không hợp lệ'),
+    // address: yup.string().required('Vui lòng nhập địa chỉ'),
+    // email: yup.string().email().required('Vui lòng nhập email'),
+    // title: yup.string().required('Vui lòng nhập tiêu đề'),
+    // sex: yup.number().required('Vui lòng chọn giới tính'),
   });
   const { handleSubmit, setValue, reset, control } = useForm({
     defaultValues: {
