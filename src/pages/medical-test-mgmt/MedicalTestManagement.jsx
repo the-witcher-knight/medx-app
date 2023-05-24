@@ -1009,13 +1009,15 @@ function MedicalTestManagement() {
           <Wrap sx={{ p: 2 }} spacing={2}>
             {indicationState.entities.map((idc) => (
               <WrapItem key={`indication_${idc.id}`}>
-                <Checkbox
-                  value={idc.id}
-                  // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...indicationsMethods.getCheckboxProps({ value: idc.id })}
-                >
-                  {idc.name}
-                </Checkbox>
+                <Flex sx={{ w: '18rem', h: '4rem' }}>
+                  <Checkbox
+                    value={idc.id}
+                    // eslint-disable-next-line react/jsx-props-no-spreading
+                    {...indicationsMethods.getCheckboxProps({ value: idc.id })}
+                  >
+                    {idc.name}
+                  </Checkbox>
+                </Flex>
               </WrapItem>
             ))}
           </Wrap>
