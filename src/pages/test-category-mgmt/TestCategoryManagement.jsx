@@ -42,6 +42,10 @@ const initTestCategoryColumns = () => {
       header: 'Chỉ số cao',
       cell: (info) => info.getValue(),
     }),
+    columnHelper.accessor('displayLimit', {
+      header: 'Trị số bình thường',
+      cell: (info) => info.getValue(),
+    }),
     columnHelper.accessor('unitName', {
       header: 'Đơn vị',
       cell: (info) => info.getValue(),

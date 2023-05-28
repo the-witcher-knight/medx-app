@@ -64,6 +64,11 @@ export const deleteCategory = createAsyncThunk('testCategory/deleteOne', async (
 const testCategorySlice = createSlice({
   name: 'testCategory',
   initialState,
+  reducers: {
+    resetEntity(state) {
+      state.entity = {};
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(fetchTestCategories.pending, (state) => {
@@ -163,5 +168,7 @@ const testCategorySlice = createSlice({
       });
   },
 });
+
+export const { resetEntity } = testCategorySlice.actions;
 
 export default testCategorySlice.reducer;

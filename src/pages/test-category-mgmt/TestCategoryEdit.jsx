@@ -15,7 +15,12 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { createCategory, fetchCategory, updateCategory } from 'store/testCategorySlice';
+import {
+  createCategory,
+  fetchCategory,
+  resetEntity,
+  updateCategory,
+} from 'store/testCategorySlice';
 import { fetchTestGroups } from 'store/testGroupSlice';
 import { fetchUnits } from 'store/unitSlice';
 import * as yup from 'yup';
@@ -31,8 +36,9 @@ function TestCategoryEdit() {
   const schema = yup.object().shape({
     code: yup.string().required('Vui lòng nhập mã loại xét nghiệm'),
     name: yup.string().required('Vui lòng nhập tên loại xét nghiệm'),
-    lowerBound: yup.number().required('Vui lòng nhập ngưỡng thấp'),
-    upperBound: yup.string().required('Vui lòng nhập ngưỡng cao'),
+    lowerBound: yup.number(),
+    upperBound: yup.number(),
+    displayLimit: yup.string(),
     unitId: yup.string().required('Vui lòng chọn một loại đơn vị'),
     groupId: yup.string().required('Vui lòng chọn một nhóm xét nghiệm'),
     price: yup.string().required('Vui lòng nhập giá tiền').min(0, 'Hãy nhập số tiền hợp lệ'),
@@ -43,6 +49,7 @@ function TestCategoryEdit() {
       name: '',
       lowerBound: 0,
       upperBound: 0,
+      displayLimit: '',
       unitId: '',
       groupId: '',
       price: 0,
@@ -100,6 +107,7 @@ function TestCategoryEdit() {
 
   const handleClose = () => {
     onClose();
+    dispatch(resetEntity());
     setTimeout(() => {
       navigate(location.state?.background?.pathname || -1);
     }, 500);
@@ -124,6 +132,12 @@ function TestCategoryEdit() {
             <ValidatedInput control={control} name="name" type="text" label="Tên loại xét nghiệm" />
             <ValidatedInput control={control} name="lowerBound" type="number" label="Ngưỡng thấp" />
             <ValidatedInput control={control} name="upperBound" type="number" label="Ngưỡng cao" />
+            <ValidatedInput
+              control={control}
+              name="displayLimit"
+              type="string"
+              label="Trị số bình thường"
+            />
             <ValidatedSelect control={control} name="unitId" label="Đơn vị">
               <option key="unit_none" value="">
                 none
