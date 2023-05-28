@@ -4,6 +4,7 @@ import { indicationAPI } from 'apis';
 const initialState = {
   entity: null,
   entities: [],
+  updateSuccess: null,
   loading: false,
   error: null,
 };
@@ -76,6 +77,8 @@ const indicationSlice = createSlice({
         } else {
           state.entities = data.data;
         }
+
+        state.updateSuccess = null;
       })
       .addCase(fetchIndications.rejected, (state, action) => {
         state.loading = false;
@@ -84,11 +87,13 @@ const indicationSlice = createSlice({
       .addCase(createIndication.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.updateSuccess = null;
       })
       .addCase(createIndication.fulfilled, (state, action) => {
         const { data, isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.updateSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
         } else {
@@ -98,6 +103,7 @@ const indicationSlice = createSlice({
       .addCase(createIndication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.updateSuccess = false;
       })
       .addCase(fetchIndication.pending, (state) => {
         state.loading = true;
@@ -120,40 +126,40 @@ const indicationSlice = createSlice({
       .addCase(updateIndication.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.updateSuccess = null;
       })
       .addCase(updateIndication.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
+        const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.updateSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
-        } else {
-          const idx = state.entities.findIndex((entity) => entity.id === data.id);
-          state.entities[idx] = data;
         }
       })
       .addCase(updateIndication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.updateSuccess = false;
       })
       .addCase(deleteIndication.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.updateSuccess = null;
       })
       .addCase(deleteIndication.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
-        const { arg } = action.meta;
+        const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.updateSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
-        } else {
-          state.entities.filter((entity) => entity.id !== arg);
         }
       })
       .addCase(deleteIndication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.updateSuccess = false;
       });
   },
 });

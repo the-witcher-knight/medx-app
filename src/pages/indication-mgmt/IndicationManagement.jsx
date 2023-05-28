@@ -52,7 +52,7 @@ function IndicationManagement() {
   const location = useLocation();
 
   const columns = useMemo(() => initIndicationColumns(), []);
-  const { entities, loading, error } = useSelector((state) => state.indication);
+  const { entities, loading, updateSuccess, error } = useSelector((state) => state.indication);
   const [sorting, setSorting] = useState([{ id: 'id', desc: false }]);
   const [filters, setFilters] = useState([]);
   const [pagination, setPagination] = useState({
@@ -82,6 +82,19 @@ function IndicationManagement() {
       })
     );
   }, [filters, sorting, pagination.pageIndex, pagination.pageSize]);
+
+  useEffect(() => {
+    if (updateSuccess) {
+      dispatch(
+        fetchIndications({
+          filters,
+          sortBy: { fieldName: sorting[0]?.id, accending: !sorting[0]?.desc },
+          pageIndex: pagination.pageIndex,
+          pageSize: pagination.pageSize,
+        })
+      );
+    }
+  }, [updateSuccess]);
 
   useEffect(() => {
     if (error) {

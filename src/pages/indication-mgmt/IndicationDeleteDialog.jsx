@@ -24,7 +24,7 @@ function IndicationDeleteDialog() {
 
   const { id } = useParams();
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
-  const { loading, entity } = useSelector((state) => state.indication);
+  const { loading, entity, updateSuccess } = useSelector((state) => state.indication);
 
   useEffect(() => {
     if (id) {
@@ -42,6 +42,12 @@ function IndicationDeleteDialog() {
       navigate(location.state?.background?.pathname || -1);
     }, 500);
   };
+
+  useEffect(() => {
+    if (updateSuccess) {
+      handleClose();
+    }
+  }, [updateSuccess]);
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
