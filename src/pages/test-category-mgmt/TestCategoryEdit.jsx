@@ -136,7 +136,7 @@ function TestCategoryEdit() {
               control={control}
               name="displayLimit"
               type="string"
-              label="Trị số bình thường"
+              label="Chỉ số bình thường"
             />
             <ValidatedSelect control={control} name="unitId" label="Đơn vị">
               <option key="unit_none" value="">
