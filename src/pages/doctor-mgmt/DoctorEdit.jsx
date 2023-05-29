@@ -52,11 +52,9 @@ function DoctorEdit() {
   });
 
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true });
-  const { entity, loading, error } = useSelector((state) => state.doctor);
+  const { entity, loading } = useSelector((state) => state.doctor);
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log(id);
     if (id) {
       dispatch(fetchDoctor(id));
     }

@@ -21,10 +21,7 @@ import dayjs from 'dayjs';
 import { createPatient, fetchPatient, updatePatient } from 'store/patientSlice';
 import * as yup from 'yup';
 
-import { AppIcon } from 'components';
-import ValidatedInput from 'components/ValidatedInput';
-import ValidatedSelect from 'components/ValidatedSelect';
-import withSuspense from 'components/withSuspense';
+import { AppIcon, ValidatedInput, ValidatedSelect, withSuspense } from 'components';
 
 function PatientEdit() {
   const { id } = useParams();
@@ -34,13 +31,13 @@ function PatientEdit() {
 
   const schema = yup.object().shape({
     fullName: yup.string().required('Vui lòng nhập họ tên'),
-    personalId: yup.string().required('Vui lòng nhập căn cước công dân'),
-    phoneNo: yup
-      .string()
-      .required('Vui lòng nhập số điện thoại')
-      .length(10, 'Số điện thoại không hợp lệ'),
-    address: yup.string().required('Vui lòng nhập địa chỉ'),
-    email: yup.string().email().notRequired(),
+    // personalId: yup.string().required('Vui lòng nhập căn cước công dân'),
+    // phoneNo: yup
+    //   .string()
+    //   .required('Vui lòng nhập số điện thoại')
+    //   .length(10, 'Số điện thoại không hợp lệ'),
+    // address: yup.string().required('Vui lòng nhập địa chỉ'),
+    // email: yup.string().email().notRequired(),
     sex: yup.number().required('Vui lòng chọn giới tính'),
   });
   const { handleSubmit, setValue, reset, control } = useForm({

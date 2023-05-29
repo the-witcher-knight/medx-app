@@ -130,7 +130,7 @@ const doctorSlice = createSlice({
         const { isSuccess, message } = action.payload;
 
         state.loading = false;
-        state.updateSuccess = true;
+        state.updateSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
         }
