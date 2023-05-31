@@ -3,12 +3,16 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
+  AbsoluteCenter,
   Alert,
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Box,
   Button,
+  Center,
   Checkbox,
+  Divider,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -17,17 +21,17 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
-  Stack,
-  Text,
   useCheckboxGroup,
   useDisclosure,
+  Wrap,
+  WrapItem,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { createIndication, fetchIndication, updateIndication } from 'store/indicationSlice';
 import { fetchTestCategories } from 'store/testCategorySlice';
 import * as yup from 'yup';
 
-import { AppIcon, ValidatedInput, withSuspense } from 'components';
+import { AppIcon, ValidatedCheck, ValidatedInput, withSuspense } from 'components';
 
 function IndicationEdit() {
   const { id } = useParams();
@@ -41,6 +45,7 @@ function IndicationEdit() {
   const { handleSubmit, setValue, reset, control } = useForm({
     defaultValues: {
       name: '',
+      prioritize: false,
     },
     resolver: yupResolver(schema),
   });
@@ -95,9 +100,9 @@ function IndicationEdit() {
     }));
 
     if (id) {
-      dispatch(updateIndication({ id, name: values.name, tests }));
+      dispatch(updateIndication({ id, name: values.name, prioritize: values.prioritize, tests }));
     } else {
-      dispatch(createIndication({ name: values.name, tests }));
+      dispatch(createIndication({ name: values.name, prioritize: values.prioritize, tests }));
     }
   };
 
@@ -128,7 +133,7 @@ function IndicationEdit() {
             id="update-form"
             onSubmit={handleSubmit(onSubmit)}
             flexDir="column"
-            gap={2}
+            gap={5}
           >
             <ValidatedInput
               control={control}
@@ -137,13 +142,16 @@ function IndicationEdit() {
               label="Tên chỉ mục xét nghiệm"
             />
 
+            <ValidatedCheck control={control} name="prioritize" label="Ưu tiên" />
+
             <Flex direction="column">
-              <Text as="h2" fontSize="md" fontWeight="medium">
-                Các loại xét nghiệm:
-              </Text>
+              <Box sx={{ position: 'relative', padding: '10' }}>
+                <Divider />
+                <AbsoluteCenter>Các loại xét nghiệm</AbsoluteCenter>
+              </Box>
 
               {testCategoryState.entities.length > 0 ? (
-                <Stack
+                <Wrap
                   sx={{
                     overflowY: 'auto',
                     height: '40rem',
@@ -151,16 +159,20 @@ function IndicationEdit() {
                   spacing={2}
                 >
                   {testCategoryState.entities.map((cate) => (
-                    <Checkbox
-                      key={`test_category_${cate.id}`}
-                      value={cate.id}
-                      // eslint-disable-next-line react/jsx-props-no-spreading
-                      {...checkBoxMethods.getCheckboxProps({ value: cate.id })}
-                    >
-                      {cate.name}
-                    </Checkbox>
+                    <WrapItem key={`test_category_${cate.id}`}>
+                      <Center w="180px" h="80px">
+                        <Checkbox
+                          key={`test_category_${cate.id}`}
+                          value={cate.id}
+                          // eslint-disable-next-line react/jsx-props-no-spreading
+                          {...checkBoxMethods.getCheckboxProps({ value: cate.id })}
+                        >
+                          {cate.name}
+                        </Checkbox>
+                      </Center>
+                    </WrapItem>
                   ))}
-                </Stack>
+                </Wrap>
               ) : (
                 <Alert status="warning">
                   <AlertIcon />

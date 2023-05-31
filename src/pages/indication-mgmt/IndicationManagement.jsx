@@ -31,6 +31,10 @@ const initIndicationColumns = () => {
       header: 'Tên chỉ mục',
       cell: (info) => info.getValue(),
     }),
+    columnHelper.accessor('prioritize', {
+      header: 'Ưu tiên',
+      cell: (info) => <AppIcon weight="bold" icon={info.getValue() ? 'check' : 'x'} />,
+    }),
     columnHelper.accessor('id', {
       header: '',
       cell: (info) => <ActionButtonGroup path="/indication" id={info.getValue()} />,

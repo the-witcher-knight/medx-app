@@ -281,31 +281,15 @@ const TestDetailResultForm = React.forwardRef(
   }
 );
 
-const initTestColumns = (onClickView, onClickPrint, onChangeStatus) => {
+const initTestColumns = (onClickPrint, onChangeStatus) => {
   const columnHelper = createColumnHelper();
 
   return [
     columnHelper.accessor('id', {
       header: '',
       cell(info) {
-        const onClickEye = () => {
-          info.table.toggleAllRowsSelected(false);
-          onClickView(info.getValue());
-          info.row.toggleSelected(true);
-        };
-
         return (
           <HStack>
-            <Tooltip label="Xem chi tiết">
-              <Button
-                type="button"
-                colorScheme={info.row.getIsSelected() ? 'teal' : 'gray'}
-                onClick={onClickEye}
-              >
-                <AppIcon icon="eye" />
-              </Button>
-            </Tooltip>
-
             <Tooltip label="In hóa đơn">
               <Button
                 type="button"
@@ -360,12 +344,32 @@ const initTestColumns = (onClickView, onClickPrint, onChangeStatus) => {
         );
       },
     }),
-    columnHelper.accessor('code', {
-      header: 'Mã bệnh nhân',
-      cell: (info) => info.getValue(),
-    }),
     columnHelper.accessor('patientName', {
       header: 'Tên bệnh nhân',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('birthDay', {
+      header: 'Năm sinh',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('sex', {
+      header: 'Giới tính',
+      cell(info) {
+        const gender = Object.keys(GenderConstant);
+        return gender[info.getValue()];
+      },
+    }),
+    columnHelper.accessor('doctorName', {
+      header: 'Tên bác sĩ',
+      cell: (info) => info.getValue(),
+    }),
+
+    columnHelper.accessor('dayOfTest', {
+      header: 'Ngày xét nghiệm',
+      cell: (info) => dayjs(info.getValue()).format('YYYY-MM-DD HH:mm'),
+    }),
+    columnHelper.accessor('code', {
+      header: 'Mã bệnh nhân',
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor('personalId', {
@@ -375,21 +379,6 @@ const initTestColumns = (onClickView, onClickPrint, onChangeStatus) => {
     columnHelper.accessor('diagnose', {
       header: 'Chuẩn đoán',
       cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor('dayOfTest', {
-      header: 'Ngày xét nghiệm',
-      cell: (info) => dayjs(info.getValue()).format('YYYY-MM-DD HH:mm'),
-    }),
-    columnHelper.accessor('doctorName', {
-      header: 'Tên bác sĩ',
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor('sex', {
-      header: 'Giới tính',
-      cell(info) {
-        const gender = Object.keys(GenderConstant);
-        return gender[info.getValue()];
-      },
     }),
     columnHelper.accessor('phoneNumber', {
       header: 'Số điện thoại',
@@ -442,11 +431,11 @@ function MedicalTestManagement() {
     },
   });
 
-  const handleClickView = (testID) => {
-    setSelectedTestID(testID);
-    dispatch(fetchTest(testID));
-    dispatch(fetchTestDetails(testID));
-    dispatch(fetchTestIndications(testID));
+  const handleViewTestDetail = (testData) => {
+    setSelectedTestID(testData.id);
+    dispatch(fetchTest(testData.id));
+    dispatch(fetchTestDetails(testData.id));
+    dispatch(fetchTestIndications(testData.id));
   };
 
   const handleClickPrint = (type) => (testID) => {
@@ -477,10 +466,7 @@ function MedicalTestManagement() {
     setUpdateStatusSuccess(true);
   };
 
-  const columns = useMemo(
-    () => initTestColumns(handleClickView, handleClickPrint, handleChangeStatus),
-    []
-  );
+  const columns = useMemo(() => initTestColumns(handleClickPrint, handleChangeStatus), []);
   const testManageState = useSelector((state) => state.testManage);
   const [sorting, setSorting] = useState([{ id: 'code', desc: true }]);
   const [pagination, setPagination] = useState({
@@ -898,7 +884,7 @@ function MedicalTestManagement() {
 
       <Split className="split" minSize={100}>
         <DataGrid
-          variant="striped"
+          variant="simple"
           tableDef={tableDef}
           sx={{
             h: '27rem',
@@ -909,6 +895,7 @@ function MedicalTestManagement() {
             overflow: 'auto',
             resize: 'vertical',
           }}
+          onSelectRow={handleViewTestDetail}
         />
 
         <Box>
@@ -1007,19 +994,30 @@ function MedicalTestManagement() {
 
         {indicationState.entities.length > 0 ? (
           <Wrap sx={{ p: 2 }} spacing={2}>
-            {indicationState.entities.map((idc) => (
-              <WrapItem key={`indication_${idc.id}`}>
-                <Flex sx={{ w: '18rem', h: '4rem' }}>
-                  <Checkbox
-                    value={idc.id}
-                    // eslint-disable-next-line react/jsx-props-no-spreading
-                    {...indicationsMethods.getCheckboxProps({ value: idc.id })}
-                  >
-                    {idc.name}
-                  </Checkbox>
-                </Flex>
-              </WrapItem>
-            ))}
+            {indicationState.entities
+              .slice()
+              .sort((a, b) => {
+                if (a.prioritize && !b.prioritize) {
+                  return -1; // "a" has prioritize true, "b" has prioritize false
+                }
+                if (!a.prioritize && b.prioritize) {
+                  return 1; // "b" has prioritize true, "a" has prioritize false
+                }
+                return 0; // Both items have prioritize true or prioritize false
+              })
+              .map((idc) => (
+                <WrapItem key={`indication_${idc.id}`}>
+                  <Flex sx={{ w: '18rem', h: '4rem' }}>
+                    <Checkbox
+                      value={idc.id}
+                      // eslint-disable-next-line react/jsx-props-no-spreading
+                      {...indicationsMethods.getCheckboxProps({ value: idc.id })}
+                    >
+                      {idc.name}
+                    </Checkbox>
+                  </Flex>
+                </WrapItem>
+              ))}
           </Wrap>
         ) : (
           <Alert status="warning">

@@ -9,7 +9,15 @@ import AppIcon from './AppIcon';
  * @param {Object} props - props of DataGrid component
  * @returns React component
  */
-function DataGrid({ tableDef, variant = 'striped', sx }) {
+function DataGrid({ tableDef, variant = 'striped', onSelectRow, sx }) {
+  const handleSelectRow = (row) => {
+    tableDef.toggleAllRowsSelected(false);
+    if (onSelectRow != null) {
+      onSelectRow(row.original);
+    }
+    row.toggleSelected(true);
+  };
+
   return (
     <TableContainer sx={sx}>
       <Table position="relative" variant={variant}>
@@ -54,12 +62,16 @@ function DataGrid({ tableDef, variant = 'striped', sx }) {
         <Tbody>
           {tableDef.getRowModel().rows?.length > 0 &&
             tableDef.getRowModel().rows.map((row) => (
-              <Tr key={row.id} className={row}>
+              <Tr key={row.id} sx={row.getIsSelected() && { backgroundColor: 'blue.100' }}>
                 {row.getVisibleCells().map((cell) => {
                   // see https://tanstack.com/table/v8/docs/api/core/column-def#meta to type this correctly
                   const { meta } = cell.column.columnDef;
                   return (
-                    <Td key={cell.id} isNumeric={meta?.isNumeric}>
+                    <Td
+                      key={cell.id}
+                      isNumeric={meta?.isNumeric}
+                      onClick={() => handleSelectRow(row)}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </Td>
                   );
