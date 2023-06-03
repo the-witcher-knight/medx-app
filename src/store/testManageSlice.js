@@ -9,6 +9,7 @@ const initialState = {
   page: null,
   loading: false,
   testDetailUploading: null,
+  updateSuccess: null,
   error: null,
 };
 
@@ -120,6 +121,8 @@ const testManageSlice = createSlice({
         const { data, isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.updateSuccess = null;
+
         if (!isSuccess) {
           state.error = { message };
         } else {
@@ -157,59 +160,59 @@ const testManageSlice = createSlice({
       .addCase(createTest.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.updateSuccess = null;
       })
       .addCase(createTest.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
+        const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.updateSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
-        } else {
-          state.entities.push(data);
-          state.entity = data; // Save new created test to store
         }
       })
       .addCase(createTest.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.updateSuccess = false;
       })
       .addCase(updateTest.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.updateSuccess = null;
       })
       .addCase(updateTest.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
+        const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.updateSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
-        } else {
-          const idx = state.entities.findIndex((entity) => entity.id === data.id);
-          state.entities[idx] = data;
         }
       })
       .addCase(updateTest.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.updateSuccess = false;
       })
       .addCase(deleteTest.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.updateSuccess = null;
       })
       .addCase(deleteTest.fulfilled, (state, action) => {
-        const { data, isSuccess, message } = action.payload;
-        const { arg } = action.meta;
+        const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.updateSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
-        } else {
-          state.entities.filter((entity) => entity.id !== arg);
         }
       })
       .addCase(deleteTest.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.updateSuccess = false;
       })
       .addCase(fetchTestIndications.pending, (state) => {
         state.loading = false;

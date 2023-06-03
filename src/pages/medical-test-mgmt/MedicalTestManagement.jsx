@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Split from 'react-split';
 import {
   Alert,
@@ -408,6 +409,8 @@ const InputRefered = React.forwardRef((props, ref) => (
 // ===========================================================================
 function MedicalTestManagement() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [selectedTestID, setSelectedTestID] = useState(null);
   const [updateStatusSuccess, setUpdateStatusSuccess] = useState(null);
@@ -490,7 +493,7 @@ function MedicalTestManagement() {
   useEffect(() => {
     dispatch(
       fetchTests({
-        filters: [],
+        filters: [], // Filter by filter function
         sortBy: { fieldName: sorting[0]?.id, accending: !sorting[0]?.desc },
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
@@ -499,20 +502,35 @@ function MedicalTestManagement() {
   }, [sorting, pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
+    if (testManageState.updateSuccess) {
+      dispatch(
+        fetchTests({
+          filters: [],
+          sortBy: { fieldName: sorting[0]?.id, accending: !sorting[0]?.desc },
+          pageIndex: pagination.pageIndex,
+          pageSize: pagination.pageSize,
+        })
+      );
+    }
+  }, [testManageState.updateSuccess]);
+
+  useEffect(() => {
     if (testManageState.entity) {
+      const testinfo = testManageState.entity;
+
       const values = {
-        fullName: testManageState.entity.patientName,
-        address: testManageState.entity.address,
-        birthday: dayjs(testManageState.entity.birthDay).format('YYYY-MM-DD'),
-        code: testManageState.entity.code,
-        diagnose: testManageState.entity.diagnose,
-        doctorId: testManageState.entity.doctorId,
-        doctorName: testManageState.entity.doctorName,
-        email: testManageState.entity.email,
-        phoneNo: testManageState.entity.phoneNumber,
-        sex: Number(testManageState.entity.sex) > 0,
-        testStatus: testManageState.entity.testStatus,
-        personalId: testManageState.entity.personalId,
+        fullName: testinfo.patientName,
+        address: testinfo.address,
+        birthday: dayjs(testinfo.birthDay).format('YYYY-MM-DD'),
+        code: testinfo.code,
+        diagnose: testinfo.diagnose,
+        doctorId: testinfo.doctorId,
+        doctorName: testinfo.doctorName,
+        email: testinfo.email,
+        phoneNo: testinfo.phoneNumber,
+        sex: Number(testinfo.sex) > 0,
+        testStatus: testinfo.testStatus,
+        personalId: testinfo.personalId,
       };
 
       Object.keys(values).forEach((k) => {
@@ -781,6 +799,11 @@ function MedicalTestManagement() {
     );
   };
 
+  const handleDeleteTest = () => {
+    navigate(`${selectedTestID}/delete`, { state: { background: location } });
+    setSelectedTestID(null);
+  };
+
   const handleRefresh = () => {
     dispatch(
       fetchTests({
@@ -846,14 +869,27 @@ function MedicalTestManagement() {
             </Button>
           </Tooltip>
 
-          <Button
-            variant="solid"
-            colorScheme="telegram"
-            onClick={handleRefresh}
-            isLoading={testManageState.loading}
-          >
-            <AppIcon icon="arrow-counter-clockwise" />
-          </Button>
+          <Tooltip label="Xóa thông tin xét nghiệm">
+            <Button
+              variant="solid"
+              colorScheme="red"
+              isDisabled={selectedTestID === null}
+              onClick={handleDeleteTest}
+            >
+              <AppIcon icon="trash" />
+            </Button>
+          </Tooltip>
+
+          <Tooltip label="Tải lại">
+            <Button
+              variant="solid"
+              colorScheme="telegram"
+              onClick={handleRefresh}
+              isLoading={testManageState.loading}
+            >
+              <AppIcon icon="arrow-counter-clockwise" />
+            </Button>
+          </Tooltip>
 
           <Input
             disabled
