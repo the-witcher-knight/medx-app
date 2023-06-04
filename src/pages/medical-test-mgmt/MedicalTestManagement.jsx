@@ -44,7 +44,7 @@ import {
 import reportAPI from 'apis/report';
 import CurrencyFormatter from 'common/money-formatter';
 import { toastify } from 'common/toastify';
-import { GenderConstant } from 'constants';
+import { DefaultDoctorID, GenderConstant } from 'constants';
 import TestStatus from 'constants/test-status';
 import dayjs from 'dayjs';
 import { fetchDoctors } from 'store/doctorSlice';
@@ -75,6 +75,25 @@ const initTestFilter = (doctors) => [
     label: 'Tên bệnh nhân',
   },
   {
+    id: 'birthday',
+    icon: 'calendar',
+    label: 'Ngày sinh',
+    render: (control) => (
+      <FilterGroupItem
+        control={control}
+        icon="calendar"
+        name="birthday"
+        label="Ngày sinh"
+        type="date"
+      />
+    ),
+  },
+  {
+    id: 'address',
+    icon: 'map-pin',
+    label: 'Địa chỉ',
+  },
+  {
     id: 'phoneNo',
     icon: 'phone',
     label: 'Số điện thoại',
@@ -91,25 +110,7 @@ const initTestFilter = (doctors) => [
     label: 'CCCD',
     hasSearch: true,
   },
-  {
-    id: 'address',
-    icon: 'map-pin',
-    label: 'Địa chỉ',
-  },
-  {
-    id: 'birthday',
-    icon: 'calendar',
-    label: 'Ngày sinh',
-    render: (control) => (
-      <FilterGroupItem
-        control={control}
-        icon="calendar"
-        name="birthday"
-        label="Ngày sinh"
-        type="date"
-      />
-    ),
-  },
+
   {
     id: 'email',
     icon: 'envelope',
@@ -118,7 +119,7 @@ const initTestFilter = (doctors) => [
   {
     id: 'sex',
     icon: 'gender-intersex',
-    label: 'Giới tính',
+    label: 'Nam/Nữ',
     render: (control) => (
       <Controller
         name="sex"
@@ -126,7 +127,7 @@ const initTestFilter = (doctors) => [
         render={({ field: { onChange, onBlur, value, ref } }) => (
           <FormControl display="flex" alignItems="center" sx={{ mt: 1, alignItems: 'center' }}>
             <FormLabel htmlFor="sex_type" mb="0">
-              Là nữ:
+              Nam/Nữ:
             </FormLabel>
             <Switch
               id="sex_type"
@@ -428,7 +429,7 @@ function MedicalTestManagement() {
       sex: 0,
       diagnose: 'KTSK',
       testStatus: TestStatus.Pennding.value,
-      doctorId: '',
+      doctorId: DefaultDoctorID,
       searchType: 'day',
       searchDate: dayjs().format('YYYY-MM-DD'),
     },

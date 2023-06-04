@@ -19,8 +19,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { toastify } from 'common/toastify';
-import { GenderConstant } from 'constants';
-import TestStatus from 'constants/test-status';
+import { GenderConstant, TestStatus } from 'constants';
 import dayjs from 'dayjs';
 import { fetchDoctors } from 'store/doctorSlice';
 import { fetchTests } from 'store/testManageSlice';
