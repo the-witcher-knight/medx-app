@@ -568,9 +568,11 @@ function MedicalTestManagement() {
 
   const handleMoveNextInputDetail = (curr) => {
     const nextIdx = curr + 1;
-    const nextInput = detailInputRefs.current[nextIdx];
+    const nextInput = detailInputRefs?.current[nextIdx];
 
-    nextInput.focus();
+    if (nextInput) {
+      nextInput.focus();
+    }
   };
 
   const handlePageChange = (pageNum) => {
