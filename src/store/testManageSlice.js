@@ -10,6 +10,7 @@ const initialState = {
   loading: false,
   testDetailUploading: null,
   updateSuccess: null,
+  updateStatusSuccess: null,
   error: null,
 };
 
@@ -287,11 +288,13 @@ const testManageSlice = createSlice({
       .addCase(updateTestStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.updateStatusSuccess = null;
       })
       .addCase(updateTestStatus.fulfilled, (state, action) => {
         const { isSuccess, message } = action.payload;
 
         state.loading = false;
+        state.updateStatusSuccess = isSuccess;
         if (!isSuccess) {
           state.error = { message };
         }
@@ -299,6 +302,7 @@ const testManageSlice = createSlice({
       .addCase(updateTestStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error;
+        state.updateStatusSuccess = false;
       });
   },
 });

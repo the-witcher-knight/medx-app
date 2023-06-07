@@ -414,7 +414,6 @@ function MedicalTestManagement() {
   const location = useLocation();
 
   const [selectedTestID, setSelectedTestID] = useState(null);
-  const [updateStatusSuccess, setUpdateStatusSuccess] = useState(null);
 
   // Form methods
   const mixtureFormMethods = useForm({
@@ -467,7 +466,6 @@ function MedicalTestManagement() {
 
   const handleChangeStatus = ({ testId, status }) => {
     dispatch(updateTestStatus({ testId, status }));
-    setUpdateStatusSuccess(true);
   };
 
   const columns = useMemo(() => initTestColumns(handleClickPrint, handleChangeStatus), []);
@@ -698,13 +696,6 @@ function MedicalTestManagement() {
     );
   };
 
-  useEffect(() => {
-    if (updateStatusSuccess) {
-      handleFilterTest();
-      setUpdateStatusSuccess(null);
-    }
-  }, [updateStatusSuccess]);
-
   const handleSaveTest = () => {
     const values = mixtureFormMethods.getValues();
 
@@ -821,6 +812,13 @@ function MedicalTestManagement() {
     setSelectedTestID(null);
     tableDef.toggleAllRowsSelected(false);
   };
+
+  useEffect(() => {
+    if (testManageState.updateStatusSuccess) {
+      // handleFilterTest();
+      handleRefresh();
+    }
+  }, [testManageState.updateStatusSuccess]);
 
   // Helper components
 
