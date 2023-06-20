@@ -84,7 +84,7 @@ const initTestFilter = (doctors) => [
         icon="calendar"
         name="birthday"
         label="Ngày sinh"
-        type="date"
+        type="text"
       />
     ),
   },
@@ -329,7 +329,7 @@ const initTestColumns = (onClickPrint, onChangeStatus) => {
             background={status[0]?.colorSchema || 'gray'}
             variant="flushed"
             size="sm"
-            width="10rem"
+            width="6rem"
             onChange={(e) =>
               onChangeStatus({
                 testId: info.row.original.id,
@@ -520,7 +520,7 @@ function MedicalTestManagement() {
       const values = {
         fullName: testinfo.patientName,
         address: testinfo.address,
-        birthday: dayjs(testinfo.birthDay).format('YYYY-MM-DD'),
+        birthday: testinfo.birthDay,
         code: testinfo.code,
         diagnose: testinfo.diagnose,
         doctorId: testinfo.doctorId,
@@ -1030,7 +1030,7 @@ function MedicalTestManagement() {
         </Flex>
 
         {indicationState.entities.length > 0 ? (
-          <Wrap sx={{ p: 2 }} spacing={2}>
+          <Wrap spacing={2}>
             {indicationState.entities
               .slice()
               .sort((a, b) => {
@@ -1044,7 +1044,7 @@ function MedicalTestManagement() {
               })
               .map((idc) => (
                 <WrapItem key={`indication_${idc.id}`}>
-                  <Flex sx={{ w: '18rem', h: '4rem' }}>
+                  <Flex sx={{ w: '16rem', h: '2.3rem' }}>
                     <Checkbox
                       value={idc.id}
                       // eslint-disable-next-line react/jsx-props-no-spreading

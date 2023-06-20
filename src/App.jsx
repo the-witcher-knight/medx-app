@@ -14,6 +14,8 @@ import UserMgmt from 'pages/user-mgmt';
 
 import { AppContainer, AppSidebar, AppTopbar, ProtectedRoute } from 'components';
 
+import 'App.css';
+
 const routes = [
   {
     name: 'Quản lý xét nghiệm',
@@ -98,7 +100,12 @@ function App() {
           }}
           routes={routes}
         />
-        <AppContainer ml={{ base: 0, md: sideWidth }}>
+        <AppContainer
+          className="app-container"
+          sx={{
+            ml: { base: 0, md: sideWidth },
+          }}
+        >
           <Routes location={location}>
             <Route
               path="/*"
