@@ -270,7 +270,7 @@ const TestDetailResultForm = React.forwardRef(
 
     return (
       <InputGroup size="md" width="15rem" onKeyDown={handlePressEnter}>
-        <Input pr="4.5rem" defaultValue={data.result} ref={ref} />
+        <Input pr="4.5rem" defaultValue={data.resultText} ref={ref} />
         <InputRightElement>
           {isLoading ? (
             <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" />
@@ -557,7 +557,7 @@ function MedicalTestManagement() {
   }, [testManageState.testDetails]);
 
   const handleSaveDetail = (id, inputIdx) => {
-    dispatch(updateTestDetail({ id, result: detailInputRefs.current[inputIdx].value }));
+    dispatch(updateTestDetail({ id, resultText: detailInputRefs.current[inputIdx].value }));
     setTheUploadDetail(id);
   };
 
@@ -977,6 +977,7 @@ function MedicalTestManagement() {
                       <Td>
                         {tdetail.isShowTrueFalseResult && (
                           <Switch
+                            defaultChecked={tdetail.trueFalseResult}
                             onChange={(e) =>
                               handleUpdateTrueFalseTestDetail(tdetail, e.target.checked)
                             }
