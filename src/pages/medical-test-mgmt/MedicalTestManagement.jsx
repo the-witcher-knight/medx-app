@@ -443,9 +443,46 @@ function MedicalTestManagement() {
 
   const handleClickPrint = (type) => (testID) => {
     reportAPI.get({ testName: type, testID }).then((res) => {
-      const newTab = window.open();
-      newTab.document.write(res.data.data);
-      newTab.window.print();
+      const newTab = window.open('about:blank');
+
+      const htmlTemplate = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>New Tab</title>
+        <script>
+          window.onload = function () {
+            console.log("Loading...")
+            const table = document.querySelector('.table-data');
+            const nextDiv = document.querySelector('.next-content');
+        
+            const tableHeight = table.offsetHeight;
+            const divHeight = nextDiv.offsetHeight;
+            const printableHeight = window.innerHeight;
+        
+            const isLastRowOnNextPage = tableHeight + divHeight > printableHeight;
+        
+            if (isLastRowOnNextPage) {
+              const rows = table.getElementsByTagName('tr');
+              const lastRow = rows[rows.length - 1];
+              const nextTable = document.createElement('table');
+              nextTable.className = 'table-data';
+              nextTable.appendChild(lastRow);
+              nextDiv.insertBefore(nextTable, nextDiv.firstChild);
+            }
+            window.print();
+          };
+        </script>
+      </head>
+      <body>
+        ${res.data.data}
+      </body>
+    </html>
+  `;
+
+      newTab.document.open();
+      newTab.document.write(htmlTemplate);
+      newTab.document.close();
     });
   };
 

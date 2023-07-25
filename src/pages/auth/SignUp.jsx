@@ -1,5 +1,7 @@
 import React from 'react';
 
-function SignUp() {}
+function SignUp() {
+  return <p>Signup component</p>;
+}
 
 export default SignUp;

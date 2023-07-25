@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import { SignIn } from 'pages/auth';
@@ -63,8 +62,6 @@ function App() {
   const sideWidth = '3.3rem';
   const location = useLocation();
 
-  const { loggedIn } = useSelector((state) => state.auth);
-
   return (
     <Box
       sx={{
@@ -110,7 +107,7 @@ function App() {
             <Route
               path="/*"
               element={
-                <ProtectedRoute loggedIn={loggedIn}>
+                <ProtectedRoute>
                   <MedicalTestMgmt />
                 </ProtectedRoute>
               }
@@ -118,7 +115,7 @@ function App() {
             <Route
               path="/home/*"
               element={
-                <ProtectedRoute loggedIn={loggedIn}>
+                <ProtectedRoute>
                   <MedicalTestMgmt />
                 </ProtectedRoute>
               }
@@ -126,7 +123,7 @@ function App() {
             <Route
               path="/patient/*"
               element={
-                <ProtectedRoute loggedIn={loggedIn}>
+                <ProtectedRoute>
                   <PatientMgmt />
                 </ProtectedRoute>
               }
@@ -134,7 +131,7 @@ function App() {
             <Route
               path="/doctor/*"
               element={
-                <ProtectedRoute loggedIn={loggedIn}>
+                <ProtectedRoute>
                   <DoctorMgmt />
                 </ProtectedRoute>
               }
@@ -142,7 +139,7 @@ function App() {
             <Route
               path="/unit/*"
               element={
-                <ProtectedRoute loggedIn={loggedIn}>
+                <ProtectedRoute>
                   <UnitMgmt />
                 </ProtectedRoute>
               }
@@ -150,7 +147,7 @@ function App() {
             <Route
               path="/test-group-mgmt/*"
               element={
-                <ProtectedRoute loggedIn={loggedIn}>
+                <ProtectedRoute>
                   <TestGroupMgmt />
                 </ProtectedRoute>
               }
@@ -158,7 +155,7 @@ function App() {
             <Route
               path="/test-category/*"
               element={
-                <ProtectedRoute loggedIn={loggedIn}>
+                <ProtectedRoute>
                   <TestCategoryMgmt />
                 </ProtectedRoute>
               }
@@ -166,7 +163,7 @@ function App() {
             <Route
               path="/indication/*"
               element={
-                <ProtectedRoute loggedIn={loggedIn}>
+                <ProtectedRoute>
                   <IndicationMgmt />
                 </ProtectedRoute>
               }
@@ -174,7 +171,7 @@ function App() {
             <Route
               path="/user/*"
               element={
-                <ProtectedRoute loggedIn={loggedIn}>
+                <ProtectedRoute>
                   <UserMgmt />
                 </ProtectedRoute>
               }
