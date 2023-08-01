@@ -1,5 +1,5 @@
-import React from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import { SignIn } from 'pages/auth';
 import DoctorMgmt from 'pages/doctor-mgmt';
@@ -61,6 +61,13 @@ const routes = [
 function App() {
   const sideWidth = '3.3rem';
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.pathname === '/') {
+      navigate('/home');
+    }
+  }, []);
 
   return (
     <Box
@@ -104,14 +111,6 @@ function App() {
           }}
         >
           <Routes location={location}>
-            <Route
-              path="/*"
-              element={
-                <ProtectedRoute>
-                  <MedicalTestMgmt />
-                </ProtectedRoute>
-              }
-            />
             <Route
               path="/home/*"
               element={
@@ -177,6 +176,7 @@ function App() {
               }
             />
             <Route path="/auth/signin" element={<SignIn />} />
+
             {/* Add more routes here */}
           </Routes>
         </AppContainer>

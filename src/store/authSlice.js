@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { authAPI } from 'apis';
+import CheckUserLogin from 'common/auth';
 import StorageAPI from 'common/storageAPI';
 import { AuthLoginKey } from 'constants';
 
 const initialState = {
-  loggedIn: StorageAPI.local.get(AuthLoginKey) || false,
+  loggedIn: CheckUserLogin(),
   loading: false,
   accountInfo: {},
   err: null,

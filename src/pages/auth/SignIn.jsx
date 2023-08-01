@@ -53,7 +53,7 @@ function SignIn() {
 
   useEffect(() => {
     if (success || loggedIn) {
-      navigate('/');
+      navigate('/home');
     }
   }, [success, loggedIn]);
 
