@@ -5,6 +5,8 @@ import {
   ArrowCounterClockwise,
   BoundingBox,
   Calendar,
+  CalendarCheck,
+  CalendarX,
   CaretDoubleLeft,
   CaretDoubleRight,
   CaretDown,
@@ -102,6 +104,8 @@ const libIcons = {
   calendar: Calendar,
   'map-pin': MapPin,
   'skip-forward': SkipForward,
+  'calendar-x': CalendarX,
+  'calendar-check': CalendarCheck,
   // add more icons here
 };
 

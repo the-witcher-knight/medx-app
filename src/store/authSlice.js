@@ -39,11 +39,11 @@ export const authSlice = createSlice({
         state.err = null;
         state.success = null;
       })
-      .addCase(authenticate.fulfilled, (state) => {
+      .addCase(authenticate.fulfilled, (state, action) => {
         state.loading = false;
-        state.loggedIn = true;
+        state.loggedIn = !!action.payload; // success if payload had jwt token
+        state.success = !!action.payload; // same as loggedId state
         state.err = null;
-        state.success = true;
       })
       .addCase(authenticate.rejected, (state, action) => {
         state.loading = false;

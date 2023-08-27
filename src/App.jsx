@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import { SignIn } from 'pages/auth';
 import DoctorMgmt from 'pages/doctor-mgmt';

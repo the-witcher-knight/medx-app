@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Split from 'react-split';
 import {
+  AbsoluteCenter,
   Alert,
   AlertDescription,
   AlertIcon,
@@ -11,9 +12,11 @@ import {
   Box,
   Button,
   Checkbox,
+  Divider,
   Flex,
   FormControl,
   FormLabel,
+  Heading,
   HStack,
   Input,
   InputGroup,
@@ -65,6 +68,8 @@ import {
 import { AppIcon, DataGrid, withFormController, withSuspense } from 'components';
 import { FilterGroupItem, FilterGroupSelect } from 'components/FilterGroup';
 import LinearPagination from 'components/LinearPagination';
+
+import MedicalTestSearchForm from './components/MedicalTestSearchForm';
 
 import './MedicalTestManagement.css';
 
@@ -179,6 +184,64 @@ const initTestFilter = (doctors) => [
         ))}
       </FilterGroupSelect>
     ),
+  },
+];
+
+const initSearchFields = (doctors) => [
+  {
+    id: 'fullName',
+    icon: 'address-book',
+    label: 'Tên bệnh nhân',
+  },
+  {
+    id: 'phoneNo',
+    icon: 'phone',
+    label: 'Số điện thoại',
+  },
+  {
+    id: 'testStatus',
+    render: (control) => (
+      <FilterGroupSelect
+        control={control}
+        name="testStatus"
+        icon="check-square-offset"
+        label="Tình trạng"
+      >
+        {Object.keys(TestStatus).map((k) => (
+          <option key={`test_status_${k}`} value={TestStatus[k].value}>
+            {TestStatus[k].name}
+          </option>
+        ))}
+      </FilterGroupSelect>
+    ),
+  },
+  {
+    id: 'doctorId',
+    render: (control) => (
+      <FilterGroupSelect control={control} name="doctorId" icon="first-aid-kit" label="Bác sĩ">
+        {doctors.map((doctor) => (
+          <option key={`doctor_${doctor.id}`} value={doctor.id}>
+            {doctor.fullName}
+          </option>
+        ))}
+      </FilterGroupSelect>
+    ),
+  },
+  {
+    id: 'searchType',
+    icon: 'calendar-check',
+    render: (control) => (
+      <FilterGroupSelect control={control} name="searchType">
+        <option value="day">Tìm theo ngày</option>
+        <option value="month">Tìm theo tháng</option>
+        <option value="year">Tìm theo năm</option>
+      </FilterGroupSelect>
+    ),
+  },
+  {
+    id: 'searchDate',
+    icon: 'calendar-x',
+    type: 'date',
   },
 ];
 
@@ -393,18 +456,6 @@ const initTestColumns = (onClickPrint, onChangeStatus) => {
   ];
 };
 
-const SelectRefered = React.forwardRef(({ children, ...props }, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  <Select ref={ref} {...props}>
-    {children}
-  </Select>
-));
-
-const InputRefered = React.forwardRef((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  <Input ref={ref} {...props} />
-));
-
 // ===========================================================================
 // ============================== Main Component =============================
 // ===========================================================================
@@ -427,6 +478,17 @@ function MedicalTestManagement() {
       email: '',
       sex: 0,
       diagnose: 'KTSK',
+      testStatus: TestStatus.Pennding.value,
+      doctorId: DefaultDoctorID,
+      searchType: 'day',
+      searchDate: dayjs().format('YYYY-MM-DD'),
+    },
+  });
+
+  const searchFormMethods = useForm({
+    defaultValues: {
+      fullName: '',
+      phoneNo: '',
       testStatus: TestStatus.Pennding.value,
       doctorId: DefaultDoctorID,
       searchType: 'day',
@@ -644,6 +706,10 @@ function MedicalTestManagement() {
   // Doctor state
   const doctorState = useSelector((state) => state.doctor);
   const filterFields = useMemo(() => initTestFilter(doctorState.entities), [doctorState.entities]);
+  const searchFields = useMemo(
+    () => initSearchFields(doctorState.entities),
+    [doctorState.entities]
+  );
 
   useEffect(() => {
     dispatch(
@@ -672,17 +738,13 @@ function MedicalTestManagement() {
   }, [patientState.entity]);
 
   const handleFilterTest = () => {
-    const values = mixtureFormMethods.getValues();
+    const values = searchFormMethods.getValues();
 
     const filterObj = {
-      doctorId: values.doctorId,
       patientName: values.patientName,
-      testStatus: values.testStatus,
       phoneNo: values.phoneNo,
-      personalId: values.personalId,
-      code: values.code,
-      email: values.email,
-      sex: Number(values.sex),
+      testStatus: values.testStatus,
+      doctorId: values.doctorId,
       timeType: values.searchType,
       day: values.searchDate,
     };
@@ -701,6 +763,29 @@ function MedicalTestManagement() {
       })
     );
   };
+
+  // const handleFilterTestByDate = () => {
+  //   const values = mixtureFormMethods.getValues();
+
+  //   const filterObj = {
+  //     timeType: values.searchType,
+  //     day: values.searchDate,
+  //   };
+
+  //   // Transfer to filters array
+  //   const testFilters = Object.keys(filterObj)
+  //     .filter((k) => filterObj[k] !== undefined && filterObj[k] !== '' && filterObj[k] !== null)
+  //     .map((k) => ({ fieldName: k, value: String(filterObj[k]) }));
+
+  //   dispatch(
+  //     fetchTests({
+  //       filters: testFilters,
+  //       sortBy: { fieldName: 'createdOn', accending: false },
+  //       pageIndex: pagination.pageIndex,
+  //       pageSize: pagination.pageSize,
+  //     })
+  //   );
+  // };
 
   const handleSaveTest = () => {
     const values = mixtureFormMethods.getValues();
@@ -826,12 +911,6 @@ function MedicalTestManagement() {
     }
   }, [testManageState.updateStatusSuccess]);
 
-  // Helper components
-
-  const ControlledSelect = withFormController(SelectRefered, mixtureFormMethods.control);
-
-  const ControlledInput = withFormController(InputRefered, mixtureFormMethods.control);
-
   return (
     <Box sx={{ display: 'flex', flexDir: 'column', gap: 3 }}>
       <Flex direction="column" alignItems="start" justifyContent="space-between" gap={3} p={2}>
@@ -847,14 +926,11 @@ function MedicalTestManagement() {
           />
         </FormProvider>
 
-        <HStack spacing={2} alignItems="end">
-          <ControlledSelect name="searchType" width="max-content">
-            <option value="day">Tìm theo ngày</option>
-            <option value="month">Tìm theo tháng</option>
-            <option value="year">Tìm theo năm</option>
-          </ControlledSelect>
-
-          <ControlledInput name="searchDate" type="date" width="max-content" />
+        <HStack spacing={2} alignItems="end" mt={4}>
+          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+          <FormProvider {...searchFormMethods}>
+            <MedicalTestSearchForm fields={searchFields} />
+          </FormProvider>
 
           <Tooltip label="Tìm xét nghiệm">
             <Button variant="solid" colorScheme="gray" onClick={handleFilterTest}>
@@ -921,6 +997,27 @@ function MedicalTestManagement() {
             </Select>
           </Tooltip>
         </HStack>
+      </Flex>
+
+      <Flex sx={{ m: 2 }}>
+        <Text fontSize="medium" as="p">
+          Giá xét nghiệm của&nbsp;
+          <Text
+            as="span"
+            fontSize="medium"
+            sx={{ px: '2', py: '1', rounded: 'full', bg: 'teal.100' }}
+          >
+            &quot;{testManageState.entity?.patientName || ''}&quot;
+          </Text>
+          &nbsp;
+          <Text
+            as="span"
+            fontSize="medium"
+            sx={{ px: '2', py: '1', rounded: 'full', bg: 'red.100' }}
+          >
+            {CurrencyFormatter.format(testManageState.entity?.totalPrice || 0)}
+          </Text>
+        </Text>
       </Flex>
 
       <Split className="split" minSize={100}>
