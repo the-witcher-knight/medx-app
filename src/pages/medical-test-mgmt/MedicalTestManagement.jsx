@@ -207,6 +207,9 @@ const initSearchFields = (doctors) => [
         icon="check-square-offset"
         label="Tình trạng"
       >
+        <option key="test_status_none" value="-">
+          -
+        </option>
         {Object.keys(TestStatus).map((k) => (
           <option key={`test_status_${k}`} value={TestStatus[k].value}>
             {TestStatus[k].name}
@@ -219,6 +222,9 @@ const initSearchFields = (doctors) => [
     id: 'doctorId',
     render: (control) => (
       <FilterGroupSelect control={control} name="doctorId" icon="first-aid-kit" label="Bác sĩ">
+        <option key="test_status_none" value="-">
+          -
+        </option>
         {doctors.map((doctor) => (
           <option key={`doctor_${doctor.id}`} value={doctor.id}>
             {doctor.fullName}
@@ -232,6 +238,9 @@ const initSearchFields = (doctors) => [
     icon: 'calendar-check',
     render: (control) => (
       <FilterGroupSelect control={control} name="searchType">
+        <option key="test_status_none" value="-">
+          -
+        </option>
         <option value="day">Tìm theo ngày</option>
         <option value="month">Tìm theo tháng</option>
         <option value="year">Tìm theo năm</option>
@@ -489,9 +498,9 @@ function MedicalTestManagement() {
     defaultValues: {
       fullName: '',
       phoneNo: '',
-      testStatus: TestStatus.Pennding.value,
-      doctorId: DefaultDoctorID,
-      searchType: 'day',
+      testStatus: '-',
+      doctorId: '-', // DefaultDoctorID,
+      searchType: '-',
       searchDate: dayjs().format('YYYY-MM-DD'),
     },
   });
@@ -751,7 +760,13 @@ function MedicalTestManagement() {
 
     // Transfer to filters array
     const testFilters = Object.keys(filterObj)
-      .filter((k) => filterObj[k] !== undefined && filterObj[k] !== '' && filterObj[k] !== null)
+      .filter(
+        (k) =>
+          filterObj[k] !== undefined &&
+          filterObj[k] !== '' &&
+          filterObj[k] !== null &&
+          filterObj[k] !== '-' // Default null value
+      )
       .map((k) => ({ fieldName: k, value: String(filterObj[k]) }));
 
     dispatch(
@@ -926,7 +941,11 @@ function MedicalTestManagement() {
           />
         </FormProvider>
 
-        <HStack spacing={2} alignItems="end" mt={4}>
+        <Text as="leading" size="sm" mt={4}>
+          Tìm kiếm:
+        </Text>
+
+        <HStack spacing={2} alignItems="end">
           {/* eslint-disable-next-line react/jsx-props-no-spreading */}
           <FormProvider {...searchFormMethods}>
             <MedicalTestSearchForm fields={searchFields} />
