@@ -750,12 +750,16 @@ function MedicalTestManagement() {
     const values = searchFormMethods.getValues();
 
     const filterObj = {
-      patientName: values.patientName,
+      patientName: values.fullName,
       phoneNo: values.phoneNo,
       testStatus: values.testStatus,
       doctorId: values.doctorId,
       timeType: values.searchType,
-      day: values.searchDate,
+      day:
+        (values.searchType !== '' ||
+          values.searchType !== undefined ||
+          values.searchType !== null) &&
+        values.searchDate,
     };
 
     // Transfer to filters array
@@ -941,7 +945,7 @@ function MedicalTestManagement() {
           />
         </FormProvider>
 
-        <Text as="leading" size="sm" mt={4}>
+        <Text as="span" size="sm" mt={4}>
           Tìm kiếm:
         </Text>
 
