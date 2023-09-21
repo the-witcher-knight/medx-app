@@ -17,6 +17,7 @@ import {
   Check,
   CheckSquareOffset,
   Copy,
+  CurrencyBtc,
   CurrencyDollar,
   DotsThreeOutlineVertical,
   Envelope,
@@ -106,6 +107,7 @@ const libIcons = {
   'skip-forward': SkipForward,
   'calendar-x': CalendarX,
   'calendar-check': CalendarCheck,
+  'currency-btc': CurrencyBtc,
   // add more icons here
 };
 

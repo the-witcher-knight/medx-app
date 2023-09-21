@@ -115,7 +115,6 @@ const initTestFilter = (doctors) => [
     label: 'CCCD',
     hasSearch: true,
   },
-
   {
     id: 'email',
     icon: 'envelope',
@@ -184,6 +183,11 @@ const initTestFilter = (doctors) => [
         ))}
       </FilterGroupSelect>
     ),
+  },
+  {
+    id: 'prepaid',
+    icon: 'currency-btc',
+    label: 'Tiền đưa trước',
   },
 ];
 
@@ -440,7 +444,7 @@ const initTestColumns = (onClickPrint, onChangeStatus) => {
 
     columnHelper.accessor('dayOfTest', {
       header: 'Ngày xét nghiệm',
-      cell: (info) => dayjs(info.getValue()).format('YYYY-MM-DD HH:mm'),
+      cell: (info) => dayjs(info.getValue()).format('HH:mm DD-MM-YYYY'),
     }),
     columnHelper.accessor('code', {
       header: 'Mã bệnh nhân',
@@ -491,6 +495,7 @@ function MedicalTestManagement() {
       doctorId: DefaultDoctorID,
       searchType: 'day',
       searchDate: dayjs().format('YYYY-MM-DD'),
+      prepaid: '',
     },
   });
 
@@ -605,6 +610,7 @@ function MedicalTestManagement() {
         sex: Number(testinfo.sex) > 0,
         testStatus: testinfo.testStatus,
         personalId: testinfo.personalId,
+        prepaid: testinfo.prepaid,
       };
 
       Object.keys(values).forEach((k) => {
@@ -843,6 +849,7 @@ function MedicalTestManagement() {
           email: values.email,
           personalId: values.personalId,
           sex: Number(values.sex),
+          prepaid: values.prepaid,
         })
       );
     } else {
