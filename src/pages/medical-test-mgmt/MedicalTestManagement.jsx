@@ -525,6 +525,7 @@ function MedicalTestManagement() {
 
       newTab.document.open();
       newTab.document.write(htmlTemplate);
+      newTab.print();
       newTab.document.close();
     });
   };
